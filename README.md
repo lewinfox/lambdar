@@ -44,4 +44,6 @@ curl -vX POST https://my-lambda-endpoint.com/whatever -H "Content-Type: applicat
 '{"response": "Hello, R"}'
 ```
 
-Something like that, anyway.
+Something like that, anyway. It would be even better to build on plumber and just get that working
+in Lambda. Can you have sub-routes within a Lambda call? Yes, see 
+[here](https://aws.amazon.com/blogs/compute/using-multiple-segments-in-amazon-api-gateway-base-path-mapping/).
