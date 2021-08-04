@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+# This file is expected by Lambda and provides the entrypoint for the whole shebang.
+
+# Lambda provides the AWS_TASK_ROOT environment variable
+cd "${AWS_TASK_ROOT}"
+
+# Initialise the R runtime
+Rscript runtime.R
