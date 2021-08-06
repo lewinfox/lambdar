@@ -15,9 +15,10 @@ ENV PATH="${PATH}:/opt/R/${R_VERSION}/bin/"
 RUN yum -y install openssl-devel
 
 RUN Rscript -e \
-  "install.packages(c('httr', 'jsonlite'), repos = 'https://cloud.r-project.org/')"
+  "install.packages(c('httr', 'jsonlite', 'logger'), repos = 'https://cloud.r-project.org/')"
 
 COPY runtime.R functions.R ${LAMBDA_TASK_ROOT}/
 RUN chmod 755 -R ${LAMBDA_TASK_ROOT}/
 
-COPY bootstrap /var/runtime/bootstrap && chmod +x /var/runtime/bootstrap
+RUN printf '#!/bin/sh\ncd $LAMBDA_TASK_ROOT\nRscript runtime.R' > /var/runtime/bootstrap \
+  && chmod +x /var/runtime/bootstrap
