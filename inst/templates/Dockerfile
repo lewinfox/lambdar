@@ -3,7 +3,7 @@ FROM public.ecr.aws/lambda/provided
 ENV R_VERSION={{ r_version }}
 
 # Install system packages
-RUN yum -y install wget \
+RUN  yum -y install wget \
   && yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
   && yum -y install openssl-devel \
   && wget https://cdn.rstudio.com/r/centos-7/pkgs/R-${R_VERSION}-1-1.x86_64.rpm \
@@ -23,9 +23,13 @@ RUN printf '#!/bin/sh\ncd $LAMBDA_TASK_ROOT\nRscript runtime.R' > /var/runtime/b
 # The R runtime requires these packages
 RUN Rscript -e "install.packages(c('httr', 'jsonlite', 'logger'), repos = c({{ r_package_repos }}))"
 
-# If necessary, install extra R packages here. This installation step happens last as this is the
-# one most likely to change between containers - having it as the last image in the stack means we
-# can use cached images as much as possible.
+# If necessary, install extra R and Linux packages here. This installation step happens last as this
+# is the one most likely to change between containers - having it as the last image in the stack
+# means we can use cached images as much as possible.
 {{#r_packages}}
 RUN Rscript -e "install.packages(c({{ r_packages }}), repos = c({{ r_package_repos }}))"
 {{/r_packages}}
+
+{{#linux_packages}}
+RUN yum -y install {{ linux_packages }}
+{{/linux_packages}}
