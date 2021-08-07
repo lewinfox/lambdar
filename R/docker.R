@@ -11,7 +11,11 @@
 #' @return Nothing - this function is called for its side effect, which is to write a `Dockerfile`
 #'   to disk.
 #' @keywords internal
-lam_build_dockerfile <- function(r_functions_file = "main.R", r_packages = NULL, repos = getOption("repos"), linux_packages = NULL, r_version = lam_r_version()) {
+lam_build_dockerfile <- function(r_functions_file = "main.R",
+                                 r_packages = NULL,
+                                 repos = getOption("repos"),
+                                 linux_packages = NULL,
+                                 r_version = lam_r_version()) {
   outfile <- "Dockerfile"
   data = list(
     r_version = r_version,
