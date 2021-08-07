@@ -1,7 +1,7 @@
 name: "my_lambdar_app"
 
-# If you want to specify an R version other than your current version, enter it here
-# r_version: "3.6.3"
+# What version of R should be installed in the container?
+r_version: "{{ r_version }}"
 
 # Specify the function as EITHER `file.function_name` (this is how Lambda does it), or by providing
 # `lambda_function_file` and `lambda_function` separately.
