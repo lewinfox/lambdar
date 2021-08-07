@@ -18,5 +18,5 @@ linux_packages: []
 # Specify any environment variables your function needs
 env: []
 
-# Data files to be included
-include_data: []
+# If any additional files or directories need to be included in the container, list them here.
+include_files: []
