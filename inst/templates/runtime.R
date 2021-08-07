@@ -1,7 +1,5 @@
-library(httr)
-library(logger)
-log_formatter(formatter_paste)
-log_threshold(INFO)
+logger::log_formatter(logger::formatter_paste)
+logger::log_threshold(logger::INFO)
 
 #' Convert a list to a single character, preserving names
 #' prettify_list(list("a" = 1, "b" = 2, "c" = 3))
@@ -22,56 +20,64 @@ condition <- function(subclass, message, code, call = sys.call(-1), ...) {
     ...
   )
 }
+
+#' Signal an API error
 stop_api <- function(message, code = 500, call = sys.call(-1), ...) {
-  stop(condition(c("api_error", "error"), message, code = code, call = call,
-                 ...))
+  stop(condition(c("api_error", "error"), message, code = code, call = call, ...))
 }
 
-log_debug("Deriving lambda runtime API endpoints from environment variables")
+logger::log_debug("Deriving lambda runtime API endpoints from environment variables")
+
 lambda_runtime_api <- Sys.getenv("AWS_LAMBDA_RUNTIME_API")
 if (lambda_runtime_api == "") {
   error_message <- "AWS_LAMBDA_RUNTIME_API environment variable undefined"
-  log_error(error_message)
+  logger::log_error(error_message)
   stop(error_message)
 }
-next_invocation_endpoint <- paste0(
-  "http://", lambda_runtime_api, "/2018-06-01/runtime/invocation/next"
-)
-initialisation_error_endpoint <- paste0(
-  "http://", lambda_runtime_api, "/2018-06-01/runtime/init/error"
-)
+
+next_invocation_endpoint <- paste0("http://", lambda_runtime_api, "/2018-06-01/runtime/invocation/next")
+
+initialisation_error_endpoint <- paste0("http://", lambda_runtime_api, "/2018-06-01/runtime/init/error")
 
 tryCatch(
   {
-    log_debug("Determining handler from environment variables")
+    logger::log_debug("Determining handler from environment variables")
+
     handler <- Sys.getenv("_HANDLER")
     if (is.null(handler) || handler == "") {
       stop_api("_HANDLER environment variable undefined")
     }
-    log_info("Handler found:", handler)
+
+    logger::log_info("Handler found:", handler)
+
     handler_split <- strsplit(handler, ".", fixed = TRUE)[[1]]
     file_name <- paste0(handler_split[1], ".R")
     function_name <- handler_split[2]
-    log_info("Using function", function_name, "from", file_name)
 
-    log_debug("Checking if", file_name, "exists")
+    logger::log_info("Using function", function_name, "from", file_name)
+
+    logger::log_debug("Checking if", file_name, "exists")
+
     if (!file.exists(file_name)) {
       stop_api(file_name, " doesn't exist in ", getwd())
     }
+
     source(file_name)
 
-    log_debug("Checking if", function_name, "is defined")
+    logger::log_debug("Checking if", function_name, "is defined")
     if (!exists(function_name)) {
       stop_api("Function name ", function_name, " isn't defined in R")
     }
-    log_debug("Checking if", function_name, "is a function")
+
+    logger::log_debug("Checking if", function_name, "is a function")
+
     if (!is.function(eval(parse(text = function_name)))) {
       stop_api("Function name ", function_name, " is not a function")
     }
   },
   api_error = function(e) {
-    log_error(as.character(e))
-    POST(
+    logger::log_error(as.character(e))
+    httr::POST(
       url = initialisation_error_endpoint,
       body = list(
         statusCode = e$code,
@@ -83,22 +89,21 @@ tryCatch(
 )
 
 handle_event <- function(event) {
-  status_code <- status_code(event)
-  log_debug("Status code:", status_code)
+  status_code <- httr::status_code(event)
+  logger::log_debug("Status code:", status_code)
   if (status_code != 200) {
-    stop_api("Didn't get status code 200. Status code: ", status_code,
-             code = 400)
+    stop_api("Didn't get status code 200. Status code: ", status_code, code = 400)
   }
-  event_headers <- headers(event)
+
+  event_headers <- httr::headers(event)
 
   # HTTP headers are case-insensitive
   names(event_headers) <- tolower(names(event_headers))
-  log_debug("Event headers:", prettify_list(event_headers))
+  logger::log_debug("Event headers:", prettify_list(event_headers))
 
   aws_request_id <- event_headers[["lambda-runtime-aws-request-id"]]
   if (is.null(aws_request_id)) {
-    stop_api("Could not find lambda-runtime-aws-request-id header in event",
-             code = 400)
+    stop_api("Could not find lambda-runtime-aws-request-id header in event", code = 400)
   }
 
   # According to the AWS guide, the below is used by "X-Ray SDK"
@@ -118,8 +123,12 @@ handle_event <- function(event) {
   unparsed_content <- httr::content(event, "text", encoding = "UTF-8")
   # Thank you to Menno Schellekens for this fix for Cloudwatch events
   is_scheduled_event <- grepl("Scheduled Event", unparsed_content)
-  if(is_scheduled_event) log_info("Event type is scheduled")
-  log_debug("Unparsed content:", unparsed_content)
+  if (is_scheduled_event) {
+    logger::log_info("Event type is scheduled")
+  }
+
+  logger::log_debug("Unparsed content:", unparsed_content)
+
   if (unparsed_content == "" || is_scheduled_event) {
     # (1a) direct invocation with no args (or scheduled request)
     event_content <- list()
@@ -149,12 +158,11 @@ handle_event <- function(event) {
     }
   }
 
-  result <- do.call(function_name, event_content)
-  log_debug("Result:", as.character(result))
-  response_endpoint <- paste0(
-    "http://", lambda_runtime_api, "/2018-06-01/runtime/invocation/",
-    aws_request_id, "/response"
-  )
+  result <- do.call(function_name, event_content) # TODO: Error handling
+
+  logger::log_debug("Result:", as.character(result))
+  response_endpoint <- paste0("http://", lambda_runtime_api, "/2018-06-01/runtime/invocation/", aws_request_id, "/response")
+
   # aws api gateway is a bit particular about the response format
   body <- if (is_http_req) {
     list(
@@ -165,64 +173,62 @@ handle_event <- function(event) {
   } else {
     result
   }
-  POST(
+
+  httr::POST(
     url = response_endpoint,
     body = body,
     encode = "json"
   )
+
   rm("aws_request_id") # so we don't report errors to an outdated endpoint
 }
 
-log_info("Querying for events")
+logger::log_info("Querying for events")
+
 while (TRUE) {
   tryCatch(
     {
-      event <- GET(url = next_invocation_endpoint)
-      log_debug("Event received")
+      event <- httr::GET(url = next_invocation_endpoint)
+      logger::log_debug("Event received")
       handle_event(event)
     },
     api_error = function(e) {
-      log_error(as.character(e))
-      aws_request_id <-
-        headers(event)[["lambda-runtime-aws-request-id"]]
+      logger::log_error(as.character(e))
+
+      aws_request_id <- httr::headers(event)[["lambda-runtime-aws-request-id"]]
+
       if (exists("aws_request_id")) {
-        log_debug("POSTing invocation error for ID:", aws_request_id)
-        invocation_error_endpoint <- paste0(
-          "http://", lambda_runtime_api, "/2018-06-01/runtime/invocation/",
-          aws_request_id, "/error"
-        )
-        POST(
+        logger::log_debug("POSTing invocation error for ID:", aws_request_id)
+
+        invocation_error_endpoint <- paste0("http://", lambda_runtime_api, "/2018-06-01/runtime/invocation/", aws_request_id, "/error")
+
+        httr::POST(
           url = invocation_error_endpoint,
           body = list(
             statusCode = e$code,
-            error_message = as.character(e$message)),
+            error_message = as.character(e$message)
+          ),
           encode = "json"
         )
       } else {
-        log_debug("No invocation ID!",
-                  "Can't clear this request from the queue.")
+        logger::log_debug("No invocation ID! Can't clear this request from the queue.")
       }
     },
     error = function(e) {
-      log_error(as.character(e))
-      aws_request_id <-
-        headers(event)[["lambda-runtime-aws-request-id"]]
+      logger::log_error(as.character(e))
+      aws_request_id <- httr::headers(event)[["lambda-runtime-aws-request-id"]]
       if (exists("aws_request_id")) {
-        log_debug("POSTing invocation error for ID:", aws_request_id)
-        invocation_error_endpoint <- paste0(
-          "http://", lambda_runtime_api, "/2018-06-01/runtime/invocation/",
-          aws_request_id, "/error"
-        )
-        POST(
+        logger::log_debug("POSTing invocation error for ID:", aws_request_id)
+        invocation_error_endpoint <- paste0("http://", lambda_runtime_api, "/2018-06-01/runtime/invocation/", aws_request_id, "/error")
+
+        httr::POST(
           url = invocation_error_endpoint,
           body = list(error_message = as.character(e)),
           encode = "json"
         )
       } else {
-        log_debug("No invocation ID!",
-                  "Can't clear this request from the queue.")
+        logger::log_debug("No invocation ID! Can't clear this request from the queue.")
       }
     }
   )
 }
-
