@@ -20,6 +20,9 @@ RUN chmod 755 -R ${LAMBDA_TASK_ROOT}/
 RUN printf '#!/bin/sh\ncd $LAMBDA_TASK_ROOT\nRscript runtime.R' > /var/runtime/bootstrap \
   && chmod +x /var/runtime/bootstrap
 
+# The R runtime requires these packages
+RUN Rscript -e "install.packages(c('httr', 'jsonlite', 'logger'), repos = c({{ r_package_repos }}))"
+
 # If necessary, install extra R packages here. This installation step happens last as this is the
 # one most likely to change between containers - having it as the last image in the stack means we
 # can use cached images as much as possible.
