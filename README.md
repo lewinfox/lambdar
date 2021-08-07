@@ -27,21 +27,21 @@ Run the container:
 ``` bash
 # The first argument after the conatiner name is the `_HANDLER` environment variable expected by
 # Lambda, in the format `filename.function_name`.
-$ docker run -p 9000:8080 lewinfox/lamndar functions.hello_world
+$ docker run -p 9000:8080 lewinfox/lambdar functions.hello_world
 ```
 
 When the container runs it sets up a server that listens on
-`http://localhost:8080/2015-03-01/functions/function/invocations`. Because we mapped port 9000 on our local
+`http://localhost:8080/2015-03-31/functions/function/invocations`. Because we mapped port 9000 on our local
 machine to port 8080 on the container in the previous step, we need to make requests to 
-`http://localhost:9000/2015-03-01/functions/function/invocations`.
+`http://localhost:9000/2015-03-31/functions/function/invocations`.
 
 ``` bash
 # Passing no arguments
-$ curl http://localhost:9000/2015-03-01/functions/function/invocations
+$ curl http://localhost:9000/2015-03-31/functions/function/invocations
 Hello, World!
 
 # Passing a JSON payload
-$ curl http://localhost:9000/2015-03-01/functions/function/invocations -d '{"name": "R"}'
+$ curl http://localhost:9000/2015-03-31/functions/function/invocations -d '{"name": "R"}'
 Hello, R!
 ```
 
