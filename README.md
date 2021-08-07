@@ -45,42 +45,19 @@ $ curl http://localhost:9000/2015-03-31/functions/function/invocations -d '{"nam
 Hello, R!
 ```
 
-## Future work
+## The plan
 
-Use a similar API to [plumber](https://www.rplumber.io/) to define a function (or functions?) to be 
-lambda-d:
-
-``` r
-#' @lambda
-hello <- function(name = NULL) {
-  if (is.null(name)) {
-    name <- "World"
-  }
-  paste("Hello," name) # This will need to be JSON-ified
-}
-```
-
-Do some kind of compilation and upload step:
-
-``` r
-upload_functions_to_lambda()
-#> Reading config
-#> Doing security stuff
-#> Zipping code
-#> Uploading to lambda
-#> Done - send requests to https://my-lambda-endpoint.com/whatever
-```
-
-Make a request:
-
-```
-curl -vX POST https://my-lambda-endpoint.com/whatever -H "Content-Type: application/json" -d '{"name": "R"}'
-```
-
-```
-'{"response": "Hello, R"}'
-```
-
-Something like that, anyway. It would be even better to build on plumber and just get that working
-in Lambda. Can you have sub-routes within a Lambda call? Yes, see 
-[here](https://aws.amazon.com/blogs/compute/using-multiple-segments-in-amazon-api-gateway-base-path-mapping/).
+* Tag your function with `#' @lambda`
+* Call `lambdar::use_lambdar()`
+* It identifies the tagged function, checks there's only one
+* Identifies dependencies (how? is this too hard?)
+* Writes a `_lambdar.yml` file to the project root dir, which contains all the params needed
+  * Main function identifier
+  * Package list
+  * Linux package list? If you need extra stuff?
+  * Custom container init script?
+* Once the `_lambdar.yml` file is ready, `lambdar` uses it to generate a `Dockerfile`
+* Once the `Dockerfile` is ready, use `docker` to build a container.
+* Tells you how to test the container locally.
+* Helps you automate the process of uploading to AWS
+* Provide a GitHub Actions template so we can update on every push etc.
