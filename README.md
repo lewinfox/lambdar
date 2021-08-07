@@ -55,7 +55,7 @@ Hello, R!
   * Main function identifier
   * Package list
   * Linux package list? If you need extra stuff?
-  * Custom container init script?
+  * Data files to be included in the container
 * Once the `_lambdar.yml` file is ready, `lambdar` uses it to generate a `Dockerfile`
 * Once the `Dockerfile` is ready, use `docker` to build a container.
 * Tells you how to test the container locally.
