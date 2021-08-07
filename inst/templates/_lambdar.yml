@@ -1,0 +1,19 @@
+name: "my_lambdar_app"
+
+# Specify the function as EITHER `file.function_name` (this is how Lambda does it), or by providing
+# `lambda_function_file` and `lambda_function` separately.
+lambda_function: "main.hello_world"
+# lambda_function_file: "main.R"
+# lambda_function: "hello_world"
+
+# List any extra R packages you need to have installed in the container
+r_packages: []
+
+# List any extra Linux packages you need to have installed in the container
+linux_packages: []
+
+# Specify any environment variables your function needs
+env: []
+
+# Data files to be included
+include_data: []
