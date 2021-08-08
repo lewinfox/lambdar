@@ -44,6 +44,7 @@ roclet_process.roclet_lambda <- function(x, blocks, env, base_path) {
 #' @param x A `roclet_lambda` object. See [roclet_lambda()].
 #' @param results The output of [roclet_process.roclet_lambda].
 #' @param base_path Unknown.
+#' @param ... Unused
 #'
 #' @importFrom roxygen2 roclet_output
 #' @export

@@ -11,6 +11,7 @@ Description: Tools to build AWS Lambda functions in R.
 License: MIT + file LICENSE
 Imports: 
     cli,
+    glue,
     httr,
     roxygen2,
     usethis,

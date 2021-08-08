@@ -30,45 +30,6 @@ lam_build_dockerfile <- function(r_functions_file = "main.R",
   usethis::use_template("Dockerfile", save_as = outfile, data = data, package = "lambdar")
 }
 
-#' Convert a vector into a list
-#'
-#' @param items Vector or items to write.
-#'
-#' @return A string
-#'
-#' @name build-lists
-#' @keywords internal
-#'
-#' @examples
-#' lam_build_quoted_list(c("a", "b", "c"))
-#'
-#' lam_build_space_separated_list(c("a", "b", "c"))
-NULL
-
-#' @describeIn build-lists Build a single-quoted comma-separated list
-lam_build_quoted_list <- function(items = NULL) {
-  if (is.null(items)) {
-    return(NULL)
-  }
-  glue::glue_collapse(glue::single_quote(items), sep = ",")
-}
-
-#' @describeIn build-lists Build an unquoted space-separated list
-lam_build_space_separated_list <- function(items = NULL) {
-  if (is.null(items)) {
-    return(NULL)
-  }
-  glue::glue_collapse(items, sep = " ")
-}
-
-#' Get the current R version
-#'
-#' @return Current R version as a string, e.g. "4.0.1"
-#' @keywords internal
-lam_r_version <- function() {
-  paste0(R.version$major, ".", R.version$minor)
-}
-
 #' Add `_lamdar.yml` to the project root.
 #'
 #' @keywords internal
@@ -82,8 +43,11 @@ use_lambdar_yaml <- function(save_as = "_lambdar.yml") {
   usethis::use_template("_lambdar.yml", save_as = save_as, data = data, package = "lambdar")
 }
 
+#' Use lamndar with your project
+#'
+#' @return Nothing
+#' @export
 use_lambdar <- function() {
   cli::cli_alert_success("Setting up a lambdar project")
   use_lambdar_yaml(file.path(usethis::proj_get(), "_lambdar.yml"))
-  cli::cli_al
 }

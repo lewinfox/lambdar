@@ -19,11 +19,6 @@ relish <- function(x, dir = getwd()) {
 #'
 #' @name build-lists
 #' @keywords internal
-#'
-#' @examples
-#' lam_build_quoted_list(c("a", "b", "c"))
-#'
-#' lam_build_space_separated_list(c("a", "b", "c"))
 NULL
 
 #' @describeIn build-lists Build a single-quoted comma-separated list

@@ -12,6 +12,8 @@
 \item{results}{The output of [roclet_process.roclet_lambda].}
 
 \item{base_path}{Unknown.}
+
+\item{...}{Unused}
 }
 \description{
 Given a list of functions that have been tagged with `@lambda`, do something cool with them
