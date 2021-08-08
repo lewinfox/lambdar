@@ -17,7 +17,7 @@ lam_build_dockerfile <- function(r_functions_file = "main.R",
                                  linux_packages = NULL,
                                  r_version = lam_r_version(),
                                  include_files = NULL) {
-  outfile <- file.path(usethis::proj_get(), "Dockerfile")
+  outfile <- "Dockerfile"
   data = list(
     r_version = r_version,
     r_packages = lam_build_quoted_list(r_packages),
