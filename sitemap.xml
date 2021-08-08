@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://lewinfox.githib.io/lambdar/index.html</loc>
+    <loc>https://lewinfox.github.io/lambdar/index.html</loc>
   </url>
   <url>
-    <loc>https://lewinfox.githib.io/lambdar/reference/build-lists.html</loc>
+    <loc>https://lewinfox.github.io/lambdar/reference/build-lists.html</loc>
   </url>
   <url>
-    <loc>https://lewinfox.githib.io/lambdar/reference/lam_build_dockerfile.html</loc>
+    <loc>https://lewinfox.github.io/lambdar/reference/lam_build_dockerfile.html</loc>
   </url>
   <url>
-    <loc>https://lewinfox.githib.io/lambdar/reference/lam_r_version.html</loc>
+    <loc>https://lewinfox.github.io/lambdar/reference/lam_r_version.html</loc>
   </url>
   <url>
-    <loc>https://lewinfox.githib.io/lambdar/reference/relish.html</loc>
+    <loc>https://lewinfox.github.io/lambdar/reference/relish.html</loc>
   </url>
   <url>
-    <loc>https://lewinfox.githib.io/lambdar/reference/roclet_lambda.html</loc>
+    <loc>https://lewinfox.github.io/lambdar/reference/roclet_lambda.html</loc>
   </url>
   <url>
-    <loc>https://lewinfox.githib.io/lambdar/reference/roclet_output.roclet_lambda.html</loc>
+    <loc>https://lewinfox.github.io/lambdar/reference/roclet_output.roclet_lambda.html</loc>
   </url>
   <url>
-    <loc>https://lewinfox.githib.io/lambdar/reference/roclet_process.roclet_lambda.html</loc>
+    <loc>https://lewinfox.github.io/lambdar/reference/roclet_process.roclet_lambda.html</loc>
   </url>
   <url>
-    <loc>https://lewinfox.githib.io/lambdar/reference/use_lambdar_yaml.html</loc>
+    <loc>https://lewinfox.github.io/lambdar/reference/use_lambdar.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/use_lambdar_yaml.html</loc>
   </url>
 </urlset>

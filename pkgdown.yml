@@ -2,8 +2,8 @@ pandoc: 2.7.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles: {}
-last_built: 2021-08-08T02:18Z
+last_built: 2021-08-08T02:42Z
 urls:
-  reference: https://lewinfox.githib.io/lambdar/reference
-  article: https://lewinfox.githib.io/lambdar/articles
+  reference: https://lewinfox.github.io/lambdar/reference
+  article: https://lewinfox.github.io/lambdar/articles
 
