@@ -1,3 +1,19 @@
+#' Read and validate `_lambdar.yml`
+#'
+#' @return
+#'
+#' @keywords internal
+lam_read_config <- function() {
+  config_path <- file.path(usethis::proj_get(), "_lambdar.yml")
+  if (!file.exists(config_path)) {
+    cli::cli_alert_danger("{.path {config_path}} not found")
+    return()
+  }
+  config_list <- yaml::read_yaml(config_path)
+  # TODO: Validate config
+  config_list
+}
+
 #' Build a Dockerfile
 #'
 #' @param r_functions_file File containing the R functions to be lambda-d
