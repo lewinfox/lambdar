@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://lewinfox.githib.io/lambdar/index.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.githib.io/lambdar/reference/build-lists.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.githib.io/lambdar/reference/lam_build_dockerfile.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.githib.io/lambdar/reference/lam_r_version.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.githib.io/lambdar/reference/relish.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.githib.io/lambdar/reference/roclet_lambda.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.githib.io/lambdar/reference/roclet_output.roclet_lambda.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.githib.io/lambdar/reference/roclet_process.roclet_lambda.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.githib.io/lambdar/reference/use_lambdar_yaml.html</loc>
+  </url>
+</urlset>
