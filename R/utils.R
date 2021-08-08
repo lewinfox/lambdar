@@ -60,3 +60,24 @@ lam_has_docker <- function() {
   }
   TRUE
 }
+
+#' Path utilities
+#'
+#' Pinched from `usethis`.
+#'
+#' @param ... Path elements
+#'
+#' @keywords internal
+lam_proj_path <- function(...) {
+  file.path(usethis::proj_get(), ...)
+}
+
+#' @describeIn lam_proj_path Path to lambdar config file
+lam_config_file <- function() {
+  lam_proj_path("_lambdar.yml")
+}
+
+#' @describeIn lam_proj_path Path to Dockerfile
+lam_dockerfile_path <- function() {
+  lam_proj_path("Dockerfile")
+}

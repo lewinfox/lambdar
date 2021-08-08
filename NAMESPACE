@@ -3,6 +3,7 @@
 S3method(roclet_output,roclet_lambda)
 S3method(roclet_process,roclet_lambda)
 S3method(roxy_tag_parse,roxy_tag_lambda)
+export(build_container)
 export(use_lambdar)
 importFrom(roxygen2,roclet_output)
 importFrom(roxygen2,roclet_process)

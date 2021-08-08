@@ -1,15 +1,33 @@
+#' Build a container image from a config file
+#'
+#' @export
+build_container <- function() {
+  if (!lam_has_docker()) {
+    msg <- paste(
+      "Can't build a container without Docker installed.",
+      "You can still create a Dockerfile using {.fn lambdar::build_dockerfile}."
+    )
+    cli::cli_alert_danger(msg)
+    return(invisible())
+  }
+}
+
+build_dockerfile <- function() {
+  lam_build_dockerfile(lam_read_config())
+}
+
 #' Read and validate `_lambdar.yml`
 #'
 #' @return
 #'
 #' @keywords internal
 lam_read_config <- function() {
-  config_path <- file.path(usethis::proj_get(), "_lambdar.yml")
-  if (!file.exists(config_path)) {
-    cli::cli_alert_danger("{.path {config_path}} not found")
+  cfg <- lam_config_file()
+  if (!file.exists(cfg)) {
+    cli::cli_alert_danger("{.path {cfg}} not found. Have you run {.fn lambdar::use_lambdar}?")
     return(invisible())
   }
-  config_list <- yaml::read_yaml(config_path)
+  config_list <- yaml::read_yaml(cfg)
   # TODO: Validate config
   config_list
 }
@@ -33,7 +51,7 @@ lam_build_dockerfile <- function(r_functions_file = "main.R",
                                  linux_packages = NULL,
                                  r_version = lam_r_version(),
                                  include_files = NULL) {
-  outfile <- "Dockerfile"
+  outfile <- lam_dockerfile_path()
   data = list(
     r_version = r_version,
     r_packages = lam_build_quoted_list(r_packages),
