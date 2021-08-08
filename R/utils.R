@@ -44,3 +44,19 @@ lam_build_space_separated_list <- function(items = NULL) {
 lam_r_version <- function() {
   paste0(R.version$major, ".", R.version$minor)
 }
+
+#' Do we have docker installed?
+#'
+#' @keywords internal
+lam_has_docker <- function() {
+  x <- Sys.which("docker")
+  if (x == "") {
+    msg <- paste(
+      "No docker installation found.",
+      "Refer to {.url https://docs.docker.com/get-docker/} for installation instructions"
+    )
+    cli::cli_alert_warning(msg)
+    return(FALSE)
+  }
+  TRUE
+}
