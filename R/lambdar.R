@@ -7,7 +7,7 @@ lam_read_config <- function() {
   config_path <- file.path(usethis::proj_get(), "_lambdar.yml")
   if (!file.exists(config_path)) {
     cli::cli_alert_danger("{.path {config_path}} not found")
-    return()
+    return(invisible())
   }
   config_list <- yaml::read_yaml(config_path)
   # TODO: Validate config
