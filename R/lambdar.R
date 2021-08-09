@@ -76,13 +76,13 @@ lam_build_dockerfile <- function(r_functions_file = "main.R",
   usethis::use_template("Dockerfile", save_as = outfile, data = data, package = "lambdar")
 }
 
-#' Add `_lamdar.yml` to the project root.
+#' Add `_lambdar.yml` to the project root.
 #'
 #' @keywords internal
 use_lambdar_yaml <- function(save_as = "_lambdar.yml") {
   # TODO: Identify and pre-populate the main file (if it already contains the `@lambdar` tag this
   #       should be easy), and populate the `include_files` option with a list of everything else in
-  #       the directory that isn't lamdar-related
+  #       the directory that isn't lambdar-related
   data <- list(
     r_version = lam_r_version()
   )

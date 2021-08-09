@@ -2,11 +2,11 @@
 % Please edit documentation in R/lambdar.R
 \name{use_lambdar_yaml}
 \alias{use_lambdar_yaml}
-\title{Add `_lamdar.yml` to the project root.}
+\title{Add `_lambdar.yml` to the project root.}
 \usage{
 use_lambdar_yaml(save_as = "_lambdar.yml")
 }
 \description{
-Add `_lamdar.yml` to the project root.
+Add `_lambdar.yml` to the project root.
 }
 \keyword{internal}
