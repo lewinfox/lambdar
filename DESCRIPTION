@@ -13,6 +13,7 @@ Imports:
     cli,
     glue,
     httr,
+    rlang,
     roxygen2,
     usethis,
     yaml
