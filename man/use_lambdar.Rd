@@ -2,7 +2,7 @@
 % Please edit documentation in R/lambdar.R
 \name{use_lambdar}
 \alias{use_lambdar}
-\title{Use lamndar with your project}
+\title{Use lambdar with your project}
 \usage{
 use_lambdar()
 }
@@ -10,5 +10,5 @@ use_lambdar()
 Nothing
 }
 \description{
-Use lamndar with your project
+Use lambdar with your project
 }

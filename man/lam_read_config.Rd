@@ -7,7 +7,7 @@
 lam_read_config()
 }
 \value{
-
+A list containing parsed config data.
 }
 \description{
 Read and validate `_lambdar.yml`
