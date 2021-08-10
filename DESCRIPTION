@@ -1,7 +1,7 @@
 Type: Package
 Package: lambdar
 Title: Run R on AWS Lambda
-Version: 0.1.0.9000
+Version: 0.1.0.9001
 Authors@R: 
     person(given = "Lewin",
            family = "Appleton-Fox",
