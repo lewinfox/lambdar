@@ -158,9 +158,14 @@ handle_event <- function(event) {
     }
   }
 
-  result <- do.call(function_name, event_content) # TODO: Error handling
+  response_object <- list(result = try(do.call(function_name, event_content), silent = TRUE)) # TODO: Error handling
+  if (inherits(response_object$result, "try-error")) {
+    response_object$status <- "failure"
+  } else {
+    response_object$status <- "success"
+  }
 
-  logger::log_debug("Result:", as.character(result))
+  logger::log_debug("Result:", as.character(response_object$result))
   response_endpoint <- paste0("http://", lambda_runtime_api, "/2018-06-01/runtime/invocation/", aws_request_id, "/response")
 
   # aws api gateway is a bit particular about the response format
@@ -168,10 +173,10 @@ handle_event <- function(event) {
     list(
       isBase64Encoded = FALSE,
       statusCode = 200L,
-      body =  as.character(jsonlite::toJSON(result, auto_unbox = TRUE))
+      body =  as.character(jsonlite::toJSON(response_object, auto_unbox = TRUE))
     )
   } else {
-    result
+    response_object
   }
 
   httr::POST(
