@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Use lambdar with your project — use_lambdar • lambdar</title>
+<title>Lambdar configuration object — lambdar_config • lambdar</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Use lambdar with your project — use_lambdar" />
-<meta property="og:description" content="Use lambdar with your project" />
+<meta property="og:title" content="Lambdar configuration object — lambdar_config" />
+<meta property="og:description" content="Contains info about the container" />
 
 
 
@@ -103,21 +103,41 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Use lambdar with your project</h1>
+    <h1>Lambdar configuration object</h1>
     
-    <div class="hidden name"><code>use_lambdar.Rd</code></div>
+    <div class="hidden name"><code>lambdar_config.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Use lambdar with your project</p>
+    <p>Contains info about the container</p>
     </div>
 
-    <pre class="usage"><span class='fu'>use_lambdar</span><span class='op'>(</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>lambdar_config</span><span class='op'>(</span>config_file <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
+<span class='fu'>new_lambdar_config</span><span class='op'>(</span><span class='va'>cfg</span><span class='op'>)</span>
+
+<span class='fu'>is_lambdar_config</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span></pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>config_file</th>
+      <td><p>Path to config file. If not provided, looks for `_lambdar.yml` in the project
+root durectory.</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Nothing</p>
+    <p>A list.</p>
+    <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
+
+    
+<ul>
+<li><p><code>new_lambdar_config</code>: Create a new `lambdar_config` object. For internal use only</p></li>
+<li><p><code>is_lambdar_config</code>: Test if an object is a `lambdar_config` object.</p></li>
+</ul>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

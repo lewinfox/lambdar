@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Use lambdar with your project — use_lambdar • lambdar</title>
+<title>Create a Dockerfile — build_dockerfile • lambdar</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Use lambdar with your project — use_lambdar" />
-<meta property="og:description" content="Use lambdar with your project" />
+<meta property="og:title" content="Create a Dockerfile — build_dockerfile" />
+<meta property="og:description" content="Create a Dockerfile" />
 
 
 
@@ -103,21 +103,33 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Use lambdar with your project</h1>
+    <h1>Create a Dockerfile</h1>
     
-    <div class="hidden name"><code>use_lambdar.Rd</code></div>
+    <div class="hidden name"><code>build_dockerfile.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Use lambdar with your project</p>
+    <p>Create a Dockerfile</p>
     </div>
 
-    <pre class="usage"><span class='fu'>use_lambdar</span><span class='op'>(</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>build_dockerfile</span><span class='op'>(</span>cfg <span class='op'>=</span> <span class='cn'>NULL</span>, quiet <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>cfg</th>
+      <td><p>A [lambdar_config] object.</p></td>
+    </tr>
+    <tr>
+      <th>quiet</th>
+      <td><p>If `FALSE`, will tell you the command to build your container.</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Nothing</p>
+    <p>Nothing is returned, but a Dockerfile will be written to disk.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
