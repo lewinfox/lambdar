@@ -1,5 +1,3 @@
-name: "my_lambdar_app"
-
 # What version of R should be installed in the container?
 r_version: "{{ r_version }}"
 
@@ -15,8 +13,13 @@ r_packages: []
 # List any extra Linux packages you need to have installed in the container
 linux_packages: []
 
-# Specify any environment variables your function needs
-env: []
+# Specify any environment variables your function needs.
+#
+# NOTE: Do not use YAML lists here. Copy the syntax in the example variables below.
+# TODO: Support `env` being a list as well as this syntax
+env:
+  LAMBDAR_APP_NAME: "my_lambdar_app"
+  LAMBDAR_PACKAGE_VERSION: "0.1.0"
 
 # If any additional files or directories need to be included in the container, list them here.
 include_files: []
