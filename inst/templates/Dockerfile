@@ -13,7 +13,7 @@ RUN  yum -y install wget \
 ENV PATH="${PATH}:/opt/R/${R_VERSION}/bin/"
 
 # Move the runtime and function definition file into the container and make it executable
-COPY {{ r_runtime_file }} {{ r_functions_file }} ${LAMBDA_TASK_ROOT}/
+COPY {{ r_runtime_file }} {{ r_handler_file }} ${LAMBDA_TASK_ROOT}/
 RUN chmod 755 -R ${LAMBDA_TASK_ROOT}/
 
 # Write the bootstrap file

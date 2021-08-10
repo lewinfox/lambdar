@@ -69,7 +69,7 @@ lam_has_docker <- function() {
 #'
 #' @keywords internal
 lam_proj_path <- function(...) {
-  file.path(usethis::proj_get(), ...)
+  relish(file.path(usethis::proj_get(), ...))
 }
 
 #' @describeIn lam_proj_path Path to lambdar config file
@@ -80,4 +80,8 @@ lam_config_file <- function() {
 #' @describeIn lam_proj_path Path to Dockerfile
 lam_dockerfile_path <- function() {
   lam_proj_path("Dockerfile")
+}
+
+lam_runtime_path <- function() {
+  lam_proj_path("lambdar", "lambdar_runtime.R")
 }

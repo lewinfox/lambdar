@@ -4,30 +4,10 @@
 \alias{lam_build_dockerfile}
 \title{Build a Dockerfile}
 \usage{
-lam_build_dockerfile(
-  r_functions_file = "main.R",
-  r_packages = NULL,
-  repos = getOption("repos"),
-  linux_packages = NULL,
-  r_version = lam_r_version(),
-  include_files = NULL,
-  env = list()
-)
+lam_build_dockerfile(cfg)
 }
 \arguments{
-\item{r_functions_file}{File containing the R functions to be lambda-d}
-
-\item{repos}{R package repo/s to use. Optional, defaults to the value of your local
-`getOption("repos")`.}
-
-\item{linux_packages}{Character vector of Linux packages to be installed in the container.}
-
-\item{r_version}{String - R version to be installed in the lambda container, e.g. "4.0.1".
-Defaults to your local R version.}
-
-\item{env}{Named list containing environment variables to be set in the container.}
-
-\item{packages}{Character vector of R packages that need to be installed in the container}
+\item{cfg}{A [lambdar_config] object.}
 }
 \value{
 Nothing - this function is called for its side effect, which is to write a `Dockerfile`

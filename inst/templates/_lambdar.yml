@@ -1,11 +1,11 @@
+# This will be used as the container tag
+name: "{{ user }}/{{ proj_root }}"
+
 # What version of R should be installed in the container?
 r_version: "{{ r_version }}"
 
-# Specify the function as EITHER `file.function_name` (this is how Lambda does it), or by providing
-# `lambda_function_file` and `lambda_function` separately.
-lambda_function: "main.hello_world"
-# lambda_function_file: "main.R"
-# lambda_function: "hello_world"
+# Specify the handler as `file.function_name`. Omit `.R` from the file name.
+lambda_handler: "{{ lambda_handler }}"
 
 # List any extra R packages you need to have installed in the container
 r_packages: []
@@ -18,7 +18,7 @@ linux_packages: []
 # NOTE: Do not use YAML lists here. Copy the syntax in the example variables below.
 # TODO: Support `env` being a list as well as this syntax
 env:
-  LAMBDAR_APP_NAME: "my_lambdar_app"
+  LAMBDAR_APP_NAME: "{{ proj_root }}"
   LAMBDAR_PACKAGE_VERSION: "0.1.0"
 
 # If any additional files or directories need to be included in the container, list them here.

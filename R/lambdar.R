@@ -10,15 +10,23 @@ build_container <- function() {
     cli::cli_alert_danger(msg)
     return(invisible())
   }
-  usethis::proj_get()
   if (file.exists(lam_dockerfile_path())) {
     cli::cli_alert_warning("{.path Dockerfile} already exists")
   } else {
     cli::cli_alert_info("Building {.path Dockerfile}")
   }
-  build_dockerfile()
-  docker_build_cmd <- glue::glue("docker build -t lewinfox/lambdar .")
-  system(docker_build_cmd)
+  cfg <- lambdar_config(lam_config_file())
+  lam_build_dockerfile(cfg)
+
+  docker_build_cmd <- glue::glue("docker build -t {cfg$name} .")
+  exit_code <- system(docker_build_cmd)
+  if (exit_code != 0) {
+    cli::cli_alert_danger(paste("Docker build failed with exit code", exit_code))
+    rlang::abort("Docker build failure")
+  }
+  cli::cli_alert_success("Docker build successful")
+  cli::cli_alert_info("To start your container run {.code docker run -p 9000:8080 {cfg$name} {cfg$lambda_handler}}")
+  cli::cli_alert_info("API endpoint: {.code http://localhost:9000/2015-03-31/functions/function/invocations}")
 }
 
 #' Create a Dockerfile
@@ -29,16 +37,8 @@ build_container <- function() {
 build_dockerfile <- function() {
   tryCatch(
     {
-      c <- lam_read_config()
-      lam_build_dockerfile(
-        r_functions_file = c$r_functions_file,
-        r_packages = c$r_packages,
-        repos = c$repos,
-        linux_packages = c$linux_packages,
-        r_version = c$r_version,
-        include_files = c$include_files,
-        env = c$env
-      )
+      cfg <- lambdar_config(lam_config_file())
+      lam_build_dockerfile(cfg)
     },
     lambdar_no_config = function(e) {
       return(invisible())
@@ -60,48 +60,39 @@ lam_read_config <- function() {
   # Remove any empty lists to prevent them getting included in the Dockerfile
   config_list <- lapply(yaml::read_yaml(cfg), function(item) if (length(item) == 0) NULL else item)
   # TODO: Validate config
+  config_list[["r_functions_file"]] <- strsplit(config_list[["lambda_function"]], split = ".", fixed = TRUE)[[1]][[1]]
   config_list
 }
 
 #' Build a Dockerfile
 #'
-#' @param r_functions_file File containing the R functions to be lambda-d
-#' @param packages Character vector of R packages that need to be installed in the container
-#' @param repos R package repo/s to use. Optional, defaults to the value of your local
-#'   `getOption("repos")`.
-#' @param linux_packages Character vector of Linux packages to be installed in the container.
-#' @param r_version String - R version to be installed in the lambda container, e.g. "4.0.1".
-#'   Defaults to your local R version.
-#' @param env Named list containing environment variables to be set in the container.
+#' @param cfg A [lambdar_config] object.
 #'
 #' @return Nothing - this function is called for its side effect, which is to write a `Dockerfile`
 #'   to disk.
 #' @keywords internal
-lam_build_dockerfile <- function(r_functions_file = "main.R",
-                                 r_packages = NULL,
-                                 repos = getOption("repos"),
-                                 linux_packages = NULL,
-                                 r_version = lam_r_version(),
-                                 include_files = NULL,
-                                 env = list()) {
-  # Clean up the file paths
-  r_functions_file <- relish(file.path(usethis::proj_get(), r_functions_file))
-  r_runtime_file <- relish(file.path(usethis::proj_get(), "lambdar", "lambdar_runtime.R"))
+lam_build_dockerfile <- function(cfg) {
 
-  # Create the data list
-  data = list(
-    r_version = r_version,
-    r_packages = lam_build_quoted_list(r_packages),
-    r_package_repos = lam_build_quoted_list(repos),
-    r_runtime_file = r_runtime_file,
-    r_functions_file = r_functions_file,
-    linux_packages = lam_build_space_separated_list(linux_packages),
-    include_files = lam_build_space_separated_list(include_files),
-    env = lam_build_env_list(env)
-  )
+  # Some elements of the config file need formatting before they're inserted into the Dockerfile
+  # template
+  cfg$r_packages      <- lam_build_quoted_list(cfg$r_packages)
+  cfg$r_package_repos <- lam_build_quoted_list(cfg$r_package_repos)
+  cfg$linux_packages  <- lam_build_space_separated_list(cfg$linux_packages)
+  cfg$include_files   <- lam_build_space_separated_list(cfg$include_files)
+  cfg$env             <- lam_build_env_list(cfg$env)
+  cfg$r_runtime_file  <- lam_runtime_path()
+
+  # If repos are provided, use them. If not, use `getOption("repos")`
+  if (is.null(cfg$r_package_repos)) {
+    cfg$r_package_repos <- getOption("repos")
+  }
+  cfg$r_package_repos <- lam_build_quoted_list(cfg$r_package_repos)
+
+  # Replace any zero-length elements with NULL to prevent the populating the Dockerfile
+  cfg <- lapply(cfg, function(item) if (length(item) > 0) item else NULL)
 
   # Build and write the Dockerfile
-  usethis::use_template("Dockerfile", save_as = "Dockerfile", data = data, package = "lambdar")
+  usethis::use_template("Dockerfile", save_as = "Dockerfile", data = cfg, package = "lambdar")
 }
 
 #' Add `_lambdar.yml` to the project root.
@@ -112,10 +103,13 @@ use_lambdar_yaml <- function() {
   #       should be easy), and populate the `include_files` option with a list of everything else in
   #       the directory that isn't lambdar-related
   data <- list(
-    r_version = lam_r_version()
+    user = Sys.getenv("USER"),
+    r_version = lam_r_version(),
+    r_package_repos = getOption("repos"),
+    proj_root = basename(usethis::proj_get()),
+    lambda_handler = "main.hello_world"
   )
   usethis::use_template("_lambdar.yml", save_as = "_lambdar.yml", data = data, package = "lambdar", open = TRUE)
-  usethis::ui_todo(paste("Edit", usethis::ui_path("_lambdar.yml")))
 }
 
 #' Create a space-separated list of environment variables
@@ -123,7 +117,8 @@ use_lambdar_yaml <- function() {
 #' @param env A named list
 lam_build_env_list <- function(env = list()) {
   if (!is.list(env)) {
-    rlang::abort("`env` must be a list, not {typeof(env)})")
+    msg <- glue::glue("`env` must be a list, not {typeof(env)})")
+    rlang::abort(msg)
   }
   if (length(env) == 0) {
     return(NULL)
@@ -141,7 +136,6 @@ lam_build_env_list <- function(env = list()) {
 #' @export
 use_lambdar <- function() {
   # If this fails we want to restore the dir to its previous state
-  current_files <- list.files(usethis::proj_get(), all.files = TRUE, full.names = TRUE)
   LAMBDAR_DIR <- file.path(usethis::proj_get(), "lambdar")
   LAMBDAR_RUNTIME_PATH <- file.path(LAMBDAR_DIR, "lambdar_runtime.R")
 
