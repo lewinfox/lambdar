@@ -40,7 +40,8 @@
 
 
 <meta property="og:title" content="Create a Dockerfile — build_dockerfile" />
-<meta property="og:description" content="Create a Dockerfile" />
+<meta property="og:description" content="Writes a Dockerfile to your project root directory based on a configuration object. If no
+config object is provided it will try and read `_lambdar.yml` from your project's root directory." />
 
 
 
@@ -89,7 +90,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/lewinfox/lambdar/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -104,12 +110,13 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Create a Dockerfile</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/lambdar.R'><code>R/lambdar.R</code></a></small>
     <div class="hidden name"><code>build_dockerfile.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Create a Dockerfile</p>
+    <p>Writes a Dockerfile to your project root directory based on a configuration object. If no
+config object is provided it will try and read `_lambdar.yml` from your project's root directory.</p>
     </div>
 
     <pre class="usage"><span class='fu'>build_dockerfile</span><span class='op'>(</span>cfg <span class='op'>=</span> <span class='cn'>NULL</span>, quiet <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
@@ -119,7 +126,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>cfg</th>
-      <td><p>A [lambdar_config] object.</p></td>
+      <td><p>A [lambdar_config()] object (optional).</p></td>
     </tr>
     <tr>
       <th>quiet</th>
@@ -127,9 +134,6 @@
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>Nothing is returned, but a Dockerfile will be written to disk.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

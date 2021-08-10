@@ -40,7 +40,9 @@
 
 
 <meta property="og:title" content="Build a container image from a config file — build_container" />
-<meta property="og:description" content="Build a container image from a config file" />
+<meta property="og:description" content="Reads your `_lambdar.yml` config file, creates a Dockerfile from it, and then attempts to create
+a container from the Dockerfile using `docker build`. You must have Docker installed for this
+to work, otherwise it will throw an error." />
 
 
 
@@ -89,7 +91,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/lewinfox/lambdar/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -104,12 +111,14 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Build a container image from a config file</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/lambdar.R'><code>R/lambdar.R</code></a></small>
     <div class="hidden name"><code>build_container.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Build a container image from a config file</p>
+    <p>Reads your `_lambdar.yml` config file, creates a Dockerfile from it, and then attempts to create
+a container from the Dockerfile using `docker build`. You must have Docker installed for this
+to work, otherwise it will throw an error.</p>
     </div>
 
     <pre class="usage"><span class='fu'>build_container</span><span class='op'>(</span><span class='op'>)</span></pre>

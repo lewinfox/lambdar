@@ -89,7 +89,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/lewinfox/lambdar/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -104,7 +109,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Path utilities</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
     <div class="hidden name"><code>lam_proj_path.Rd</code></div>
     </div>
 
@@ -114,9 +119,13 @@
 
     <pre class="usage"><span class='fu'>lam_proj_path</span><span class='op'>(</span><span class='va'>...</span><span class='op'>)</span>
 
+<span class='fu'>lam_dir_path</span><span class='op'>(</span><span class='op'>)</span>
+
 <span class='fu'>lam_config_file</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>lam_dockerfile_path</span><span class='op'>(</span><span class='op'>)</span></pre>
+<span class='fu'>lam_dockerfile_path</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>lam_runtime_path</span><span class='op'>(</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -131,8 +140,10 @@
 
     
 <ul>
+<li><p><code>lam_dir_path</code>: Path to the `lambdar/` directory</p></li>
 <li><p><code>lam_config_file</code>: Path to lambdar config file</p></li>
 <li><p><code>lam_dockerfile_path</code>: Path to Dockerfile</p></li>
+<li><p><code>lam_runtime_path</code>: Path to runtime function</p></li>
 </ul>
 
   </div>

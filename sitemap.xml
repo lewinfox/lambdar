@@ -28,9 +28,6 @@
     <loc>https://lewinfox.github.io/lambdar/reference/lam_r_version.html</loc>
   </url>
   <url>
-    <loc>https://lewinfox.github.io/lambdar/reference/lam_read_config.html</loc>
-  </url>
-  <url>
     <loc>https://lewinfox.github.io/lambdar/reference/lambdar_config.html</loc>
   </url>
   <url>
@@ -47,8 +44,5 @@
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/use_lambdar.html</loc>
-  </url>
-  <url>
-    <loc>https://lewinfox.github.io/lambdar/reference/use_lambdar_yaml.html</loc>
   </url>
 </urlset>

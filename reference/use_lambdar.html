@@ -89,7 +89,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/lewinfox/lambdar/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -104,7 +109,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Use lambdar with your project</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/lambdar.R'><code>R/lambdar.R</code></a></small>
     <div class="hidden name"><code>use_lambdar.Rd</code></div>
     </div>
 
@@ -115,9 +120,15 @@
     <pre class="usage"><span class='fu'>use_lambdar</span><span class='op'>(</span><span class='op'>)</span></pre>
 
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <h2 class="hasAnchor" id="description"><a class="anchor" href="#description"></a>Description</h2>
 
-    <p>Nothing</p>
+    
+
+<p>Call this function to create the necessary files lambdar needs to work. Specifically:</p>
+<p>* A `_lamndar.yml` config file
+* A `lambdar/` directory to house a copy of the R runtime we will load into your container.</p>
+<p>The function will try and pre-populate your config file with as much information as possible, but
+you are free to amend as much or as little as you like.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
