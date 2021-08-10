@@ -85,8 +85,8 @@ lam_build_dockerfile <- function(r_functions_file = "main.R",
                                  include_files = NULL,
                                  env = list()) {
   # Clean up the file paths
-  r_functions_file <- relish(r_functions_file)
-  r_runtime_file <- relish(system.file("runtime", "lambdar_runtime.R", package = "lambdar", mustWork = TRUE))
+  r_functions_file <- relish(file.path(usethis::proj_get(), r_functions_file))
+  r_runtime_file <- relish(file.path(usethis::proj_get(), "lambdar", "lambdar_runtime.R"))
 
   # Create the data list
   data = list(
@@ -140,6 +140,30 @@ lam_build_env_list <- function(env = list()) {
 #' @return Nothing
 #' @export
 use_lambdar <- function() {
-  cli::cli_alert_success("Setting up a lambdar project")
-  use_lambdar_yaml()
+  # If this fails we want to restore the dir to its previous state
+  current_files <- list.files(usethis::proj_get(), all.files = TRUE, full.names = TRUE)
+  LAMBDAR_DIR <- file.path(usethis::proj_get(), "lambdar")
+  LAMBDAR_RUNTIME_PATH <- file.path(LAMBDAR_DIR, "lambdar_runtime.R")
+
+  tryCatch(
+    {
+      if (!dir.exists(LAMBDAR_DIR)) {
+        dir.create(LAMBDAR_DIR)
+        cli::cli_alert_success("Creating {.path {LAMBDAR_DIR}} directory")
+      }
+      file.copy(
+        system.file("runtime", "lambdar_runtime.R", package = "lambdar", mustWork = TRUE),
+        LAMBDAR_RUNTIME_PATH
+      )
+      cli::cli_alert_success("Writing {.path {LAMBDAR_RUNTIME_PATH}}")
+      use_lambdar_yaml()
+    },
+    error = function(e) {
+      cli::cli_alert_danger("{e}")
+      unlink(LAMBDAR_DIR, recursive = TRUE, force = TRUE)
+      cli::cli_alert_warning("Removing {.PATH {LAMBDAR_DIR}}")
+      unlink(usethis::proj_get(), "_lambdar.yml", force = TRUE)
+      cli::cli_alert_warning("Removing {.path _lambdar.yml}")
+    }
+  )
 }
