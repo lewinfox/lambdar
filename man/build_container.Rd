@@ -7,5 +7,7 @@
 build_container()
 }
 \description{
-Build a container image from a config file
+Reads your `_lambdar.yml` config file, creates a Dockerfile from it, and then attempts to create
+a container from the Dockerfile using `docker build`. You must have Docker installed for this
+to work, otherwise it will throw an error.
 }

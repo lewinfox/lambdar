@@ -4,7 +4,11 @@
 #'
 #' @param x File path
 #' @param dir Directory to strip from `x`
-relish <- function(x, dir = getwd()) {
+#'
+#' @return Character vector
+#'
+#' @keywords internal
+relish <- function(x, dir = usethis::proj_get()) {
   if (substr(dir, nchar(dir), nchar(dir)) != "/") {
     dir <- paste0(dir, "/")
   }
@@ -72,6 +76,11 @@ lam_proj_path <- function(...) {
   relish(file.path(usethis::proj_get(), ...))
 }
 
+#' @describeIn lam_proj_path Path to the `lambdar/` directory
+lam_dir_path <- function() {
+  lam_proj_path("lambdar")
+}
+
 #' @describeIn lam_proj_path Path to lambdar config file
 lam_config_file <- function() {
   lam_proj_path("_lambdar.yml")
@@ -82,6 +91,28 @@ lam_dockerfile_path <- function() {
   lam_proj_path("Dockerfile")
 }
 
+#' @describeIn lam_proj_path Path to runtime function
 lam_runtime_path <- function() {
-  lam_proj_path("lambdar", "lambdar_runtime.R")
+  lam_proj_path(lam_dir_path(), "lambdar_runtime.R")
+}
+
+
+#' Create a space-separated list of environment variables
+#'
+#' @param env A named list
+#'
+#' @keywords internal
+lam_build_env_list <- function(env = list()) {
+  if (!is.list(env)) {
+    msg <- glue::glue("`env` must be a list, not {typeof(env)})")
+    rlang::abort(msg)
+  }
+  if (length(env) == 0) {
+    return(NULL)
+  }
+  if (is.null(names(env)) || any(names(env) == "")) {
+    rlang::abort("All elements of `env` must be named")
+  }
+  vars = sapply(names(env), function(name) paste0(toupper(name), "=\"", env[[name]], "\""))
+  lam_build_space_separated_list(vars)
 }

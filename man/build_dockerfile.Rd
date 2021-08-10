@@ -7,13 +7,11 @@
 build_dockerfile(cfg = NULL, quiet = FALSE)
 }
 \arguments{
-\item{cfg}{A [lambdar_config] object.}
+\item{cfg}{A [lambdar_config()] object (optional).}
 
 \item{quiet}{If `FALSE`, will tell you the command to build your container.}
 }
-\value{
-Nothing is returned, but a Dockerfile will be written to disk.
-}
 \description{
-Create a Dockerfile
+Writes a Dockerfile to your project root directory based on a configuration object. If no
+config object is provided it will try and read `_lambdar.yml` from your project's root directory.
 }

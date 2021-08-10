@@ -47,6 +47,8 @@ new_lambdar_config <- function(cfg) {
 #' @param fun String. A function that we expect to be defined in `file`
 #'
 #' @return Boolean
+#'
+#' @keywords internal
 lam_function_exists_in_file <- function(file, fun) {
   local(
     {

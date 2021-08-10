@@ -17,3 +17,4 @@ Boolean
 \description{
 Check that a file contains a function
 }
+\keyword{internal}

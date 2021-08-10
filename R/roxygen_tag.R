@@ -13,6 +13,8 @@ roxy_tag_parse.roxy_tag_lambda <- function(x) {
 #' Roclet lambda class
 #'
 #' Create an object of class `roclet_lambda` to ensure the correct S3 methods are called.
+#'
+#' @keywords internal
 roclet_lambda <- function() {
   roxygen2::roclet("lambda")
 }

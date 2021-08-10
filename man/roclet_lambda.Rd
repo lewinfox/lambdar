@@ -9,3 +9,4 @@ roclet_lambda()
 \description{
 Create an object of class `roclet_lambda` to ensure the correct S3 methods are called.
 }
+\keyword{internal}

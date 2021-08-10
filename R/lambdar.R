@@ -1,5 +1,9 @@
 #' Build a container image from a config file
 #'
+#' Reads your `_lambdar.yml` config file, creates a Dockerfile from it, and then attempts to create
+#' a container from the Dockerfile using `docker build`. You must have Docker installed for this
+#' to work, otherwise it will throw an error.
+#'
 #' @export
 build_container <- function() {
 
@@ -42,10 +46,11 @@ build_container <- function() {
 
 #' Create a Dockerfile
 #'
-#' @param cfg A [lambdar_config] object.
-#' @param quiet If `FALSE`, will tell you the command to build your container.
+#' Writes a Dockerfile to your project root directory based on a configuration object. If no
+#' config object is provided it will try and read `_lambdar.yml` from your project's root directory.
 #'
-#' @return Nothing is returned, but a Dockerfile will be written to disk.
+#' @param cfg A [lambdar_config()] object (optional).
+#' @param quiet If `FALSE`, will tell you the command to build your container.
 #'
 #' @export
 build_dockerfile <- function(cfg = NULL, quiet = FALSE) {
@@ -93,62 +98,17 @@ build_dockerfile <- function(cfg = NULL, quiet = FALSE) {
   )
 }
 
-#' Read and validate `_lambdar.yml`
-#'
-#' @return A list containing parsed config data.
-#'
-#' @keywords internal
-lam_read_config <- function() {
-  cfg <- lam_config_file()
-  if (!file.exists(cfg)) {
-    cli::cli_alert_danger("Config file {.path {cfg}} not found. Have you run {.fn lambdar::use_lambdar}?")
-    rlang::abort("No config file found", "lambdar_no_config")
-  }
-  # Remove any empty lists to prevent them getting included in the Dockerfile
-  config_list <- lapply(yaml::read_yaml(cfg), function(item) if (length(item) == 0) NULL else item)
-  # TODO: Validate config
-  config_list[["r_functions_file"]] <- strsplit(config_list[["lambda_function"]], split = ".", fixed = TRUE)[[1]][[1]]
-  config_list
-}
-
-#' Add `_lambdar.yml` to the project root.
-#'
-#' @keywords internal
-use_lambdar_yaml <- function() {
-  # TODO: Identify and pre-populate the main file (if it already contains the `@lambdar` tag this
-  #       should be easy), and populate the `include_files` option with a list of everything else in
-  #       the directory that isn't lambdar-related
-  data <- list(
-    user = Sys.getenv("USER"),
-    r_version = lam_r_version(),
-    r_package_repos = getOption("repos"),
-    proj_root = basename(usethis::proj_get()),
-    lambda_handler = "main.hello_world"
-  )
-  usethis::use_template("_lambdar.yml", save_as = "_lambdar.yml", data = data, package = "lambdar", open = TRUE)
-}
-
-#' Create a space-separated list of environment variables
-#'
-#' @param env A named list
-lam_build_env_list <- function(env = list()) {
-  if (!is.list(env)) {
-    msg <- glue::glue("`env` must be a list, not {typeof(env)})")
-    rlang::abort(msg)
-  }
-  if (length(env) == 0) {
-    return(NULL)
-  }
-  if (is.null(names(env)) || any(names(env) == "")) {
-    rlang::abort("All elements of `env` must be named")
-  }
-  vars = sapply(names(env), function(name) paste0(toupper(name), "=\"", env[[name]], "\""))
-  lam_build_space_separated_list(vars)
-}
-
 #' Use lambdar with your project
 #'
-#' @return Nothing
+#' @section Description:
+#' Call this function to create the necessary files lambdar needs to work. Specifically:
+#'
+#' * A `_lamndar.yml` config file
+#' * A `lambdar/` directory to house a copy of the R runtime we will load into your container.
+#'
+#' The function will try and pre-populate your config file with as much information as possible, but
+#' you are free to amend as much or as little as you like.
+#'
 #' @export
 use_lambdar <- function() {
   # If this fails we want to restore the dir to its previous state
@@ -166,7 +126,17 @@ use_lambdar <- function() {
         LAMBDAR_RUNTIME_PATH
       )
       cli::cli_alert_success("Writing {.path {LAMBDAR_RUNTIME_PATH}}")
-      use_lambdar_yaml()
+      # TODO: Identify and pre-populate the main file (if it already contains the `@lambdar` tag this
+      #       should be easy), and populate the `include_files` option with a list of everything else in
+      #       the directory that isn't lambdar-related
+      data <- list(
+        user = Sys.getenv("USER"),
+        r_version = lam_r_version(),
+        r_package_repos = getOption("repos"),
+        proj_root = basename(usethis::proj_get()),
+        lambda_handler = "main.hello_world"
+      )
+      usethis::use_template("_lambdar.yml", save_as = "_lambdar.yml", data = data, package = "lambdar", open = TRUE)
     },
     error = function(e) {
       cli::cli_alert_danger("{e}")

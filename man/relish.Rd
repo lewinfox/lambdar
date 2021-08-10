@@ -4,13 +4,17 @@
 \alias{relish}
 \title{Tidy file paths by removing instances of `dir` from `x`.}
 \usage{
-relish(x, dir = getwd())
+relish(x, dir = usethis::proj_get())
 }
 \arguments{
 \item{x}{File path}
 
 \item{dir}{Directory to strip from `x`}
 }
+\value{
+Character vector
+}
 \description{
 Ensures that we get a relative path for `x`. Pinched from `rlang:::relish()`.
 }
+\keyword{internal}

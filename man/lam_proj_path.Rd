@@ -2,15 +2,21 @@
 % Please edit documentation in R/utils.R
 \name{lam_proj_path}
 \alias{lam_proj_path}
+\alias{lam_dir_path}
 \alias{lam_config_file}
 \alias{lam_dockerfile_path}
+\alias{lam_runtime_path}
 \title{Path utilities}
 \usage{
 lam_proj_path(...)
 
+lam_dir_path()
+
 lam_config_file()
 
 lam_dockerfile_path()
+
+lam_runtime_path()
 }
 \arguments{
 \item{...}{Path elements}
@@ -20,9 +26,13 @@ Pinched from `usethis`.
 }
 \section{Functions}{
 \itemize{
+\item \code{lam_dir_path}: Path to the `lambdar/` directory
+
 \item \code{lam_config_file}: Path to lambdar config file
 
 \item \code{lam_dockerfile_path}: Path to Dockerfile
+
+\item \code{lam_runtime_path}: Path to runtime function
 }}
 
 \keyword{internal}
