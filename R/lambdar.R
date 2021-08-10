@@ -2,6 +2,8 @@
 #'
 #' @export
 build_container <- function() {
+
+  # Check we have Docker installed
   if (!lam_has_docker()) {
     msg <- paste(
       "Can't build a container without Docker installed.",
@@ -10,20 +12,29 @@ build_container <- function() {
     cli::cli_alert_danger(msg)
     return(invisible())
   }
+
+  # Warn if we are overwriting an existing Dockerfile (usethis::use_template() will also warn)
   if (file.exists(lam_dockerfile_path())) {
     cli::cli_alert_warning("{.path Dockerfile} already exists")
   } else {
     cli::cli_alert_info("Building {.path Dockerfile}")
   }
-  cfg <- lambdar_config(lam_config_file())
-  lam_build_dockerfile(cfg)
 
+  # Read config and create the Dockerfile
+  cfg <- lambdar_config(lam_config_file())
+  build_dockerfile(cfg, quiet = TRUE)
+
+  # Build the container
   docker_build_cmd <- glue::glue("docker build -t {cfg$name} .")
   exit_code <- system(docker_build_cmd)
+
+  # Check for success
   if (exit_code != 0) {
     cli::cli_alert_danger(paste("Docker build failed with exit code", exit_code))
     rlang::abort("Docker build failure")
   }
+
+  # Let the user know we are OK and provide useful URLs for testing
   cli::cli_alert_success("Docker build successful")
   cli::cli_alert_info("To start your container run {.code docker run -p 9000:8080 {cfg$name} {cfg$lambda_handler}}")
   cli::cli_alert_info("API endpoint: {.code http://localhost:9000/2015-03-31/functions/function/invocations}")
@@ -31,14 +42,50 @@ build_container <- function() {
 
 #' Create a Dockerfile
 #'
+#' @param cfg A [lambdar_config] object.
+#' @param quiet If `FALSE`, will tell you the command to build your container.
+#'
 #' @return Nothing is returned, but a Dockerfile will be written to disk.
 #'
 #' @export
-build_dockerfile <- function() {
+build_dockerfile <- function(cfg = NULL, quiet = FALSE) {
   tryCatch(
     {
-      cfg <- lambdar_config(lam_config_file())
-      lam_build_dockerfile(cfg)
+      # If this is called in standalone mode, read the config file. Otherwise we expect to have a
+      # `cfg` object passed in
+      if (is.null(cfg)) {
+        cfg <- lambdar_config(lam_config_file())
+      }
+
+      # Validate the config object
+      if (!is_lambdar_config(cfg)) {
+        cli::cli_alert_danger("{.var cfg} must be a {.code lambdar_config} object created by {.fn lambdar_config}")
+        rlang::abort("Invalid configuration object")
+      }
+
+      # Some elements of the config file need formatting before they're inserted into the Dockerfile
+      # template
+      cfg$r_packages      <- lam_build_quoted_list(cfg$r_packages)
+      cfg$r_package_repos <- lam_build_quoted_list(cfg$r_package_repos)
+      cfg$linux_packages  <- lam_build_space_separated_list(cfg$linux_packages)
+      cfg$include_files   <- lam_build_space_separated_list(cfg$include_files)
+      cfg$env             <- lam_build_env_list(cfg$env)
+      cfg$r_runtime_file  <- lam_runtime_path()
+
+      # If repos are provided, use them. If not, use `getOption("repos")`
+      if (is.null(cfg$r_package_repos)) {
+        cfg$r_package_repos <- getOption("repos")
+      }
+      cfg$r_package_repos <- lam_build_quoted_list(cfg$r_package_repos)
+
+      # Replace any zero-length elements with NULL to prevent the populating the Dockerfile
+      cfg <- lapply(cfg, function(item) if (length(item) > 0) item else NULL)
+
+      # Build and write the Dockerfile
+      usethis::use_template("Dockerfile", save_as = "Dockerfile", data = cfg, package = "lambdar")
+      if (!quiet) {
+        cli::cli_alert_info("To build your container, run {.code docker build -t {cfg$name} .}")
+      }
     },
     lambdar_no_config = function(e) {
       return(invisible())
@@ -62,37 +109,6 @@ lam_read_config <- function() {
   # TODO: Validate config
   config_list[["r_functions_file"]] <- strsplit(config_list[["lambda_function"]], split = ".", fixed = TRUE)[[1]][[1]]
   config_list
-}
-
-#' Build a Dockerfile
-#'
-#' @param cfg A [lambdar_config] object.
-#'
-#' @return Nothing - this function is called for its side effect, which is to write a `Dockerfile`
-#'   to disk.
-#' @keywords internal
-lam_build_dockerfile <- function(cfg) {
-
-  # Some elements of the config file need formatting before they're inserted into the Dockerfile
-  # template
-  cfg$r_packages      <- lam_build_quoted_list(cfg$r_packages)
-  cfg$r_package_repos <- lam_build_quoted_list(cfg$r_package_repos)
-  cfg$linux_packages  <- lam_build_space_separated_list(cfg$linux_packages)
-  cfg$include_files   <- lam_build_space_separated_list(cfg$include_files)
-  cfg$env             <- lam_build_env_list(cfg$env)
-  cfg$r_runtime_file  <- lam_runtime_path()
-
-  # If repos are provided, use them. If not, use `getOption("repos")`
-  if (is.null(cfg$r_package_repos)) {
-    cfg$r_package_repos <- getOption("repos")
-  }
-  cfg$r_package_repos <- lam_build_quoted_list(cfg$r_package_repos)
-
-  # Replace any zero-length elements with NULL to prevent the populating the Dockerfile
-  cfg <- lapply(cfg, function(item) if (length(item) > 0) item else NULL)
-
-  # Build and write the Dockerfile
-  usethis::use_template("Dockerfile", save_as = "Dockerfile", data = cfg, package = "lambdar")
 }
 
 #' Add `_lambdar.yml` to the project root.

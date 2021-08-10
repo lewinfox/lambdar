@@ -4,7 +4,12 @@
 \alias{build_dockerfile}
 \title{Create a Dockerfile}
 \usage{
-build_dockerfile()
+build_dockerfile(cfg = NULL, quiet = FALSE)
+}
+\arguments{
+\item{cfg}{A [lambdar_config] object.}
+
+\item{quiet}{If `FALSE`, will tell you the command to build your container.}
 }
 \value{
 Nothing is returned, but a Dockerfile will be written to disk.
