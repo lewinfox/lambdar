@@ -17,7 +17,7 @@ COPY {{ r_runtime_file }} {{ r_functions_file }} ${LAMBDA_TASK_ROOT}/
 RUN chmod 755 -R ${LAMBDA_TASK_ROOT}/
 
 # Write the bootstrap file
-RUN printf '#!/bin/sh\ncd $LAMBDA_TASK_ROOT\nRscript runtime.R' > /var/runtime/bootstrap \
+RUN printf '#!/bin/sh\ncd $LAMBDA_TASK_ROOT\nRscript lambdar_runtime.R' > /var/runtime/bootstrap \
   && chmod +x /var/runtime/bootstrap
 
 # The R runtime requires these packages

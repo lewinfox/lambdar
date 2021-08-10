@@ -17,6 +17,8 @@ build_container <- function() {
     cli::cli_alert_info("Building {.path Dockerfile}")
   }
   build_dockerfile()
+  docker_build_cmd <- glue::glue("docker build -t lewinfox/lambdar .")
+  system(docker_build_cmd)
 }
 
 #' Create a Dockerfile
@@ -84,7 +86,7 @@ lam_build_dockerfile <- function(r_functions_file = "main.R",
                                  env = list()) {
   # Clean up the file paths
   r_functions_file <- relish(r_functions_file)
-  r_runtime_file <- relish(system.file("runtime.R", package = "lambdar", mustWork = TRUE))
+  r_runtime_file <- relish(system.file("runtime", "lambdar_runtime.R", package = "lambdar", mustWork = TRUE))
 
   # Create the data list
   data = list(
