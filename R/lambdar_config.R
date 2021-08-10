@@ -1,4 +1,17 @@
-lambdar_config <- function(config_file) {
+#' Lambdar configuration object
+#'
+#' Contains info about the container
+#'
+#' @param config_file Path to config file. If not provided, looks for `_lambdar.yml` in the project
+#'   root durectory.
+#'
+#' @return A list.
+#'
+#' @keywords internal
+lambdar_config <- function(config_file = NULL) {
+  if (is.null(config_file)) {
+    config_file <- lam_config_file()
+  }
   if (!file.exists(config_file)) {
     cli::cli_alert_danger("File {.path {config_file}} does not exist")
     rlang::abort("File not found", "lambdar_no_config")
@@ -7,6 +20,7 @@ lambdar_config <- function(config_file) {
   new_lambdar_config(cfg)
 }
 
+#' @describeIn lambdar_config Create a new `lambdar_config` object. For internal use only
 new_lambdar_config <- function(cfg) {
   if (!is.list(cfg)) {
     msg <- glue::glue("`cfg` must be a list, not {typeof(cfg)}")
@@ -49,4 +63,9 @@ lam_function_exists_in_file <- function(file, fun) {
       TRUE
     }
   )
+}
+
+#' @describeIn lambdar_config Test if an object is a `lambdar_config` object.
+is_lambdar_config <- function(x) {
+  inherits(x, "lambdar_config")
 }
