@@ -9,6 +9,9 @@ Authors@R:
            email = "lewin.a.f@gmail.com")
 Description: Tools to build AWS Lambda functions in R.
 License: MIT + file LICENSE
+URL: https://github.com/lewinfox/lambdar,
+    https://lewinfox.github.io/lambdar
+BugReports: https://github.com/lewinfox/lambdar/issues
 Imports: 
     cli,
     glue,
