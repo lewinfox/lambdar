@@ -1,1 +1,27 @@
 url: "https://lewinfox.github.io/lambdar"
+
+home:
+  strip_header: true
+
+  authors:
+    Lewin Appleton-Fox:
+      href: https://github.com/lewinfox
+
+reference:
+  - title: Setup
+    desc: >
+      Getting started with lambdar is easy!
+  - contents:
+    - use_lambdar
+
+  - title: Containers
+    desc: >
+      AWS Lambda allows you to use custom container images to run your code. These functions
+      help you build and test container images from a lambdar config file.
+  - contents:
+    - build_dockerfile
+    - build_container
+
+  - title: Layers
+    desc: >
+      Tooling to help you build Lambda layers is on the roadmap but not implemented yet.
