@@ -34,6 +34,11 @@ RUN Rscript -e "install.packages(c({{ r_packages }}), repos = c({{ r_package_rep
 RUN yum -y install {{ linux_packages }}
 {{/linux_packages}}
 
+# Add any environment variables specified in the config file here
+{{#env}}
+ENV {{{ env }}}
+{{/env}}
+
 # If any additional files or directories need to be transferred, do that here.
 {{#include_files}}
 COPY {{ include_files }} ${LAMBDA_TASK_ROOT}
