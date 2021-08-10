@@ -114,7 +114,7 @@ use_lambdar_yaml <- function() {
   data <- list(
     r_version = lam_r_version()
   )
-  usethis::use_template("_lambdar.yml", save_as = "_lambdar.yml", data = data, package = "lambdar")
+  usethis::use_template("_lambdar.yml", save_as = "_lambdar.yml", data = data, package = "lambdar", open = TRUE)
   usethis::ui_todo(paste("Edit", usethis::ui_path("_lambdar.yml")))
 }
 
