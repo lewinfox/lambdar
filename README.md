@@ -25,7 +25,7 @@ cd inst/templates && docker build -t lewinfox/lambdar .
 Run the container:
 
 ``` bash
-# The first argument after the conatiner name is the `_HANDLER` environment variable expected by
+# The first argument after the container name is the `_HANDLER` environment variable expected by
 # Lambda, in the format `filename.function_name`.
 $ docker run -p 9000:8080 lewinfox/lambdar functions.hello_world
 ```
