@@ -10,7 +10,8 @@ lam_build_dockerfile(
   repos = getOption("repos"),
   linux_packages = NULL,
   r_version = lam_r_version(),
-  include_files = NULL
+  include_files = NULL,
+  env = list()
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ lam_build_dockerfile(
 
 \item{r_version}{String - R version to be installed in the lambda container, e.g. "4.0.1".
 Defaults to your local R version.}
+
+\item{env}{Named list containing environment variables to be set in the container.}
 
 \item{packages}{Character vector of R packages that need to be installed in the container}
 }

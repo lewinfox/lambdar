@@ -4,7 +4,7 @@
 \alias{use_lambdar_yaml}
 \title{Add `_lambdar.yml` to the project root.}
 \usage{
-use_lambdar_yaml(save_as = "_lambdar.yml")
+use_lambdar_yaml()
 }
 \description{
 Add `_lambdar.yml` to the project root.
