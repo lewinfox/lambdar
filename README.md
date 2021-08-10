@@ -3,19 +3,22 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of `lambdar` is to provide a plug-and-play solution to running R on AWS lambda. The initial
-code is a straight copy of [mdneuzerling/r-on-lambda](https://github.com/mdneuzerling/r-on-lambda).
-Also see the 
-[acompanying blog post](https://mdneuzerling.com/post/r-on-aws-lambda-with-containers/).
+The goal of `lambdar` is to provide a plug-and-play solution to running R on AWS lambda. The runtime
+code (see `inst/runtime/lambdar_runtime.R) is a straight copy of 
+[mdneuzerling/r-on-lambda](https://github.com/mdneuzerling/r-on-lambda). The 
+[acompanying blog post](https://mdneuzerling.com/post/r-on-aws-lambda-with-containers/) was helpful
+when I was learning about Lambda runtimes.
 
 
-## Testing locally
+## Quickstart guide
 
 First, make sure you have [Docker installed](https://docs.docker.com/get-docker/).
 
-Create a new RStudio project. Mine is called `lambdar-test`.
+Create a new RStudio project. Mine is called `lambdar-test` - lambdar will detect the name of your
+project folder and use it to give a default name to your app.
 
-Create a file called `main.R` containing a function called `hello_world().
+In the root directory of your project, create a file called `main.R` containing the function you
+want to access as a lambda.
 
 ``` r
 # main.R
@@ -70,17 +73,22 @@ You can now query that endpoint using the tool of your choice to test your API.
 
 ``` bash
 $ curl http://localhost/2015-03-31/functions/function/invocation
-Hello, World!
+{"result": "Hello, World!", "status": "success"}
 ```
 
 If your function accepts arguments, you can pass in a JSON payload:
 
 ``` bash
 $ curl http://localhost/2015-03-31/functions/function/invocation -d '{"name": "R"}'
-Hello, R!
+{"result": "Hello, R!", "status": "success"}
 ```
 
-## The plan
+To stop your container use `docker stop`. If you have no other containers running you can use
+``` bash
+docker stop $(docker ps -q)
+```
+
+## TODO - future work
 
 * Tag your function with `#' @lambda`
 * Call `lambdar::use_lambdar()`
@@ -89,7 +97,7 @@ Hello, R!
 * Writes a `_lambdar.yml` file to the project root dir, which contains all the params needed
   * Main function identifier
   * Package list
-  * Linux package list? If you need extra stuff?
+  * Linux package list, if needed
   * Data files to be included in the container
 * Once the `_lambdar.yml` file is ready, `lambdar` uses it to generate a `Dockerfile`
 * Once the `Dockerfile` is ready, use `docker` to build a container.
