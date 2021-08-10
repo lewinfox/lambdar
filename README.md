@@ -72,35 +72,28 @@ lambdar::build_container()
 You can now query that endpoint using the tool of your choice to test your API.
 
 ``` bash
-$ curl http://localhost/2015-03-31/functions/function/invocation
+$ curl http://localhost:9000/2015-03-31/functions/function/invocation
 {"result": "Hello, World!", "status": "success"}
 ```
 
 If your function accepts arguments, you can pass in a JSON payload:
 
 ``` bash
-$ curl http://localhost/2015-03-31/functions/function/invocation -d '{"name": "R"}'
+$ curl http://localhost:9000/2015-03-31/functions/function/invocation -d '{"name": "R"}'
 {"result": "Hello, R!", "status": "success"}
 ```
 
 To stop your container use `docker stop`. If you have no other containers running you can use
+
 ``` bash
 docker stop $(docker ps -q)
 ```
 
 ## TODO - future work
 
-* Tag your function with `#' @lambda`
-* Call `lambdar::use_lambdar()`
-* It identifies the tagged function, checks there's only one
-* Identifies dependencies (how? is this too hard?)
-* Writes a `_lambdar.yml` file to the project root dir, which contains all the params needed
-  * Main function identifier
-  * Package list
-  * Linux package list, if needed
-  * Data files to be included in the container
-* Once the `_lambdar.yml` file is ready, `lambdar` uses it to generate a `Dockerfile`
-* Once the `Dockerfile` is ready, use `docker` to build a container.
-* Tells you how to test the container locally.
-* Helps you automate the process of uploading to AWS
+* Auto-detection of function tagged `#' @lambda` and auto-populate config YAML
+* Identify and auto-populate dependencies (how?)
+* Help you automate the process of uploading to AWS
 * Provide a GitHub Actions template so we can update on every push etc.
+* Duplicate the same functionality but using lambda layers (the other custom runtime option). See
+  [medium.com/bakdata/running-r-on-aws-lambda](https://medium.com/bakdata/running-r-on-aws-lambda-9d40643551a6)
