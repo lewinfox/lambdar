@@ -134,7 +134,7 @@ use_lambdar <- function() {
         r_version = lam_r_version(),
         r_package_repos = getOption("repos"),
         proj_root = basename(usethis::proj_get()),
-        lambda_handler = "main.hello_world"
+        lambda_handlers = lam_build_quoted_list(lam_parse_project_handlers())
       )
       usethis::use_template("_lambdar.yml", save_as = "_lambdar.yml", data = data, package = "lambdar", open = TRUE)
     },
