@@ -26,9 +26,9 @@ Pinched from `usethis`.
 }
 \section{Functions}{
 \itemize{
-\item \code{lam_dir_path}: Path to the `lambdar/` directory
+\item \code{lam_dir_path}: Path to the `.lambdar/` directory
 
-\item \code{lam_config_file}: Path to lambdar config file
+\item \code{lam_config_file}: Path to `_lambdar.yml` config file
 
 \item \code{lam_dockerfile_path}: Path to Dockerfile
 
