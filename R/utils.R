@@ -30,7 +30,7 @@ lam_build_quoted_list <- function(items = NULL) {
   if (is.null(items)) {
     return(NULL)
   }
-  glue::glue_collapse(glue::single_quote(items), sep = ",")
+  glue::glue_collapse(glue::double_quote(items), sep = ",")
 }
 
 #' @describeIn build-lists Build an unquoted space-separated list
