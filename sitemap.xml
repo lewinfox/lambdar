@@ -13,6 +13,9 @@
     <loc>https://lewinfox.github.io/lambdar/reference/build_dockerfile.html</loc>
   </url>
   <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/build_yaml.html</loc>
+  </url>
+  <url>
     <loc>https://lewinfox.github.io/lambdar/reference/lam_build_env_list.html</loc>
   </url>
   <url>
@@ -20,6 +23,9 @@
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/lam_has_docker.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/lam_parse_project_handlers.html</loc>
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/lam_proj_path.html</loc>

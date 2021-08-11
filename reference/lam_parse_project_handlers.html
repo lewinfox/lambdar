@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Path utilities — lam_proj_path • lambdar</title>
+<title>Search project files for `@lambda` tags — lam_parse_project_handlers • lambdar</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,9 @@
 
 
 
-<meta property="og:title" content="Path utilities — lam_proj_path" />
-<meta property="og:description" content="Pinched from `usethis`." />
+<meta property="og:title" content="Search project files for `@lambda` tags — lam_parse_project_handlers" />
+<meta property="og:description" content="Searches the project root directory for `.R` files containing functions tagged with `@lambda` and
+returns a character vector of AWS Lambda handler specifiers in the format `&quot;file.function&quot;`." />
 
 
 
@@ -108,43 +109,22 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Path utilities</h1>
-    <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
-    <div class="hidden name"><code>lam_proj_path.Rd</code></div>
+    <h1>Search project files for `@lambda` tags</h1>
+    <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/roxygen_tag.R'><code>R/roxygen_tag.R</code></a></small>
+    <div class="hidden name"><code>lam_parse_project_handlers.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Pinched from `usethis`.</p>
+    <p>Searches the project root directory for `.R` files containing functions tagged with `@lambda` and
+returns a character vector of AWS Lambda handler specifiers in the format `"file.function"`.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>lam_proj_path</span><span class='op'>(</span><span class='va'>...</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>lam_parse_project_handlers</span><span class='op'>(</span><span class='op'>)</span></pre>
 
-<span class='fu'>lam_dir_path</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>lam_config_file</span><span class='op'>(</span><span class='op'>)</span>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-<span class='fu'>lam_dockerfile_path</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>lam_runtime_path</span><span class='op'>(</span><span class='op'>)</span></pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>...</th>
-      <td><p>Path elements</p></td>
-    </tr>
-    </table>
-
-    <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
-
-    
-<ul>
-<li><p><code>lam_dir_path</code>: Path to the `.lambdar/` directory</p></li>
-<li><p><code>lam_config_file</code>: Path to `_lambdar.yml` config file</p></li>
-<li><p><code>lam_dockerfile_path</code>: Path to Dockerfile</p></li>
-<li><p><code>lam_runtime_path</code>: Path to runtime function</p></li>
-</ul>
+    <p>Returns a character vector of `"file.function"` handler specifications.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

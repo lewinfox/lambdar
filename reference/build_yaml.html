@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Path utilities — lam_proj_path • lambdar</title>
+<title>Build a `_lambdar.yml` file — build_yaml • lambdar</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,9 @@
 
 
 
-<meta property="og:title" content="Path utilities — lam_proj_path" />
-<meta property="og:description" content="Pinched from `usethis`." />
+<meta property="og:title" content="Build a `_lambdar.yml` file — build_yaml" />
+<meta property="og:description" content="Scans your project folder for `.R` files, identified those containing `@lambda` tags, and writes
+a `_lambdar.yml` config file containing relevant information." />
 
 
 
@@ -108,43 +109,19 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Path utilities</h1>
-    <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
-    <div class="hidden name"><code>lam_proj_path.Rd</code></div>
+    <h1>Build a `_lambdar.yml` file</h1>
+    <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/lambdar.R'><code>R/lambdar.R</code></a></small>
+    <div class="hidden name"><code>build_yaml.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Pinched from `usethis`.</p>
+    <p>Scans your project folder for `.R` files, identified those containing `@lambda` tags, and writes
+a `_lambdar.yml` config file containing relevant information.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>lam_proj_path</span><span class='op'>(</span><span class='va'>...</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>build_yaml</span><span class='op'>(</span><span class='op'>)</span></pre>
 
-<span class='fu'>lam_dir_path</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>lam_config_file</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>lam_dockerfile_path</span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='fu'>lam_runtime_path</span><span class='op'>(</span><span class='op'>)</span></pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>...</th>
-      <td><p>Path elements</p></td>
-    </tr>
-    </table>
-
-    <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
-
-    
-<ul>
-<li><p><code>lam_dir_path</code>: Path to the `.lambdar/` directory</p></li>
-<li><p><code>lam_config_file</code>: Path to `_lambdar.yml` config file</p></li>
-<li><p><code>lam_dockerfile_path</code>: Path to Dockerfile</p></li>
-<li><p><code>lam_runtime_path</code>: Path to runtime function</p></li>
-</ul>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

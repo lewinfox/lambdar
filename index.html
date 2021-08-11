@@ -70,33 +70,44 @@
 
 <!-- badges: start -->
 <!-- badges: end -->
-<p>The goal of <code>lambdar</code> is to provide a plug-and-play solution to running R on AWS lambda. The runtime code (see `inst/runtime/lambdar_runtime.R) is a straight copy of <a href="https://github.com/mdneuzerling/r-on-lambda">mdneuzerling/r-on-lambda</a>. The <a href="https://mdneuzerling.com/post/r-on-aws-lambda-with-containers/">acompanying blog post</a> was helpful when I was learning about Lambda runtimes.</p>
-<div id="quickstart-guide" class="section level2">
+<p>The goal of <code>lambdar</code> is to provide a plug-and-play solution to running R on AWS lambda. The runtime code (see <code>inst/runtime/lambdar_runtime.R</code>) is a straight copy of <a href="https://github.com/mdneuzerling/r-on-lambda">mdneuzerling/r-on-lambda</a>. The <a href="https://mdneuzerling.com/post/r-on-aws-lambda-with-containers/">acompanying blog post</a> was helpful when I was learning about Lambda runtimes.</p>
+<div id="setup" class="section level2">
 <h2 class="hasAnchor">
-<a href="#quickstart-guide" class="anchor"></a>Quickstart guide</h2>
+<a href="#setup" class="anchor"></a>Setup</h2>
 <p>First, make sure you have <a href="https://docs.docker.com/get-docker/">Docker installed</a>.</p>
 <p>Create a new RStudio project. Mine is called <code>lambdar-test</code> - lambdar will detect the name of your project folder and use it to give a default name to your app.</p>
-<p>In the root directory of your project, create a file called <code>main.R</code> containing the function you want to access as a lambda.</p>
+<p>In the root directory of your project, create a file called <code>main.R</code> containing the function you want to access as a lambda. Use a roxygen-style <code>#' @lambda</code> tag to tell lambdar that this function should be lambda-fied.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># main.R</span>
+
+<span class="co">#' @lambda</span>
 <span class="va">hello_world</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">name</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">{</span>
   <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
     <span class="va">name</span> <span class="op">&lt;-</span> <span class="st">"World"</span>
   <span class="op">}</span>
   <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"Hello, "</span>, <span class="va">name</span>, <span class="st">"!"</span><span class="op">)</span>
 <span class="op">}</span></code></pre></div>
+</div>
+<div id="generate-config-file" class="section level2">
+<h2 class="hasAnchor">
+<a href="#generate-config-file" class="anchor"></a>Generate config file</h2>
 <p>Call <code><a href="reference/use_lambdar.html">lambdar::use_lambdar()</a></code>. This will create two items in your project’s root directory:</p>
 <ol>
 <li>A <code>_lambdar.yml</code> file. This will be pre-populated with some metadata about your app. For this example you can leave it as-is.</li>
-<li>A <code>lambdar/</code> directory containing a single file, <code>lambdar_runtime.R</code>. This is the custom runtime that will be installed into the container to make everything work. Don’t touch it!</li>
+<li>A <code>.lambdar/</code> directory containing a single file, <code>lambdar_runtime.R</code>. This is the custom runtime that will be installed into the container to make everything work. Don’t touch it!</li>
 </ol>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">lambdar</span><span class="fu">::</span><span class="fu"><a href="reference/use_lambdar.html">use_lambdar</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; ✓ Setting active project to '/home/lewin/lambdar-test'</span>
-<span class="co">#&gt; ✓ Creating /home/lewin/lambdar-test/lambdar directory</span>
-<span class="co">#&gt; ✓ Writing /home/lewin/lambdar-test/lambdar/lambdar_runtime.R</span>
+<span class="co">#&gt; ✓ Creating /home/lewin/lambdar-test/.lambdar directory</span>
+<span class="co">#&gt; ✓ Writing /home/lewin/lambdar-test/.lambdar/lambdar_runtime.R</span>
 <span class="co">#&gt; ✓ Writing '_lambdar.yml'</span>
 <span class="co">#&gt; • Modify '_lambdar.yml'</span></code></pre></div>
+<p>If you decide to lambda-fy a different function, call <code><a href="reference/build_yaml.html">lambdar::build_yaml()</a></code> to re-scan your code for <code>@lambda</code> tags. You can always edit <code>_lambdar.yml</code> by hand as well - see (<strong>TODO</strong> - vignette).</p>
+</div>
+<div id="build-container" class="section level2">
+<h2 class="hasAnchor">
+<a href="#build-container" class="anchor"></a>Build container</h2>
 <p>From here you can call <code><a href="reference/build_dockerfile.html">lambdar::build_dockerfile()</a></code> or <code><a href="reference/build_container.html">lambdar::build_container()</a></code>. <code><a href="reference/build_container.html">build_container()</a></code> builds the Dockerfile as part of the process anyway, but if you want to review the Dockerfile before building it, use <code><a href="reference/build_dockerfile.html">build_dockerfile()</a></code>. The Dockerfile will be created in your project’s root directory.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">lambdar</span><span class="fu">::</span><span class="fu"><a href="reference/build_dockerfile.html">build_dockerfile</a></span><span class="op">(</span><span class="op">)</span>
@@ -110,21 +121,110 @@
 <span class="co">#&gt; ...</span>
 <span class="co">#&gt; ✓ Docker build successful</span>
 <span class="co">#&gt; ℹ To start your container run `docker run -p 9000:8080 lewin/lambdar-test main.hello_world`</span>
-<span class="co">#&gt; ℹ API endpoint: `http://localhost:9000/2015-03-31/functions/function/invocations`</span></code></pre></div>
-<p>You can now query that endpoint using the tool of your choice to test your API.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a>$ <span class="ex">curl</span> http://localhost:9000/2015-03-31/functions/function/invocation</span>
-<span id="cb5-2"><a href="#cb5-2"></a>{<span class="st">"result"</span>: <span class="st">"Hello, World!"</span>, <span class="st">"status"</span>: <span class="st">"success"</span>}</span></code></pre></div>
+<span class="co">#&gt; ℹ Once running you can send test queries to `http://localhost:9000/2015-03-31/functions/function/invocations`</span></code></pre></div>
+</div>
+<div id="test-locally" class="section level2">
+<h2 class="hasAnchor">
+<a href="#test-locally" class="anchor"></a>Test locally</h2>
+<p>The built container is based on an image supplied by AWS that includes a copy of something called the Runtime Interface Emulator (RIE) that simulates the environment your function will run in. This means you can work out the bugs in your function before deploying to AWS.</p>
+<p>To start a container locally, use the Docker run command from the previous step.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a><span class="ex">docker</span> run -p 9000:8080 lewin/lambdar-test main.hello_world</span></code></pre></div>
+<p>In case you’re not familiar with Docker syntax, this means “run the <code>lewin/lambdar-test</code> container, redirecting traffic from local port 9000 to container port 8080”. <code>"main.hello_world"</code> is a required parameter that tells the Lambda runtime which handler we want this container to use. In this case we’re using the <code>hello_world()</code> function from the <code>main.R</code> file.</p>
+<p>You can now query the demo endpoint using the tool of your choice to test your API.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1"></a>$ <span class="ex">curl</span> http://localhost:9000/2015-03-31/functions/function/invocation</span>
+<span id="cb6-2"><a href="#cb6-2"></a>{<span class="st">"result"</span>: <span class="st">"Hello, World!"</span>, <span class="st">"status"</span>: <span class="st">"success"</span>}</span></code></pre></div>
 <p>If your function accepts arguments, you can pass in a JSON payload:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1"></a>$ <span class="ex">curl</span> http://localhost:9000/2015-03-31/functions/function/invocation -d <span class="st">'{"name": "R"}'</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a>{<span class="st">"result"</span>: <span class="st">"Hello, R!"</span>, <span class="st">"status"</span>: <span class="st">"success"</span>}</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1"></a>$ <span class="ex">curl</span> http://localhost:9000/2015-03-31/functions/function/invocation -d <span class="st">'{"name": "R"}'</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>{<span class="st">"result"</span>: <span class="st">"Hello, R!"</span>, <span class="st">"status"</span>: <span class="st">"success"</span>}</span></code></pre></div>
 <p>To stop your container use <code>docker stop</code>. If you have no other containers running you can use</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1"></a><span class="ex">docker</span> stop <span class="va">$(</span><span class="ex">docker</span> ps -q<span class="va">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1"></a><span class="ex">docker</span> stop <span class="va">$(</span><span class="ex">docker</span> ps -q<span class="va">)</span></span></code></pre></div>
+</div>
+<div id="multiple-endpoints" class="section level2">
+<h2 class="hasAnchor">
+<a href="#multiple-endpoints" class="anchor"></a>Multiple endpoints</h2>
+<p>You are welcome to tag multiple functions with <code>@lambda</code>. The relevant source file/s will be copied into the container, and you can launch a container for each handler in your <code>docker run</code> command.</p>
+<p>If you want to have multiple containers running at once, remember to map them to different ports.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># main.R</span>
+
+<span class="co">#' @lambda</span>
+<span class="co">#' @lambda</span>
+<span class="va">hello_world</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">name</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">name</span> <span class="op">&lt;-</span> <span class="st">"World"</span>
+  <span class="op">}</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"Hello, "</span>, <span class="va">name</span>, <span class="st">"!"</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="co">#' @lambda</span>
+<span class="va">add_one</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">0</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+    <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> 
+  <span class="op">}</span>
+  <span class="va">x</span> <span class="op">+</span> <span class="fl">1</span>
+<span class="op">}</span></code></pre></div>
+<p>Call <code><a href="reference/build_yaml.html">lambdar::build_yaml()</a></code> to regenerate the config file. You’ll notice that the <code>lambda_handlers</code> entry now has two handlers:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># _lambdar.yml</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="co"># ...</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="fu">lambda_handlers</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at"> </span><span class="st">"main.hello_world"</span><span class="kw">,</span><span class="at"> </span><span class="st">"main.add_one"</span><span class="at"> </span><span class="kw">]</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="co"># ...</span></span></code></pre></div>
+<p>Either of these can now be specified as a handler for a given container.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">lambdar</span><span class="fu">::</span><span class="fu"><a href="reference/build_container.html">build_container</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; ... [ Docker output ] ...</span>
+<span class="co">#&gt; ✓ Docker build successful</span>
+<span class="co">#&gt; ℹ To start your container run `docker run -p 9000:8080 lewin/lambdar-test &lt;handler&gt;`</span>
+<span class="co">#&gt; ℹ Possible values of `&lt;handler&gt;` are `main.hello_world` and `main.add_one`</span>
+<span class="co">#&gt; ℹ Once running you can send test queries to `http://localhost:9000/2015-03-31/functions/function/invocations`</span></code></pre></div>
+<p>In two different terminal windows, run</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1"></a><span class="co"># One container listens on port 9000</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>$ <span class="ex">docker</span> run -p 9000:8080 lewin/lambdar-test main.hello_world</span>
+<span id="cb12-3"><a href="#cb12-3"></a></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="co"># The other on port 9001</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a>$ <span class="ex">docker</span> run -p 9001:8080 lewin/lambdar-test main.add_one</span></code></pre></div>
+<p>You can now send queries to <code>http://localhost:9000/2015-03-31/functions/function/invocations</code> (for the <code>hello_world()</code> function) and <code>http://localhost:9001/2015-03-31/functions/function/invocations</code> (for the <code>add_one()</code> function).</p>
+</div>
+<div id="including-extra-stuff-in-the-container" class="section level2">
+<h2 class="hasAnchor">
+<a href="#including-extra-stuff-in-the-container" class="anchor"></a>Including extra stuff in the container</h2>
+<p>You can tell lambdar to include extra files or packages in your container by editing <code>_lambdar.yml</code>.</p>
+<div id="include_files" class="section level3">
+<h3 class="hasAnchor">
+<a href="#include_files" class="anchor"></a><code>include_files</code>
+</h3>
+<p>If your lambda depends on additional data or code files you need to add them to the<code>include_files</code> array. By default only files containing <code>@lambdar</code>-tagged functions will be included.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1"></a><span class="co"># _lambdar.yml</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="fu">include_files</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at"> </span><span class="st">"main.R"</span><span class="kw">,</span><span class="at"> </span><span class="st">"data.csv"</span><span class="kw">,</span><span class="at"> </span><span class="st">"utilities.R"</span><span class="at"> </span><span class="kw">]</span></span></code></pre></div>
+</div>
+<div id="r_packages" class="section level3">
+<h3 class="hasAnchor">
+<a href="#r_packages" class="anchor"></a><code>r_packages</code>
+</h3>
+<p>Any packages listed here will be installed when the container is built. <strong>TODO</strong>: Auto-populate this.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb14-1"><a href="#cb14-1"></a><span class="co"># _lambdar.yml</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="fu">r_packages</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at"> tidyverse</span><span class="kw">,</span><span class="at"> units </span><span class="kw">]</span></span></code></pre></div>
+</div>
+<div id="linux_packages" class="section level3">
+<h3 class="hasAnchor">
+<a href="#linux_packages" class="anchor"></a><code>linux_packages</code>
+</h3>
+<p>If you need any extra system libraries installing, mention them here. The base AWS image is based on CentOS, so packages will be installed by <code>yum</code>.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb15-1"><a href="#cb15-1"></a><span class="co"># _lambdar.yml</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a></span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="fu">linux_packages</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at"> udunits2-devel </span><span class="kw">]</span></span></code></pre></div>
+</div>
 </div>
 <div id="todo---future-work" class="section level2">
 <h2 class="hasAnchor">
 <a href="#todo---future-work" class="anchor"></a>TODO - future work</h2>
 <ul>
-<li>Auto-detection of function tagged <code>#' @lambda</code> and auto-populate config YAML</li>
 <li>Identify and auto-populate dependencies (how?)</li>
 <li>Help you automate the process of uploading to AWS</li>
 <li>Provide a GitHub Actions template so we can update on every push etc.</li>
