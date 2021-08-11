@@ -40,8 +40,13 @@ build_container <- function() {
 
   # Let the user know we are OK and provide useful URLs for testing
   cli::cli_alert_success("Docker build successful")
-  cli::cli_alert_info("To start your container run {.code docker run -p 9000:8080 {cfg$name} {cfg$lambda_handler}}")
-  cli::cli_alert_info("API endpoint: {.code http://localhost:9000/2015-03-31/functions/function/invocations}")
+  if (length(cfg$lambda_handler) > 1) {
+    cli::cli_alert_info("To start your container run {.code docker run -p 9000:8080 {cfg$name} <handler>}")
+    cli::cli_alert_info("Possible values of {.code <handler>} are {.code {cfg$lambda_handler}}")
+  } else {
+    cli::cli_alert_info("To start your container run {.code docker run -p 9000:8080 {cfg$name} {cfg$lambda_handler}}")
+  }
+  cli::cli_alert_info("Once running you can send test queries to {.code http://localhost:9000/2015-03-31/functions/function/invocations}")
 }
 
 #' Create a Dockerfile
@@ -73,7 +78,7 @@ build_dockerfile <- function(cfg = NULL, quiet = FALSE) {
       cfg$r_packages      <- lam_build_quoted_list(cfg$r_packages)
       cfg$r_package_repos <- lam_build_quoted_list(cfg$r_package_repos)
       cfg$linux_packages  <- lam_build_space_separated_list(cfg$linux_packages)
-      cfg$include_files   <- lam_build_space_separated_list(cfg$include_files)
+      cfg$include_files   <- lam_build_quoted_list(cfg$include_files)
       cfg$env             <- lam_build_env_list(cfg$env)
       cfg$r_runtime_file  <- lam_runtime_path()
 
@@ -126,17 +131,7 @@ use_lambdar <- function() {
         LAMBDAR_RUNTIME_PATH
       )
       cli::cli_alert_success("Writing {.path {LAMBDAR_RUNTIME_PATH}}")
-      # TODO: Identify and pre-populate the main file (if it already contains the `@lambdar` tag this
-      #       should be easy), and populate the `include_files` option with a list of everything else in
-      #       the directory that isn't lambdar-related
-      data <- list(
-        user = Sys.getenv("USER"),
-        r_version = lam_r_version(),
-        r_package_repos = getOption("repos"),
-        proj_root = basename(usethis::proj_get()),
-        lambda_handlers = lam_build_quoted_list(lam_parse_project_handlers())
-      )
-      usethis::use_template("_lambdar.yml", save_as = "_lambdar.yml", data = data, package = "lambdar", open = TRUE)
+      build_yaml()
     },
     error = function(e) {
       cli::cli_alert_danger("{e}")
@@ -146,4 +141,35 @@ use_lambdar <- function() {
       cli::cli_alert_warning("Removing {.path _lambdar.yml}")
     }
   )
+}
+
+#' Build a `_lambdar.yml` file
+#'
+#' Scans your project folder for `.R` files, identified those containing `@lambda` tags, and writes
+#' a `_lambdar.yml` config file containing relevant information.
+#'
+#' @export
+build_yaml <- function() {
+  # TODO: Identify and pre-populate the main file (if it already contains the `@lambdar` tag this
+  #       should be easy), and populate the `include_files` option with a list of everything else in
+  #       the directory that isn't lambdar-related
+
+  # Parse out the handlers ("file.function") and then generate a unique list of "file.R" names
+  handlers <- lam_parse_project_handlers()
+  include_files <- unique(
+    sapply(
+      strsplit(handlers, ".", fixed = T),
+      function(f) paste0(f[[1]], ".R")
+    )
+  )
+
+  data <- list(
+    user = Sys.getenv("USER"),
+    r_version = lam_r_version(),
+    r_package_repos = getOption("repos"),
+    proj_root = basename(usethis::proj_get()),
+    lambda_handlers = lam_build_quoted_list(handlers),
+    include_files = lam_build_quoted_list(include_files)
+  )
+  usethis::use_template("_lambdar.yml", save_as = "_lambdar.yml", data = data, package = "lambdar", open = TRUE)
 }
