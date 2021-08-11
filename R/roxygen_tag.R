@@ -54,3 +54,27 @@ roclet_output.roclet_lambda <- function(x, results, base_path, ...) {
   message("I got a lambda roclet")
   results
 }
+
+#' Search project files for `@lambda` tags
+#'
+#' Searches the project root directory for `.R` files containing functions tagged with `@lambda` and
+#' returns a character vector of AWS Lambda handler specifiers in the format `"file.function"`.
+#'
+#' @return Returns a character vector of `"file.function"` handler specifications.
+#'
+#' @keywords internal
+lam_parse_project_handlers <- function() {
+  files <- list.files(path = lam_proj_path(), pattern = "\\.R$", all.files = FALSE)
+  res <- character()
+  for (file in files) {
+    parsed <- roxygen2::parse_file(file)
+    res <- c(
+      res,
+      sapply(
+        parsed,
+        function(lambda) paste(gsub("\\.[Rr]$", "", lambda$file), lambda$object$alias, sep = ".")
+      )
+    )
+  }
+  res
+}
