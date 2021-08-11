@@ -26,13 +26,13 @@ RUN printf '#!/bin/sh\ncd $LAMBDA_TASK_ROOT\nRscript lambdar_runtime.R' > /var/r
 # If necessary, install extra R and Linux packages here. This installation step happens last as this
 # is the one most likely to change between containers - having it as the last image in the stack
 # means we can use cached images as much as possible.
-{{#r_packages}}
-RUN Rscript -e 'install.packages(c({{{ r_packages }}}, repos = c({{{ r_package_repos }}}))'
-{{/r_packages}}
-
 {{#linux_packages}}
 RUN yum -y install {{ linux_packages }}
 {{/linux_packages}}
+
+{{#r_packages}}
+RUN Rscript -e 'install.packages(c({{{ r_packages }}}, repos = c({{{ r_package_repos }}}))'
+{{/r_packages}}
 
 # Add any environment variables specified in the config file here
 {{#env}}
