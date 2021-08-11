@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Convert a vector into a list — build-lists • lambdar</title>
+<title>Parse files containing @lambda tags into AWS Lambda handler specifiers — lam_parse_file_handlers • lambdar</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Convert a vector into a list — build-lists" />
-<meta property="og:description" content="Convert a vector into a list" />
+<meta property="og:title" content="Parse files containing @lambda tags into AWS Lambda handler specifiers — lam_parse_file_handlers" />
+<meta property="og:description" content="AWS Lambda handlers are specified as file.function_name." />
 
 
 
@@ -108,38 +108,30 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Convert a vector into a list</h1>
-    <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
-    <div class="hidden name"><code>build-lists.Rd</code></div>
+    <h1>Parse files containing <code>@lambda</code> tags into AWS Lambda handler specifiers</h1>
+    <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/roxygen_tag.R'><code>R/roxygen_tag.R</code></a></small>
+    <div class="hidden name"><code>lam_parse_file_handlers.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Convert a vector into a list</p>
+    <p>AWS Lambda handlers are specified as <code>file.function_name</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>lam_build_quoted_list</span><span class='op'>(</span>items <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
-
-<span class='fu'>lam_build_space_separated_list</span><span class='op'>(</span>items <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>lam_parse_file_handlers</span><span class='op'>(</span><span class='va'>file</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>items</th>
-      <td><p>Vector or items to write.</p></td>
+      <th>file</th>
+      <td><p>A file path</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A string</p>
-    <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
-
-    
-<ul>
-<li><p><code>lam_build_quoted_list</code>: Build a single-quoted comma-separated list</p></li>
-<li><p><code>lam_build_space_separated_list</code>: Build an unquoted space-separated list</p></li>
-</ul>
+    <p>Character vector containing <code>"file.function_name"</code> for any <code>@lambda</code>-tagged functions in
+<code>file</code>.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

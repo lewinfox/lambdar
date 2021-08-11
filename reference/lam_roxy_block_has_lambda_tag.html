@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Convert a vector into a list — build-lists • lambdar</title>
+<title>Does a parsed roxygen block contain a @lambda tag? — lam_roxy_block_has_lambda_tag • lambdar</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Convert a vector into a list — build-lists" />
-<meta property="og:description" content="Convert a vector into a list" />
+<meta property="og:title" content="Does a parsed roxygen block contain a @lambda tag? — lam_roxy_block_has_lambda_tag" />
+<meta property="og:description" content="Does a parsed roxygen block contain a @lambda tag?" />
 
 
 
@@ -108,38 +108,29 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Convert a vector into a list</h1>
-    <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
-    <div class="hidden name"><code>build-lists.Rd</code></div>
+    <h1>Does a parsed roxygen block contain a <code>@lambda</code> tag?</h1>
+    <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/roxygen_tag.R'><code>R/roxygen_tag.R</code></a></small>
+    <div class="hidden name"><code>lam_roxy_block_has_lambda_tag.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Convert a vector into a list</p>
+    <p>Does a parsed roxygen block contain a <code>@lambda</code> tag?</p>
     </div>
 
-    <pre class="usage"><span class='fu'>lam_build_quoted_list</span><span class='op'>(</span>items <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
-
-<span class='fu'>lam_build_space_separated_list</span><span class='op'>(</span>items <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>lam_roxy_block_has_lambda_tag</span><span class='op'>(</span><span class='va'>block</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>items</th>
-      <td><p>Vector or items to write.</p></td>
+      <th>block</th>
+      <td><p>A roxy_block from <code><a href='https://roxygen2.r-lib.org/reference/parse_package.html'>roxygen2::parse_file()</a></code></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A string</p>
-    <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
-
-    
-<ul>
-<li><p><code>lam_build_quoted_list</code>: Build a single-quoted comma-separated list</p></li>
-<li><p><code>lam_build_space_separated_list</code>: Build an unquoted space-separated list</p></li>
-</ul>
+    <p><code>TRUE</code> if the block contains a <code>@lambda</code> tag, <code>FALSE</code> otherwise.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -25,6 +25,9 @@
     <loc>https://lewinfox.github.io/lambdar/reference/lam_has_docker.html</loc>
   </url>
   <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/lam_parse_file_handlers.html</loc>
+  </url>
+  <url>
     <loc>https://lewinfox.github.io/lambdar/reference/lam_parse_project_handlers.html</loc>
   </url>
   <url>
@@ -32,6 +35,9 @@
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/lam_r_version.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/lam_roxy_block_has_lambda_tag.html</loc>
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/lambdar_config.html</loc>
