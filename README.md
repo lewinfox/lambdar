@@ -34,14 +34,14 @@ Call `lambdar::use_lambdar()`. This will create two items in your project's root
 
 1. A `_lambdar.yml` file. This will be pre-populated with some metadata about your app. For this
    example you can leave it as-is.
-2. A `lambdar/` directory containing a single file, `lambdar_runtime.R`. This is the custom runtime
+2. A `.lambdar/` directory containing a single file, `lambdar_runtime.R`. This is the custom runtime
    that will be installed into the container to make everything work. Don't touch it!
    
 ``` r
 lambdar::use_lambdar()
 #> ✓ Setting active project to '/home/lewin/lambdar-test'
-#> ✓ Creating /home/lewin/lambdar-test/lambdar directory
-#> ✓ Writing /home/lewin/lambdar-test/lambdar/lambdar_runtime.R
+#> ✓ Creating /home/lewin/lambdar-test/.lambdar directory
+#> ✓ Writing /home/lewin/lambdar-test/.lambdar/lambdar_runtime.R
 #> ✓ Writing '_lambdar.yml'
 #> • Modify '_lambdar.yml'
 ```

@@ -112,8 +112,8 @@ build_dockerfile <- function(cfg = NULL, quiet = FALSE) {
 #' @export
 use_lambdar <- function() {
   # If this fails we want to restore the dir to its previous state
-  LAMBDAR_DIR <- file.path(usethis::proj_get(), "lambdar")
-  LAMBDAR_RUNTIME_PATH <- file.path(LAMBDAR_DIR, "lambdar_runtime.R")
+  LAMBDAR_DIR <- lam_dir_path()
+  LAMBDAR_RUNTIME_PATH <- lam_runtime_path()
 
   tryCatch(
     {

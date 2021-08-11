@@ -78,7 +78,7 @@ lam_proj_path <- function(...) {
 
 #' @describeIn lam_proj_path Path to the `lambdar/` directory
 lam_dir_path <- function() {
-  lam_proj_path("lambdar")
+  lam_proj_path(".lambdar")
 }
 
 #' @describeIn lam_proj_path Path to lambdar config file
