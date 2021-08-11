@@ -1,13 +1,13 @@
 Type: Package
 Package: lambdar
-Title: Run R on AWS Lambda
+Title: Tools for building AWS Lambda functions in R
 Version: 0.1.0.9001
 Authors@R: 
     person(given = "Lewin",
            family = "Appleton-Fox",
            role = c("aut", "cre"),
            email = "lewin.a.f@gmail.com")
-Description: Tools to build AWS Lambda functions in R.
+Description: Tools to develop and test AWS Lambda functions in R.
 License: MIT + file LICENSE
 URL: https://github.com/lewinfox/lambdar,
     https://lewinfox.github.io/lambdar
