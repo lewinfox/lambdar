@@ -9,6 +9,14 @@ code (see `inst/runtime/lambdar_runtime.R`) is a straight copy of
 [acompanying blog post](https://mdneuzerling.com/post/r-on-aws-lambda-with-containers/) was helpful
 when I was learning about Lambda runtimes.
 
+## Installation
+
+You can install the development version from GitHub with
+
+``` r
+devtools::install_github("lewinfox/lambdar")
+```
+
 
 ## Setup
 
