@@ -72,6 +72,10 @@ test_that("functions without the `@lambda` tag are not detected", {
     FALSE
   }
 
+  # Tag with no function
+
+  #' @lambda
+
   #' This is the only one we should find
   #'
   #' @lambda
