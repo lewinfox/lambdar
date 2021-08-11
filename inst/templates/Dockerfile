@@ -3,7 +3,8 @@ FROM public.ecr.aws/lambda/provided
 ENV R_VERSION={{ r_version }}
 
 # Install system packages
-RUN  yum -y install wget \
+RUN  yum makecache \
+  && yum -y install wget \
   && yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
   && yum -y install openssl-devel \
   && wget https://cdn.rstudio.com/r/centos-7/pkgs/R-${R_VERSION}-1-1.x86_64.rpm \
@@ -13,10 +14,10 @@ RUN  yum -y install wget \
 ENV PATH="${PATH}:/opt/R/${R_VERSION}/bin/"
 
 # The R runtime requires these packages
-RUN Rscript -e "install.packages(c('httr', 'jsonlite', 'logger'), repos = c({{ r_package_repos }}))"
+RUN Rscript -e 'install.packages(c("httr", "jsonlite", "logger"), repos = c({{{ r_package_repos }}}))'
 
-# Move the runtime and function definition file into the container and make it executable
-COPY {{ r_runtime_file }} {{ r_handler_file }} ${LAMBDA_TASK_ROOT}/
+# Move the runtime into the container
+COPY {{ r_runtime_file }} ${LAMBDA_TASK_ROOT}/
 
 # Write the bootstrap file
 RUN printf '#!/bin/sh\ncd $LAMBDA_TASK_ROOT\nRscript lambdar_runtime.R' > /var/runtime/bootstrap \
@@ -26,7 +27,7 @@ RUN printf '#!/bin/sh\ncd $LAMBDA_TASK_ROOT\nRscript lambdar_runtime.R' > /var/r
 # is the one most likely to change between containers - having it as the last image in the stack
 # means we can use cached images as much as possible.
 {{#r_packages}}
-RUN Rscript -e "install.packages(c({{ r_packages }}), repos = c({{ r_package_repos }}))"
+RUN Rscript -e 'install.packages(c({{{ r_packages }}}, repos = c({{{ r_package_repos }}}))'
 {{/r_packages}}
 
 {{#linux_packages}}
@@ -38,9 +39,9 @@ RUN yum -y install {{ linux_packages }}
 ENV {{{ env }}}
 {{/env}}
 
-# If any additional files or directories need to be transferred, do that here.
+# The include files are all user-generated code files
 {{#include_files}}
-COPY {{ include_files }} ${LAMBDA_TASK_ROOT}
+COPY {{{ include_files }}} ${LAMBDA_TASK_ROOT}/
 {{/include_files}}
 
 # Make everything in the task root executable.
