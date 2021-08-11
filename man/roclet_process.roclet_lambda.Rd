@@ -7,9 +7,9 @@
 \method{roclet_process}{roclet_lambda}(x, blocks, env, base_path)
 }
 \arguments{
-\item{x}{A `roclet_lambda` object. See [roclet_lambda()].}
+\item{x}{A \code{roclet_lambda} object. See \code{\link[=roclet_lambda]{roclet_lambda()}}.}
 
-\item{blocks}{A list of [roxygen2::roxy_block]s. Each block corresponds to the captured into of
+\item{blocks}{A list of \link[roxygen2:roxy_block]{roxygen2::roxy_block}s. Each block corresponds to the captured into of
 one function.}
 
 \item{env}{An environment - not sure what this does.}
@@ -19,3 +19,4 @@ one function.}
 \description{
 Extracts functions to be lambda-d from the roxygen block/s
 }
+\keyword{internal}

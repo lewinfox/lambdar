@@ -22,13 +22,13 @@ lam_runtime_path()
 \item{...}{Path elements}
 }
 \description{
-Pinched from `usethis`.
+Pinched from \code{usethis}.
 }
 \section{Functions}{
 \itemize{
-\item \code{lam_dir_path}: Path to the `.lambdar/` directory
+\item \code{lam_dir_path}: Path to the \verb{.lambdar/} directory
 
-\item \code{lam_config_file}: Path to `_lambdar.yml` config file
+\item \code{lam_config_file}: Path to \verb{_lambdar.yml} config file
 
 \item \code{lam_dockerfile_path}: Path to Dockerfile
 

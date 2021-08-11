@@ -13,6 +13,7 @@ reference:
       Getting started with lambdar is easy!
   - contents:
     - use_lambdar
+    - build_yaml
 
   - title: Containers
     desc: >

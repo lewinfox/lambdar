@@ -2,15 +2,15 @@
 % Please edit documentation in R/roxygen_tag.R
 \name{lam_parse_project_handlers}
 \alias{lam_parse_project_handlers}
-\title{Search project files for `@lambda` tags}
+\title{Search project files for \verb{@lambda} tags}
 \usage{
 lam_parse_project_handlers()
 }
 \value{
-Returns a character vector of `"file.function"` handler specifications.
+Returns a character vector of \code{"file.function"} handler specifications.
 }
 \description{
-Searches the project root directory for `.R` files containing functions tagged with `@lambda` and
-returns a character vector of AWS Lambda handler specifiers in the format `"file.function"`.
+Searches the project root directory for \code{.R} files containing functions tagged with \verb{@lambda} and
+returns a character vector of AWS Lambda handler specifiers in the format \code{"file.function"}.
 }
 \keyword{internal}

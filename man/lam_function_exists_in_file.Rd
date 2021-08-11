@@ -9,7 +9,7 @@ lam_function_exists_in_file(file, fun)
 \arguments{
 \item{file}{A file path}
 
-\item{fun}{String. A function that we expect to be defined in `file`}
+\item{fun}{String. A function that we expect to be defined in \code{file}}
 }
 \value{
 Boolean

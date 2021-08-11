@@ -2,11 +2,11 @@
 % Please edit documentation in R/lambdar.R
 \name{build_yaml}
 \alias{build_yaml}
-\title{Build a `_lambdar.yml` file}
+\title{Build a \verb{_lambdar.yml} file}
 \usage{
 build_yaml()
 }
 \description{
-Scans your project folder for `.R` files, identified those containing `@lambda` tags, and writes
-a `_lambdar.yml` config file containing relevant information.
+Scans your project folder for \code{.R} files, identified those containing \verb{@lambda} tags, and writes
+a \verb{_lambdar.yml} config file containing relevant information.
 }

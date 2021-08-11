@@ -108,7 +108,7 @@ build_dockerfile <- function(cfg = NULL, quiet = FALSE) {
 #' @section Description:
 #' Call this function to create the necessary files lambdar needs to work. Specifically:
 #'
-#' * A `_lamndar.yml` config file
+#' * A `_lambdar.yml` config file
 #' * A `lambdar/` directory to house a copy of the R runtime we will load into your container.
 #'
 #' The function will try and pre-populate your config file with as much information as possible, but

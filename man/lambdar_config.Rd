@@ -13,7 +13,7 @@ new_lambdar_config(cfg)
 is_lambdar_config(x)
 }
 \arguments{
-\item{config_file}{Path to config file. If not provided, looks for `_lambdar.yml` in the project
+\item{config_file}{Path to config file. If not provided, looks for \verb{_lambdar.yml} in the project
 root durectory.}
 }
 \value{
@@ -24,9 +24,9 @@ Contains info about the container
 }
 \section{Functions}{
 \itemize{
-\item \code{new_lambdar_config}: Create a new `lambdar_config` object. For internal use only
+\item \code{new_lambdar_config}: Create a new \code{lambdar_config} object. For internal use only
 
-\item \code{is_lambdar_config}: Test if an object is a `lambdar_config` object.
+\item \code{is_lambdar_config}: Test if an object is a \code{lambdar_config} object.
 }}
 
 \keyword{internal}

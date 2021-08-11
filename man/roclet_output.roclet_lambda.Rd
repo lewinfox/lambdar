@@ -7,14 +7,15 @@
 \method{roclet_output}{roclet_lambda}(x, results, base_path, ...)
 }
 \arguments{
-\item{x}{A `roclet_lambda` object. See [roclet_lambda()].}
+\item{x}{A \code{roclet_lambda} object. See \code{\link[=roclet_lambda]{roclet_lambda()}}.}
 
-\item{results}{The output of [roclet_process.roclet_lambda].}
+\item{results}{The output of \link{roclet_process.roclet_lambda}.}
 
 \item{base_path}{Unknown.}
 
 \item{...}{Unused}
 }
 \description{
-Given a list of functions that have been tagged with `@lambda`, do something cool with them
+Given a list of functions that have been tagged with \verb{@lambda}, do something cool with them
 }
+\keyword{internal}

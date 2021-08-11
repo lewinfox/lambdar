@@ -29,6 +29,7 @@ roclet_lambda <- function() {
 #'
 #' @importFrom roxygen2 roclet_process
 #' @export
+#' @keywords internal
 roclet_process.roclet_lambda <- function(x, blocks, env, base_path) {
   res <- list()
   for (block in blocks) {
@@ -50,6 +51,7 @@ roclet_process.roclet_lambda <- function(x, blocks, env, base_path) {
 #'
 #' @importFrom roxygen2 roclet_output
 #' @export
+#' @keywords internal
 roclet_output.roclet_lambda <- function(x, results, base_path, ...) {
   message("I got a lambda roclet")
   results
