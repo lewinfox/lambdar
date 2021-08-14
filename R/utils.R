@@ -122,3 +122,21 @@ relish <- function(x, dir = usethis::proj_get()) {
   }
   gsub(dir, "", x, fixed = TRUE)
 }
+
+# ---- Dependency detection ----
+
+#' Detect R package dependencies in code
+#'
+#' @param file Path to a file or files to analyse
+#'
+#' @return A character vector of R package dependencies needed by `file`
+#'
+#' @keywords internal
+lam_get_file_dependencies <- function(file) {
+  if (length(file) > 1) {
+    unique(sapply(file), lam_get_file_dependencies)
+  }
+  deps <- renv::dependencies(file)
+  unique(deps$Package)
+}
+

@@ -16,6 +16,7 @@ Imports:
     cli,
     glue,
     httr,
+    renv,
     rlang,
     roxygen2,
     usethis,
