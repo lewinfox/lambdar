@@ -212,7 +212,7 @@
 <h3 class="hasAnchor">
 <a href="#r_packages" class="anchor"></a><code>r_packages</code>
 </h3>
-<p>Any packages listed here will be installed when the container is built. <strong>TODO</strong>: Auto-populate this.</p>
+<p>Any packages listed here will be installed when the container is built. Lambdar will try and determine which packages you need using <code><a href="https://rstudio.github.io/renv/reference/dependencies.html">renv::dependencies()</a></code> and will auto-fill this list.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb15-1"><a href="#cb15-1"></a><span class="co"># _lambdar.yml</span></span>
 <span id="cb15-2"><a href="#cb15-2"></a></span>
 <span id="cb15-3"><a href="#cb15-3"></a><span class="fu">r_packages</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at"> tidyverse</span><span class="kw">,</span><span class="at"> units </span><span class="kw">]</span></span></code></pre></div>
