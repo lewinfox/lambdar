@@ -28,5 +28,5 @@ test_that("`new_lambdar_config()` works as expected", {
 })
 
 test_that("`lambdar_config()` works as expected", {
-  expect_error(lambdar_config("no-such-file"), class = "lambdar_no_config_file")
+  expect_error(lambdar_config_from_file("no-such-file"), class = "lambdar_no_config_file")
 })

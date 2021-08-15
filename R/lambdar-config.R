@@ -9,15 +9,14 @@
 #' @return A list.
 #'
 #' @keywords internal
-lambdar_config <- function(config_file = NULL) {
+lambdar_config_from_file <- function(config_file = NULL) {
   # If no file path is supplied, use the default ($PROJECT_ROOT/_lambdar.yml)
   if (is.null(config_file)) {
-    config_file <- lam_config_file()
+    config_file <- lam_config_path()
   }
 
   if (!file.exists(config_file)) {
-    cli::cli_alert_danger("File {.path {config_file}} does not exist")
-    rlang::abort("File not found", "lambdar_no_config")
+    rlang::abort("File {config_file} not found", "lambdar_no_config_file")
   }
 
   # Read the YAML
@@ -25,7 +24,7 @@ lambdar_config <- function(config_file = NULL) {
   new_lambdar_config(cfg)
 }
 
-#' @describeIn lambdar_config Create a new `lambdar_config` object. For internal use only.
+#' @describeIn lambdar_config_from_file Create a new `lambdar_config` object. For internal use only.
 #'
 #' @param config A named list containing params. If `config` or any elements are missing, defaults
 #'   will be used.
@@ -42,7 +41,7 @@ new_lambdar_config <- function(config = NULL) {
   }
 
   user <- Sys.getenv("USER")
-  proj_root_name <- basename(usethis::proj_get())
+  proj_root_name <- basename(usethis::proj_path())
   app_name <- glue::glue("{user}/{proj_root_name}")
 
   # This is the default config object. We have the option of overwriting additional parameters by
@@ -53,6 +52,7 @@ new_lambdar_config <- function(config = NULL) {
     include_files = NULL,        # Files to be included in the container image
     lambda_handlers = NULL,      # In the format "file.function_name"
     r_packages = NULL,           # R packages to be installed in the image
+    r_package_repos = as.character(getOption("repos")),
     linux_packages = NULL,       # Linux packages to be installed in the image
     env = NULL                   # Environment variables to be set in the container
   )
@@ -65,7 +65,7 @@ new_lambdar_config <- function(config = NULL) {
   structure(cfg, class = c("lambdar_config", "list"))
 }
 
-#' @describeIn lambdar_config Test if an object is a `lambdar_config` object.
+#' @describeIn lambdar_config_from_file Test if an object is a `lambdar_config` object.
 is_lambdar_config <- function(x) {
   inherits(x, "lambdar_config")
 }
