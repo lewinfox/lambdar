@@ -16,8 +16,8 @@ lambdar_config_from_file <- function(config_file = NULL) {
     config_file <- lam_config_path()
   }
 
-  if (!file.exists(config_file)) {
-    rlang::abort("File {config_file} not found", "lambdar_no_config_file")
+  if (!config_exists()) {
+    build_config()
   }
 
   # Read the YAML
