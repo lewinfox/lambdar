@@ -52,13 +52,13 @@ Call `lambdar::use_lambdar()`. This will create two items in your project's root
 ``` r
 lambdar::use_lambdar()
 #> ✓ Setting active project to '/home/lewin/lambdar-test'
-#> ✓ Creating /home/lewin/lambdar-test/.lambdar directory
-#> ✓ Writing /home/lewin/lambdar-test/.lambdar/lambdar_runtime.R
+#> ✓ Creating .lambdar directory
+#> ✓ Writing .lambdar/lambdar_runtime.R
 #> ✓ Writing '_lambdar.yml'
 #> • Modify '_lambdar.yml'
 ```
 
-If you decide to lambda-fy a different function, call `lambdar::build_yaml()` to re-scan your code
+If you decide to lambda-fy a different function, call `lambdar::build_config()` to re-scan your code
 for `@lambda` tags. You can always edit `_lambdar.yml` by hand as well - see (**TODO** - vignette).
 
 ## Build container
@@ -71,7 +71,7 @@ project's root directory.
 ``` r
 lambdar::build_dockerfile()
 #> ✓ Writing 'Dockerfile'
-#> ℹ To build your container, run `docker build -t lewin/lambdar-test .`
+#> ℹ To build your container, run `docker build -t lewin/lambdar-test .` or `lambdar::build_container()`
 ```
 
 Or
