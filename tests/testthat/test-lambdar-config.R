@@ -12,6 +12,10 @@ test_that("handler function detection works correctly", {
 })
 
 test_that("`new_lambdar_config()` works as expected", {
+  if (!tests_running_in_project()) {
+    skip("Skipping tests that must be run in a project")
+  }
+
   # Make sure the class is correct
   expect_s3_class(new_lambdar_config(), "lambdar_config")
 
