@@ -28,6 +28,8 @@ use_lambdar <- function() {
       )
       cli::cli_alert_success("Writing {.path {LAMBDAR_RUNTIME_PATH}}")
       build_config()
+      conf_str <- usethis::ui_path(LAMBDAR_CONFIG_PATH)
+      usethis::ui_todo("Edit {conf_str}")
     },
     error = function(e) {
       if (dir.exists(LAMBDAR_DIR)) {
@@ -51,6 +53,11 @@ use_lambdar <- function() {
 #'
 #' @export
 build_config <- function() {
+  if (!using_lambdar()) {
+    cli::cli_alert_info("Lambdar has not been initialiased yet, doing it now")
+    use_lambdar()
+  }
+
   # Parse out the handlers ("file.function") and then generate a unique list of "file.R" names
   handlers <- lam_parse_project_handlers()
   include_files <- unique(
@@ -75,8 +82,7 @@ build_config <- function() {
     "_lambdar.yml",
     save_as = "_lambdar.yml",
     data = cfg,
-    package = "lambdar",
-    open = TRUE
+    package = "lambdar"
   )
 }
 
@@ -92,6 +98,9 @@ build_config <- function() {
 build_dockerfile <- function(cfg = NULL, quiet = FALSE) {
   tryCatch(
     {
+      if (!config_exists()) {
+        build_config()
+      }
       # If this is called in standalone mode, read the config file. Otherwise we expect to have a
       # `cfg` object passed in
       if (is.null(cfg)) {
@@ -151,13 +160,6 @@ build_container <- function() {
     return(invisible())
   }
 
-  # Warn if we are overwriting an existing Dockerfile (usethis::use_template() will also warn)
-  if (file.exists(lam_dockerfile_path())) {
-    cli::cli_alert_warning("{.path Dockerfile} already exists")
-  } else {
-    cli::cli_alert_info("Building {.path Dockerfile}")
-  }
-
   # Read config and create the Dockerfile
   cfg <- lambdar_config_from_file(lam_config_path())
   build_dockerfile(cfg, quiet = TRUE)
@@ -173,13 +175,13 @@ build_container <- function() {
 
   # Let the user know we are OK and provide useful URLs for testing
   cli::cli_alert_success("Docker build successful")
-  if (length(cfg$lambda_handler) > 1) {
-    msg <- "To start your container run {.code docker run -p 9000:8080 {cfg$name} <handler>}"
+  if (length(cfg$lambda_handlers) > 1) {
+    msg <- "To start your container run {.code docker run -p 9000:8080 {cfg$app_name} <handler>}"
     cli::cli_alert_info(msg)
-    cli::cli_alert_info("Possible values of {.code <handler>} are {.code {cfg$lambda_handler}}")
+    cli::cli_alert_info("Possible values of {.code <handler>} are {.code {cfg$lambda_handlers}}")
   } else {
     msg <- paste("To start your container run" ,
-                 "{.code docker run -p 9000:8080 {cfg$name} {cfg$lambda_handler}}")
+                 "{.code docker run -p 9000:8080 {cfg$app_name} {cfg$lambda_handlers}}")
     cli::cli_alert_info(msg)
   }
   msg <- paste("Once running you can send test queries to",
