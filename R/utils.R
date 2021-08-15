@@ -180,3 +180,22 @@ lam_function_exists_in_file <- function(file, fun) {
     }
   )
 }
+
+#' Have we got everything we need?
+#'
+#' @return Boolean
+#'
+#' @keywords internal
+using_lambdar <- function() {
+  dir.exists(lam_dir_path())
+}
+
+#' @describeIn using_lambdar Does the config file exist?
+config_exists <- function() {
+  file.exists(lam_config_path())
+}
+
+#' @describeIn using_lambdar Does the Dockerfile exist?
+dockerfile_exists <- function() {
+  file.exists(lam_dockerfile_path())
+}
