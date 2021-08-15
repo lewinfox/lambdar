@@ -4,7 +4,7 @@
 \alias{build-lists}
 \alias{lam_build_quoted_list}
 \alias{lam_build_space_separated_list}
-\title{Convert a vector into a list}
+\title{Convert a vector into text}
 \usage{
 lam_build_quoted_list(items = NULL, quote = c("double", "single"))
 
@@ -19,9 +19,9 @@ lam_build_space_separated_list(items = NULL)
 A string
 }
 \description{
-Writing YAML and Dockerfiles templates requires translating R vectors into lists of strings. In
-some cases these need to be quoted (e.g. to build R \code{\link[=install.packages]{install.packages()}} commands) and in other
-cases they need to be space-separated (e.g. Linux \verb{yum install a b c}).
+Writing YAML and Dockerfiles templates requires translating R vectors into strings. In some cases
+these need to be quoted (e.g. to build R \code{\link[=install.packages]{install.packages()}} commands) and in other cases they
+need to be space-separated (e.g. Linux \verb{yum install a b c}).
 }
 \section{Functions}{
 \itemize{

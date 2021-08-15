@@ -12,7 +12,7 @@ test_that("handler function detection works correctly", {
 })
 
 test_that("`new_lambdar_config()` works as expected", {
-  if (!tests_running_in_project()) {
+  if (!in_project()) {
     skip("Skipping tests that must be run in a project")
   }
 
@@ -29,8 +29,4 @@ test_that("`new_lambdar_config()` works as expected", {
 
   # Throw an error if anything is unnamed
   expect_error(new_lambdar_config(list(a = 1, 2)), regexp = "must be named")
-})
-
-test_that("`lambdar_config()` works as expected", {
-  expect_error(lambdar_config_from_file("no-such-file"), class = "lambdar_no_config_file")
 })

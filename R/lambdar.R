@@ -58,22 +58,17 @@ build_config <- function() {
     use_lambdar()
   }
 
-  # Parse out the handlers ("file.function") and then generate a unique list of "file.R" names
-  handlers <- lam_parse_project_handlers()
-  include_files <- unique(
-    sapply(
-      strsplit(handlers, ".", fixed = T),
-      function(f) paste0(f[[1]], ".R")
-    )
-  )
-
   # TODO: Look for source() calls and follow that graph.
 
   # These are parameters that are not set in the default config. They also need to be formatted
   # before we pass them to `usethis::use_template()`
+  include_files <- lam_handler_filenames()
+  r_packages <- lam_get_file_dependencies(include_files)
+
   extra_params <- list(
-    lambda_handlers = lam_build_quoted_list(handlers),
-    include_files = lam_build_quoted_list(include_files)
+    lambda_handlers = lam_build_quoted_list(lam_parse_project_handlers()),
+    include_files = lam_build_quoted_list(include_files),
+    r_packages = r_packages
   )
 
   cfg <- new_lambdar_config(extra_params)
@@ -98,9 +93,8 @@ build_config <- function() {
 build_dockerfile <- function(cfg = NULL, quiet = FALSE) {
   tryCatch(
     {
-      if (!config_exists()) {
-        build_config()
-      }
+      build_config()
+
       # If this is called in standalone mode, read the config file. Otherwise we expect to have a
       # `cfg` object passed in
       if (is.null(cfg)) {

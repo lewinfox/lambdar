@@ -1,10 +1,10 @@
 # ---- Dockerfile formatting helpers ----
 
-#' Convert a vector into a list
+#' Convert a vector into text
 #'
-#' Writing YAML and Dockerfiles templates requires translating R vectors into lists of strings. In
-#' some cases these need to be quoted (e.g. to build R [install.packages()] commands) and in other
-#' cases they need to be space-separated (e.g. Linux `yum install a b c`).
+#' Writing YAML and Dockerfiles templates requires translating R vectors into strings. In some cases
+#' these need to be quoted (e.g. to build R [install.packages()] commands) and in other cases they
+#' need to be space-separated (e.g. Linux `yum install a b c`).
 #'
 #' @param items Vector or items to write.
 #'
@@ -22,9 +22,11 @@ lam_build_quoted_list <- function(items = NULL, quote = c("double", "single")) {
   if (is.null(items)) {
     return(NULL)
   }
+  # We want to ensure they only end up with one quote if they're already quoted
+  items <- stringr::str_remove_all(items, "[\"\']")
   quote <- match.arg(quote)
   quoting_function <- if (quote == "single") glue::single_quote else glue::double_quote
-  glue::glue_collapse(quoting_function(items), sep = ", ")
+  as.character(glue::glue_collapse(quoting_function(items), sep = ", "))
 }
 
 #' @describeIn build-lists Build an unquoted space-separated list
@@ -34,7 +36,8 @@ lam_build_space_separated_list <- function(items = NULL) {
   if (is.null(items)) {
     return(NULL)
   }
-  glue::glue_collapse(items, sep = " ")
+  items <- stringr::str_remove_all(items, "[\"\']")
+  as.character(glue::glue_collapse(items, sep = " "))
 }
 
 #' Get the current R version
@@ -64,7 +67,7 @@ lam_build_env_list <- function(env = list()) {
     rlang::abort("All elements of `env` must be named")
   }
   vars = sapply(names(env), function(name) paste0(toupper(name), "=\"", env[[name]], "\""))
-  lam_build_space_separated_list(vars)
+  paste(vars, collapse = " ")
 }
 
 
@@ -149,8 +152,23 @@ lam_get_file_dependencies <- function(file) {
   if (length(file) > 1) {
     unique(sapply(file), lam_get_file_dependencies)
   }
-  deps <- renv::dependencies(file)
+  deps <- renv::dependencies(file, progress = FALSE)
   unique(deps$Package)
+}
+
+#' Get a list of all `.R` files containing `@lambda` handlers
+#'
+#' @return Character vector of file paths
+#'
+#' @keywords internal
+lam_handler_filenames <- function() {
+  handlers <- lam_parse_project_handlers()
+  unique(
+    sapply(
+      strsplit(handlers, ".", fixed = T),
+      function(f) paste0(f[[1]], ".R")
+    )
+  )
 }
 
 # ---- Misc ----
@@ -198,4 +216,23 @@ config_exists <- function() {
 #' @describeIn using_lambdar Does the Dockerfile exist?
 dockerfile_exists <- function() {
   file.exists(lam_dockerfile_path())
+}
+
+#' Are we in a project-y environment?
+#'
+#' @return Boolean
+#'
+#' @keywords internal
+in_project <- function() {
+  !inherits(try(usethis::proj_path(), silent = TRUE), "try-error")
+}
+
+#' Remove all the lambdar files from a project
+#'
+#' @export
+clean <- function() {
+  unlink(lam_dir_path(), recursive = TRUE, force = TRUE)
+  unlink(lam_dockerfile_path(), force = TRUE)
+  unlink(lam_config_path(), force = TRUE)
+  cli::cli_alert_success("Cleaned")
 }
