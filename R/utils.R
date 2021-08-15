@@ -22,7 +22,7 @@ lam_build_quoted_list <- function(items = NULL, quote = c("double", "single")) {
   if (is.null(items)) {
     return(NULL)
   }
-  quote <- match.arg("quote")
+  quote <- match.arg(quote)
   quoting_function <- if (quote == "single") glue::single_quote else glue::double_quote
   glue::glue_collapse(quoting_function(items), sep = ", ")
 }
