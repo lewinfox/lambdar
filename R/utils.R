@@ -227,7 +227,7 @@ in_project <- function() {
   !inherits(try(usethis::proj_path(), silent = TRUE), "try-error")
 }
 
-#' Remove all the lambdar files from a project
+#' Remove all the lambdar-related files and directories from a project
 #'
 #' @export
 clean <- function() {

@@ -2,10 +2,10 @@
 % Please edit documentation in R/utils.R
 \name{clean}
 \alias{clean}
-\title{Remove all the lambdar files from a project}
+\title{Remove all the lambdar-related files and directories from a project}
 \usage{
 clean()
 }
 \description{
-Remove all the lambdar files from a project
+Remove all the lambdar-related files and directories from a project
 }
