@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">lambdar</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9003</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9004</span>
       </span>
     </div>
 
@@ -155,7 +155,6 @@
 <code class="sourceCode R"><span class="co"># main.R</span>
 
 <span class="co">#' @lambda</span>
-<span class="co">#' @lambda</span>
 <span class="va">hello_world</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">name</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">{</span>
   <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
     <span class="va">name</span> <span class="op">&lt;-</span> <span class="st">"World"</span>
@@ -172,7 +171,7 @@
   <span class="op">}</span>
   <span class="va">x</span> <span class="op">+</span> <span class="fl">1</span>
 <span class="op">}</span></code></pre></div>
-<p>Call <code>lambdar::build_yaml()</code> to regenerate the config file. You’ll notice that the <code>lambda_handlers</code> entry now has two handlers:</p>
+<p>Call <code><a href="reference/build_config.html">lambdar::build_config()</a></code> to regenerate the config file. You’ll notice that the <code>lambda_handlers</code> entry now has two handlers:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># _lambdar.yml</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a></span>
 <span id="cb11-3"><a href="#cb11-3"></a><span class="co"># ...</span></span>
@@ -232,7 +231,6 @@
 <h2 class="hasAnchor">
 <a href="#todo---future-work" class="anchor"></a>TODO - future work</h2>
 <ul>
-<li>Identify and auto-populate dependencies (how?)</li>
 <li>Help you automate the process of uploading to AWS</li>
 <li>Provide a GitHub Actions template so we can update on every push etc.</li>
 <li>Duplicate the same functionality but using lambda layers (the other custom runtime option). See <a href="https://medium.com/bakdata/running-r-on-aws-lambda-9d40643551a6">medium.com/bakdata/running-r-on-aws-lambda</a>
