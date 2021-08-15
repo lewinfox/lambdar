@@ -152,8 +152,8 @@ add_one <- function(x = NULL) {
 }
 ```
 
-Call `lambdar::build_yaml()` to regenerate the config file. You'll notice that the `lambda_handlers`
-entry now has two handlers:
+Call `lambdar::build_config()` to regenerate the config file. You'll notice that the 
+`lambda_handlers` entry now has two handlers:
 
 ``` yaml
 # _lambdar.yml
