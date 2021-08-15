@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Convert a vector into a list — build-lists • lambdar</title>
+<title>Lambdar configuration object — lambdar_config_from_file • lambdar</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,9 @@
 
 
 
-<meta property="og:title" content="Convert a vector into a list — build-lists" />
-<meta property="og:description" content="Writing YAML and Dockerfiles templates requires translating R vectors into lists of strings. In
-some cases these need to be quoted (e.g. to build R install.packages() commands) and in other
-cases they need to be space-separated (e.g. Linux yum install a b c)." />
+<meta property="og:title" content="Lambdar configuration object — lambdar_config_from_file" />
+<meta property="og:description" content="Lambdar stores information about your app in a configuration object of class lambdar_config.
+This is just a named list." />
 
 
 
@@ -110,43 +109,46 @@ cases they need to be space-separated (e.g. Linux yum install a b c)." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Convert a vector into a list</h1>
-    <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
-    <div class="hidden name"><code>build-lists.Rd</code></div>
+    <h1>Lambdar configuration object</h1>
+    <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/lambdar-config.R'><code>R/lambdar-config.R</code></a></small>
+    <div class="hidden name"><code>lambdar_config_from_file.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Writing YAML and Dockerfiles templates requires translating R vectors into lists of strings. In
-some cases these need to be quoted (e.g. to build R <code><a href='https://rdrr.io/r/utils/install.packages.html'>install.packages()</a></code> commands) and in other
-cases they need to be space-separated (e.g. Linux <code>yum install a b c</code>).</p>
+    <p>Lambdar stores information about your app in a configuration object of class <code>lambdar_config</code>.
+This is just a named list.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>lam_build_quoted_list</span><span class='op'>(</span>items <span class='op'>=</span> <span class='cn'>NULL</span>, quote <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"double"</span>, <span class='st'>"single"</span><span class='op'>)</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>lambdar_config_from_file</span><span class='op'>(</span>config_file <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>lam_build_space_separated_list</span><span class='op'>(</span>items <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+<span class='fu'>new_lambdar_config</span><span class='op'>(</span>config <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+
+<span class='fu'>is_lambdar_config</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>items</th>
-      <td><p>Vector or items to write.</p></td>
+      <th>config_file</th>
+      <td><p>Path to config file. If not provided, looks for <code>_lambdar.yml</code> in the project
+root durectory.</p></td>
     </tr>
     <tr>
-      <th>quote</th>
-      <td><p><code>"single"</code> or <code>"double"</code></p></td>
+      <th>config</th>
+      <td><p>A named list containing params. If <code>config</code> or any elements are missing, defaults
+will be used.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A string</p>
+    <p>A list.</p>
     <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
 
     
 <ul>
-<li><p><code>lam_build_quoted_list</code>: Build a double-quoted comma-separated list</p></li>
-<li><p><code>lam_build_space_separated_list</code>: Build an unquoted space-separated list</p></li>
+<li><p><code>new_lambdar_config</code>: Create a new <code>lambdar_config</code> object. For internal use only.</p></li>
+<li><p><code>is_lambdar_config</code>: Test if an object is a <code>lambdar_config</code> object.</p></li>
 </ul>
 
   </div>

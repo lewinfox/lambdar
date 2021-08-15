@@ -7,19 +7,22 @@
     <loc>https://lewinfox.github.io/lambdar/reference/build-lists.html</loc>
   </url>
   <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/build_config.html</loc>
+  </url>
+  <url>
     <loc>https://lewinfox.github.io/lambdar/reference/build_container.html</loc>
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/build_dockerfile.html</loc>
   </url>
   <url>
-    <loc>https://lewinfox.github.io/lambdar/reference/build_yaml.html</loc>
-  </url>
-  <url>
     <loc>https://lewinfox.github.io/lambdar/reference/lam_build_env_list.html</loc>
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/lam_function_exists_in_file.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/lam_get_file_dependencies.html</loc>
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/lam_has_docker.html</loc>
@@ -40,7 +43,7 @@
     <loc>https://lewinfox.github.io/lambdar/reference/lam_roxy_block_has_lambda_tag.html</loc>
   </url>
   <url>
-    <loc>https://lewinfox.github.io/lambdar/reference/lambdar_config.html</loc>
+    <loc>https://lewinfox.github.io/lambdar/reference/lambdar_config_from_file.html</loc>
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/relish.html</loc>

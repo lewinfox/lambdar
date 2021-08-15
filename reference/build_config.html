@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Convert a vector into a list — build-lists • lambdar</title>
+<title>Build a _lambdar.yml file — build_config • lambdar</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,9 @@
 
 
 
-<meta property="og:title" content="Convert a vector into a list — build-lists" />
-<meta property="og:description" content="Writing YAML and Dockerfiles templates requires translating R vectors into lists of strings. In
-some cases these need to be quoted (e.g. to build R install.packages() commands) and in other
-cases they need to be space-separated (e.g. Linux yum install a b c)." />
+<meta property="og:title" content="Build a _lambdar.yml file — build_config" />
+<meta property="og:description" content="Scans your project folder for .R files, identified those containing @lambda tags, and writes
+a _lambdar.yml config file containing relevant information." />
 
 
 
@@ -110,44 +109,19 @@ cases they need to be space-separated (e.g. Linux yum install a b c)." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Convert a vector into a list</h1>
-    <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
-    <div class="hidden name"><code>build-lists.Rd</code></div>
+    <h1>Build a <code>_lambdar.yml</code> file</h1>
+    <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/lambdar.R'><code>R/lambdar.R</code></a></small>
+    <div class="hidden name"><code>build_config.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Writing YAML and Dockerfiles templates requires translating R vectors into lists of strings. In
-some cases these need to be quoted (e.g. to build R <code><a href='https://rdrr.io/r/utils/install.packages.html'>install.packages()</a></code> commands) and in other
-cases they need to be space-separated (e.g. Linux <code>yum install a b c</code>).</p>
+    <p>Scans your project folder for <code>.R</code> files, identified those containing <code>@lambda</code> tags, and writes
+a <code>_lambdar.yml</code> config file containing relevant information.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>lam_build_quoted_list</span><span class='op'>(</span>items <span class='op'>=</span> <span class='cn'>NULL</span>, quote <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"double"</span>, <span class='st'>"single"</span><span class='op'>)</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>build_config</span><span class='op'>(</span><span class='op'>)</span></pre>
 
-<span class='fu'>lam_build_space_separated_list</span><span class='op'>(</span>items <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>items</th>
-      <td><p>Vector or items to write.</p></td>
-    </tr>
-    <tr>
-      <th>quote</th>
-      <td><p><code>"single"</code> or <code>"double"</code></p></td>
-    </tr>
-    </table>
-
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A string</p>
-    <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
-
-    
-<ul>
-<li><p><code>lam_build_quoted_list</code>: Build a double-quoted comma-separated list</p></li>
-<li><p><code>lam_build_space_separated_list</code>: Build an unquoted space-separated list</p></li>
-</ul>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

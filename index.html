@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">lambdar</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9003</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
 <span class="co">#&gt; ✓ Writing /home/lewin/lambdar-test/.lambdar/lambdar_runtime.R</span>
 <span class="co">#&gt; ✓ Writing '_lambdar.yml'</span>
 <span class="co">#&gt; • Modify '_lambdar.yml'</span></code></pre></div>
-<p>If you decide to lambda-fy a different function, call <code><a href="reference/build_yaml.html">lambdar::build_yaml()</a></code> to re-scan your code for <code>@lambda</code> tags. You can always edit <code>_lambdar.yml</code> by hand as well - see (<strong>TODO</strong> - vignette).</p>
+<p>If you decide to lambda-fy a different function, call <code>lambdar::build_yaml()</code> to re-scan your code for <code>@lambda</code> tags. You can always edit <code>_lambdar.yml</code> by hand as well - see (<strong>TODO</strong> - vignette).</p>
 </div>
 <div id="build-container" class="section level2">
 <h2 class="hasAnchor">
@@ -172,7 +172,7 @@
   <span class="op">}</span>
   <span class="va">x</span> <span class="op">+</span> <span class="fl">1</span>
 <span class="op">}</span></code></pre></div>
-<p>Call <code><a href="reference/build_yaml.html">lambdar::build_yaml()</a></code> to regenerate the config file. You’ll notice that the <code>lambda_handlers</code> entry now has two handlers:</p>
+<p>Call <code>lambdar::build_yaml()</code> to regenerate the config file. You’ll notice that the <code>lambda_handlers</code> entry now has two handlers:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># _lambdar.yml</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a></span>
 <span id="cb11-3"><a href="#cb11-3"></a><span class="co"># ...</span></span>
