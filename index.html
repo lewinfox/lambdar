@@ -106,11 +106,11 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">lambdar</span><span class="fu">::</span><span class="fu"><a href="reference/use_lambdar.html">use_lambdar</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; ✓ Setting active project to '/home/lewin/lambdar-test'</span>
-<span class="co">#&gt; ✓ Creating /home/lewin/lambdar-test/.lambdar directory</span>
-<span class="co">#&gt; ✓ Writing /home/lewin/lambdar-test/.lambdar/lambdar_runtime.R</span>
+<span class="co">#&gt; ✓ Creating .lambdar directory</span>
+<span class="co">#&gt; ✓ Writing .lambdar/lambdar_runtime.R</span>
 <span class="co">#&gt; ✓ Writing '_lambdar.yml'</span>
 <span class="co">#&gt; • Modify '_lambdar.yml'</span></code></pre></div>
-<p>If you decide to lambda-fy a different function, call <code>lambdar::build_yaml()</code> to re-scan your code for <code>@lambda</code> tags. You can always edit <code>_lambdar.yml</code> by hand as well - see (<strong>TODO</strong> - vignette).</p>
+<p>If you decide to lambda-fy a different function, call <code><a href="reference/build_config.html">lambdar::build_config()</a></code> to re-scan your code for <code>@lambda</code> tags. You can always edit <code>_lambdar.yml</code> by hand as well - see (<strong>TODO</strong> - vignette).</p>
 </div>
 <div id="build-container" class="section level2">
 <h2 class="hasAnchor">
@@ -119,7 +119,7 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">lambdar</span><span class="fu">::</span><span class="fu"><a href="reference/build_dockerfile.html">build_dockerfile</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; ✓ Writing 'Dockerfile'</span>
-<span class="co">#&gt; ℹ To build your container, run `docker build -t lewin/lambdar-test .`</span></code></pre></div>
+<span class="co">#&gt; ℹ To build your container, run `docker build -t lewin/lambdar-test .` or `lambdar::build_container()`</span></code></pre></div>
 <p>Or</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">lambdar</span><span class="fu">::</span><span class="fu"><a href="reference/build_container.html">build_container</a></span><span class="op">(</span><span class="op">)</span>
