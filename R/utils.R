@@ -180,30 +180,3 @@ lam_function_exists_in_file <- function(file, fun) {
     }
   )
 }
-
-#' Find all the files `source`d from another
-#'
-#' @param file A file path
-#'
-#' @return A character vector of files `source`d in `file`.
-#'
-#' @keywords internal
-lam_find_sourced_files <- function(file) {
-  text <- readLines(file)
-  files_sourced <- unlist(stringr::str_extract_all(text, "source\\((.*)\\)"))
-  files_sourced <- stringr::str_replace_all(files_sourced, "source\\((.*)\\)", "\\1")
-  files_sourced <- stringr::str_remove_all(files_sourced, "[\"\']")
-  files_sourced <- unique(files_sourced[length(files_sourced) > 0])
-
-  # At the moment we don;t have a mechanism for creating nested dirs in the Dockerfile. You can
-  # add them by hand but you need to do this yourself.
-  #
-  # TODO: Add support for nested directory structures.
-  have_directory_separator <- grepl("[/\\]", files_sourced)
-  if (any(have_directory_separator)) {
-    bad <- glue::glue_collapse(files_sourced[have_directory_separator], sep = ", ", last = " and ")
-    msg <- glue::glue("Move files {bad} to {lam_proj_path()}")
-    rlang::warn(msg)
-  }
-  files_sourced
-}
