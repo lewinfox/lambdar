@@ -229,7 +229,6 @@ linux_packages: [ udunits2-devel ]
 
 ## TODO - future work
 
-* Identify and auto-populate dependencies (how?)
 * Help you automate the process of uploading to AWS
 * Provide a GitHub Actions template so we can update on every push etc.
 * Duplicate the same functionality but using lambda layers (the other custom runtime option). See
