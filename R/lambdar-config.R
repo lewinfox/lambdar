@@ -9,6 +9,7 @@
 #' @return A list.
 #'
 #' @keywords internal
+#' @aliases lambdar_config
 lambdar_config_from_file <- function(config_file = NULL) {
   # If no file path is supplied, use the default ($PROJECT_ROOT/_lambdar.yml)
   if (is.null(config_file)) {
