@@ -6,22 +6,26 @@
 \alias{lam_build_space_separated_list}
 \title{Convert a vector into a list}
 \usage{
-lam_build_quoted_list(items = NULL)
+lam_build_quoted_list(items = NULL, quote = c("double", "single"))
 
 lam_build_space_separated_list(items = NULL)
 }
 \arguments{
 \item{items}{Vector or items to write.}
+
+\item{quote}{\code{"single"} or \code{"double"}}
 }
 \value{
 A string
 }
 \description{
-Convert a vector into a list
+Writing YAML and Dockerfiles templates requires translating R vectors into lists of strings. In
+some cases these need to be quoted (e.g. to build R \code{\link[=install.packages]{install.packages()}} commands) and in other
+cases they need to be space-separated (e.g. Linux \verb{yum install a b c}).
 }
 \section{Functions}{
 \itemize{
-\item \code{lam_build_quoted_list}: Build a single-quoted comma-separated list
+\item \code{lam_build_quoted_list}: Build a double-quoted comma-separated list
 
 \item \code{lam_build_space_separated_list}: Build an unquoted space-separated list
 }}

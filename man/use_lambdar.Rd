@@ -14,7 +14,7 @@ Use lambdar with your project
 Call this function to create the necessary files lambdar needs to work. Specifically:
 \itemize{
 \item A \verb{_lambdar.yml} config file
-\item A \verb{lambdar/} directory to house a copy of the R runtime we will load into your container.
+\item A \verb{lambdar/} directory to house a copy of the R runtime we will load into your container
 }
 
 The function will try and pre-populate your config file with as much information as possible, but

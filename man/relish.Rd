@@ -4,7 +4,7 @@
 \alias{relish}
 \title{Tidy file paths by removing instances of \code{dir} from \code{x}.}
 \usage{
-relish(x, dir = usethis::proj_get())
+relish(x, dir = getwd())
 }
 \arguments{
 \item{x}{File path}

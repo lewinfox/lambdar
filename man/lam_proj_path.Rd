@@ -3,7 +3,7 @@
 \name{lam_proj_path}
 \alias{lam_proj_path}
 \alias{lam_dir_path}
-\alias{lam_config_file}
+\alias{lam_config_path}
 \alias{lam_dockerfile_path}
 \alias{lam_runtime_path}
 \title{Path utilities}
@@ -12,7 +12,7 @@ lam_proj_path(...)
 
 lam_dir_path()
 
-lam_config_file()
+lam_config_path()
 
 lam_dockerfile_path()
 
@@ -28,7 +28,7 @@ Pinched from \code{usethis}.
 \itemize{
 \item \code{lam_dir_path}: Path to the \verb{.lambdar/} directory
 
-\item \code{lam_config_file}: Path to \verb{_lambdar.yml} config file
+\item \code{lam_config_path}: Path to \verb{_lambdar.yml} config file
 
 \item \code{lam_dockerfile_path}: Path to Dockerfile
 
