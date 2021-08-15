@@ -21,5 +21,5 @@ linux_packages: [  ]
 # NOTE: Do not use YAML lists here. Copy the syntax in the example variables below.
 # TODO: Support `env` being a list as well as this syntax
 env:
-  LAMBDAR_APP_NAME: "{{ proj_root }}"
+  LAMBDAR_APP_NAME: "{{ app_name }}"
   LAMBDAR_VERSION: "0.1.0"
