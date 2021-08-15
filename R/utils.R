@@ -2,6 +2,10 @@
 
 #' Convert a vector into a list
 #'
+#' Writing YAML and Dockerfiles templates requires translating R vectors into lists of strings. In
+#' some cases these need to be quoted (e.g. to build R [install.packages()] commands) and in other
+#' cases they need to be space-separated (e.g. Linux `yum install a b c`).
+#'
 #' @param items Vector or items to write.
 #'
 #' @return A string
@@ -10,16 +14,23 @@
 #' @keywords internal
 NULL
 
-#' @describeIn build-lists Build a single-quoted comma-separated list
-lam_build_quoted_list <- function(items = NULL) {
+#' @describeIn build-lists Build a double-quoted comma-separated list
+#' @param quote `"single"` or `"double"`
+lam_build_quoted_list <- function(items = NULL, quote = c("double", "single")) {
+  # The templating function needs to receive NULLs if the item is not present otherwise sections
+  # that are not supposed to render will render.
   if (is.null(items)) {
     return(NULL)
   }
-  glue::glue_collapse(glue::double_quote(items), sep = ", ")
+  quote <- match.arg("quote")
+  quoting_function <- if (quote == "single") glue::single_quote else glue::double_quote
+  glue::glue_collapse(quoting_function(items), sep = ", ")
 }
 
 #' @describeIn build-lists Build an unquoted space-separated list
 lam_build_space_separated_list <- function(items = NULL) {
+  # The templating function needs to receive NULLs if the item is not present otherwise sections
+  # that are not supposed to render will render.
   if (is.null(items)) {
     return(NULL)
   }
@@ -44,6 +55,8 @@ lam_build_env_list <- function(env = list()) {
     msg <- glue::glue("`env` must be a list, not {typeof(env)})")
     rlang::abort(msg)
   }
+  # The templating function needs to receive NULLs if the item is not present otherwise sections
+  # that are not supposed to render will render.
   if (length(env) == 0) {
     return(NULL)
   }
@@ -83,7 +96,7 @@ lam_has_docker <- function() {
 #'
 #' @keywords internal
 lam_proj_path <- function(...) {
-  relish(file.path(usethis::proj_get(), ...))
+    relish(file.path(usethis::proj_path(), ...))
 }
 
 #' @describeIn lam_proj_path Path to the `.lambdar/` directory
@@ -92,7 +105,7 @@ lam_dir_path <- function() {
 }
 
 #' @describeIn lam_proj_path Path to `_lambdar.yml` config file
-lam_config_file <- function() {
+lam_config_path <- function() {
   lam_proj_path("_lambdar.yml")
 }
 
@@ -116,7 +129,7 @@ lam_runtime_path <- function() {
 #' @return Character vector
 #'
 #' @keywords internal
-relish <- function(x, dir = usethis::proj_get()) {
+relish <- function(x, dir = getwd()) {
   if (substr(dir, nchar(dir), nchar(dir)) != "/") {
     dir <- paste0(dir, "/")
   }
@@ -140,3 +153,57 @@ lam_get_file_dependencies <- function(file) {
   unique(deps$Package)
 }
 
+# ---- Misc ----
+
+#' Check that a file contains a function
+#'
+#' @param file A file path
+#' @param fun String. A function that we expect to be defined in `file`
+#'
+#' @return Boolean
+#'
+#' @keywords internal
+lam_function_exists_in_file <- function(file, fun) {
+  local(
+    {
+      source(file)
+      exists <- exists(fun)
+      if (!exists) {
+        return(FALSE)
+      }
+      is_fun <- is.function(eval(parse(text = fun)))
+      if (!is_fun) {
+        cli::cli_alert_warning("{.var {fun}} is not a function in {.path {file}}")
+        return(FALSE)
+      }
+      TRUE
+    }
+  )
+}
+
+#' Find all the files `source`d from another
+#'
+#' @param file A file path
+#'
+#' @return A character vector of files `source`d in `file`.
+#'
+#' @keywords internal
+lam_find_sourced_files <- function(file) {
+  text <- readLines(file)
+  files_sourced <- unlist(stringr::str_extract_all(text, "source\\((.*)\\)"))
+  files_sourced <- stringr::str_replace_all(files_sourced, "source\\((.*)\\)", "\\1")
+  files_sourced <- stringr::str_remove_all(files_sourced, "[\"\']")
+  files_sourced <- unique(files_sourced[length(files_sourced) > 0])
+
+  # At the moment we don;t have a mechanism for creating nested dirs in the Dockerfile. You can
+  # add them by hand but you need to do this yourself.
+  #
+  # TODO: Add support for nested directory structures.
+  have_directory_separator <- grepl("[/\\]", files_sourced)
+  if (any(have_directory_separator)) {
+    bad <- glue::glue_collapse(files_sourced[have_directory_separator], sep = ", ", last = " and ")
+    msg <- glue::glue("Move files {bad} to {lam_proj_path()}")
+    rlang::warn(msg)
+  }
+  files_sourced
+}
