@@ -208,7 +208,8 @@ include_files: [ "main.R", "data.csv", "utilities.R" ]
 
 ### `r_packages`
 
-Any packages listed here will be installed when the container is built. **TODO**: Auto-populate this.
+Any packages listed here will be installed when the container is built. Lambdar will try and
+determine which packages you need using `renv::dependencies()` and will auto-fill this list.
 
 ``` yaml
 # _lambdar.yml
