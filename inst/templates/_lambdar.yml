@@ -1,5 +1,5 @@
 # This will be used as the container tag
-name: "{{ user }}/{{ proj_root }}"
+app_name: "{{ app_name }}"
 
 # What version of R should be installed in the container?
 r_version: "{{ r_version }}"
@@ -22,4 +22,4 @@ linux_packages: [  ]
 # TODO: Support `env` being a list as well as this syntax
 env:
   LAMBDAR_APP_NAME: "{{ proj_root }}"
-  LAMBDAR_PACKAGE_VERSION: "0.1.0"
+  LAMBDAR_VERSION: "0.1.0"
