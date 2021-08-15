@@ -30,7 +30,7 @@ RUN yum -y install {{ linux_packages }}
 {{/linux_packages}}
 
 {{#r_packages}}
-RUN Rscript -e 'install.packages(c({{{ r_packages }}}, repos = c({{{ r_package_repos }}}))'
+RUN Rscript -e 'install.packages(c({{{ r_packages }}}), repos = c({{{ r_package_repos }}}))'
 {{/r_packages}}
 
 # If your app needs any environment variables set, do it here
