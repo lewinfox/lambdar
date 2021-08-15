@@ -1,22 +1,12 @@
-#' Lambdar configuration
+#' Lambdar configuration object
 #'
 #' Lambdar stores information about your app in a configuration object of class `lambdar_config`.
-#'
-#' A config object contains (at least) the following elements:
-#'
-#' * `app_name`: String. Defaults to `"$USER/$PROJECT_DIR"` and will be used to name the Docker
-#'   container once built.
-#' * `r_version`: Current session's R version, e.g. "4.0.1"
-#' * `include_files`: Files to be included in the container image
-#' * `lambda_handlers`: Character vector of handlers in the format "file.function_name". See the
-#'   (AWS Lambda documentation)[https://docs.aws.amazon.com/lambda/latest/dg/runtimes-custom.html]
-#'   for details.
-#' * `r_packages`: Character vector of R packages to be installed in the image
-#' * `linux_packages`: Chracter vector of Linux packages to be installed in the image
-#' * `env`: A named list of environment variables to be set in the container
+#' This is just a named list.
 #'
 #' @param config_file Path to config file. If not provided, looks for `_lambdar.yml` in the project
 #'   root durectory.
+#'
+#' @return A list.
 #'
 #' @keywords internal
 lambdar_config <- function(config_file = NULL) {
@@ -26,20 +16,12 @@ lambdar_config <- function(config_file = NULL) {
   }
 
   if (!file.exists(config_file)) {
-    rlang::abort("File `{config_file}` does not exist", "lambdar_no_config_file")
+    cli::cli_alert_danger("File {.path {config_file}} does not exist")
+    rlang::abort("File not found", "lambdar_no_config")
   }
 
-  # Read the YAML and create the config object
+  # Read the YAML
   cfg <- yaml::read_yaml(config_file)
-
-  # Validate that the mandatory names are present
-  mandatory_entries <- c("app_name", "r_version", "include_files", "lambda_handlers")
-  if (!all(mandatory_entries) %in% names(cfg)) {
-    missing <- setdiff(mandatory_entries, names(cfg))
-    msg <- glue::glue("Entries {missing} missing from config object and must be provided")
-    rlang::abort(msg, "lambdar_bad_config")
-  }
-
   new_lambdar_config(cfg)
 }
 
