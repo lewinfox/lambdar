@@ -134,7 +134,6 @@ If you want to have multiple containers running at once, remember to map them to
 # main.R
 
 #' @lambda
-#' @lambda
 hello_world <- function(name = NULL) {
   if (is.null(name)) {
     name <- "World"
