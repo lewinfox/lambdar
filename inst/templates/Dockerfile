@@ -23,9 +23,8 @@ COPY {{ r_runtime_file }} ${LAMBDA_TASK_ROOT}/
 RUN printf '#!/bin/sh\ncd $LAMBDA_TASK_ROOT\nRscript lambdar_runtime.R' > /var/runtime/bootstrap \
   && chmod +x /var/runtime/bootstrap
 
-# If necessary, install extra R and Linux packages here. This installation step happens last as this
-# is the one most likely to change between containers - having it as the last image in the stack
-# means we can use cached images as much as possible.
+# If necessary, install extra R and Linux packages here. As the base Lambda image is based on CentOS
+# the `yum` package manager is used. Make sure you have the correct package name/s.
 {{#linux_packages}}
 RUN yum -y install {{ linux_packages }}
 {{/linux_packages}}
@@ -34,12 +33,13 @@ RUN yum -y install {{ linux_packages }}
 RUN Rscript -e 'install.packages(c({{{ r_packages }}}, repos = c({{{ r_package_repos }}}))'
 {{/r_packages}}
 
-# Add any environment variables specified in the config file here
+# If your app needs any environment variables set, do it here
 {{#env}}
 ENV {{{ env }}}
 {{/env}}
 
-# The include files are all user-generated code files
+# Copy over any user-generated files needed for the function to run. This could be R scripts, data
+# files or any other resources.
 {{#include_files}}
 COPY {{{ include_files }}} ${LAMBDA_TASK_ROOT}/
 {{/include_files}}
