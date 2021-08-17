@@ -6,55 +6,8 @@
 roxy_tag_parse.roxy_tag_lambda <- function(x) {
   # We don't expect anything after the @lambda tag so there's not much to do here. We may want to
   # set `x$val` to something else in future
-  x$val <- "Function to be exported to AWS lambda"
+  x$val <- list(handler_file = x$file, handler_function = NULL)
   x
-}
-
-#' Roclet lambda class
-#'
-#' Create an object of class `roclet_lambda` to ensure the correct S3 methods are called.
-#'
-#' @keywords internal
-roclet_lambda <- function() {
-  roxygen2::roclet("lambda")
-}
-
-#' Extracts functions to be lambda-d from the roxygen block/s
-#'
-#' @param x A `roclet_lambda` object. See [roclet_lambda()].
-#' @param blocks A list of [roxygen2::roxy_block]s. Each block corresponds to the captured into of
-#'   one function.
-#' @param env An environment - not sure what this does.
-#' @param base_path Not sure about this either.
-#'
-#' @importFrom roxygen2 roclet_process
-#' @export
-#' @keywords internal
-roclet_process.roclet_lambda <- function(x, blocks, env, base_path) {
-  res <- list()
-  for (block in blocks) {
-    nm <- block[["object"]][["alias"]]
-    fn <- block[["object"]][["value"]]
-    res[[nm]] <- fn
-  }
-  res
-}
-
-#' Do stuff with parsed lambda functions
-#'
-#' Given a list of functions that have been tagged with `@lambda`, do something cool with them
-#'
-#' @param x A `roclet_lambda` object. See [roclet_lambda()].
-#' @param results The output of [roclet_process.roclet_lambda].
-#' @param base_path Unknown.
-#' @param ... Unused
-#'
-#' @importFrom roxygen2 roclet_output
-#' @export
-#' @keywords internal
-roclet_output.roclet_lambda <- function(x, results, base_path, ...) {
-  message("I got a lambda roclet")
-  results
 }
 
 #' Search project files for `@lambda` tags
@@ -93,10 +46,16 @@ lam_parse_file_handlers <- function(file) {
     return(invisible(NULL))
   }
   parsed <- parsed[has_lambda_tag]
-  sapply(
-    parsed,
-    function(block) paste(gsub("\\.[Rr]$", "", block$file), block$object$alias, sep = ".")
-  )
+  parsed <- lapply(parsed, function(block) {
+    for (i in seq_along(block$tags)) {
+      if (block$tags[[i]]$tag == "lambda") {
+        block$tags[[i]]$val$handler_function <- block$object$alias
+      }
+    }
+    block
+  })
+  handlers <- lapply(parsed, lambdar_handler)
+  unlist(lapply(handlers, as.character))
 }
 
 #' Does a parsed roxygen block contain a `@lambda` tag?
@@ -117,4 +76,56 @@ lam_roxy_block_has_lambda_tag <- function(block) {
     },
     warning = function(e) {}
   )
+}
+
+#' @keywords internal
+lambdar_handler <- function(roxy_block = NULL, file = NULL, function_name = NULL) {
+  if (!is.null(roxy_block)) {
+    if (!inherits(roxy_block, "roxy_block")) {
+      rlang::abort("`roxy_block` must be a roxy block object")
+    }
+    h <- get_handler_from_block(roxy_block)
+    return(new_lambdar_handler(file = h[["file"]], function_name = h[["function_name"]]))
+  }
+  if (is.null(file) || is.null(function_name)) {
+    rlang::abort("`file` and `function_name` must both be provided")
+  }
+  new_lambdar_handler(file = file, function_name = function_name)
+}
+
+#' @keywords internal
+new_lambdar_handler <- function(file, function_name) {
+  if (!lam_function_exists_in_file(file, function_name)) {
+    msg <- glue::glue("No function named `{function_name}()` in `{file}`")
+    rlang::abort(msg)
+  }
+  structure(list(file = file, function_name = function_name), class = c("lambdar_handler", "list"))
+}
+
+#' @export
+as.character.lambdar_handler <- function(x, ...) {
+  paste(gsub("\\.[Rr]$", "", x$file), x$function_name, sep = ".")
+}
+
+#' @export
+print.lambdar_handler <- function(x, ...) {
+  cat("<lambdar handler: ", as.character(x), ">\n", sep = "")
+  cat("  File:     ", x$file, "\n", sep = "")
+  cat("  Function: ", x$function_name, "()\n", sep = "")
+}
+
+#' Extract handler functions from a `roxy_block`
+#'
+#' @param block A `roxy_block`
+#'
+#' @return A named character vector containing `file` and `function_name` items.
+#'
+#' @keywords internal
+get_handler_from_block <- function(block) {
+  for (tag in block$tag) {
+    if (tag$tag == "lambda") {
+      return(c(file = tag$val$handler_file, function_name = tag$val$handler_function))
+    }
+  }
+  NULL
 }

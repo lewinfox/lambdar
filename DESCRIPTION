@@ -19,6 +19,7 @@ Imports:
     renv,
     rlang,
     roxygen2,
+    stringr,
     usethis,
     yaml
 Suggests: 

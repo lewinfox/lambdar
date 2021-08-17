@@ -182,21 +182,21 @@ lam_handler_filenames <- function() {
 #'
 #' @keywords internal
 lam_function_exists_in_file <- function(file, fun) {
-  local(
-    {
-      source(file)
-      exists <- exists(fun)
-      if (!exists) {
-        return(FALSE)
-      }
-      is_fun <- is.function(eval(parse(text = fun)))
-      if (!is_fun) {
-        cli::cli_alert_warning("{.var {fun}} is not a function in {.path {file}}")
-        return(FALSE)
-      }
-      TRUE
-    }
-  )
+  if (!file.exists(file)) {
+    rlang::abort(glue::glue("File `{file}` does not exist"))
+  }
+  # Source the file into a new env and check that the named function exists
+  e <- new.env(parent = baseenv())
+  source(file, local = e)
+  exists <- exists(fun, envir = e)
+  if (!exists) {
+    return(FALSE)
+  }
+  is_fun <- is.function(eval(parse(text = fun), envir = e))
+  if (!is_fun) {
+    return(FALSE)
+  }
+  TRUE
 }
 
 #' Have we got everything we need?
