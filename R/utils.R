@@ -71,7 +71,7 @@ lam_build_env_list <- function(env = list()) {
 }
 
 
-# ---- Check Docker ----
+# ---- Docker ----
 
 #' Do we have docker installed?
 #'
@@ -87,6 +87,13 @@ lam_has_docker <- function() {
     return(FALSE)
   }
   TRUE
+}
+
+lam_docker_container_tag_name <- function(aws_id, aws_region, repository_name, tag = NULL) {
+  if (is.null(tag)) {
+    tag <- "latest"
+  }
+  as.character(glue::glue("{aws_id}.dkr.ecr.{region}.amazonaws.com/{repository_name}:{tag}"))
 }
 
 # ---- Path utilities ----
