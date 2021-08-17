@@ -108,6 +108,9 @@ build_dockerfile <- function(cfg = NULL, quiet = FALSE) {
         rlang::abort("Invalid configuration object")
       }
 
+      # TODO: Better way of determining this
+      lambda_entrypoint <- cfg$lambda_handlers[[1L]]
+
       # Some elements of the config file need formatting before they're inserted into the Dockerfile
       # template
       cfg$r_packages      <- lam_build_quoted_list(cfg$r_packages)
@@ -116,6 +119,7 @@ build_dockerfile <- function(cfg = NULL, quiet = FALSE) {
       cfg$include_files   <- lam_build_quoted_list(cfg$include_files)
       cfg$env             <- lam_build_env_list(cfg$env)
       cfg$r_runtime_file  <- lam_runtime_path()
+      cfg$lambda_entrypoint <- lam_build_quoted_list(lambda_entrypoint)
 
       # Replace any zero-length elements with NULL to prevent the populating the Dockerfile
       cfg <- lapply(cfg, function(item) if (length(item) > 0) item else NULL)

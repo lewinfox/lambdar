@@ -47,3 +47,6 @@ COPY {{{ include_files }}} ${LAMBDA_TASK_ROOT}/
 # Make everything in the task root executable.
 # TODO: is this a good idea?
 RUN chmod 755 -R ${LAMBDA_TASK_ROOT}/
+
+# The entrypoint to be used for the function
+CMD [ {{{ lambda_entrypoint }}} ]
