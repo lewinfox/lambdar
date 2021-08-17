@@ -19,6 +19,9 @@
     <loc>https://lewinfox.github.io/lambdar/reference/clean.html</loc>
   </url>
   <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/get_handler_from_block.html</loc>
+  </url>
+  <url>
     <loc>https://lewinfox.github.io/lambdar/reference/in_project.html</loc>
   </url>
   <url>
@@ -56,15 +59,6 @@
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/relish.html</loc>
-  </url>
-  <url>
-    <loc>https://lewinfox.github.io/lambdar/reference/roclet_lambda.html</loc>
-  </url>
-  <url>
-    <loc>https://lewinfox.github.io/lambdar/reference/roclet_output.roclet_lambda.html</loc>
-  </url>
-  <url>
-    <loc>https://lewinfox.github.io/lambdar/reference/roclet_process.roclet_lambda.html</loc>
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/use_lambdar.html</loc>
