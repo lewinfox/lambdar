@@ -47,15 +47,24 @@ new_lambdar_config <- function(config = NULL) {
 
   # This is the default config object. We have the option of overwriting additional parameters by
   # passing a list into the `config` argument
+
+  # The default value of `getOption("repos")` is `@CRAN@`, so we need to replace that
+  r_package_repos <- unname(getOption("repos"))
+  if (identical(r_package_repos, "@CRAN@")) {
+    r_package_repos <- "https://cran.r-project.org"
+  }
+
+  r_package_repos <- lam_build_quoted_list(r_package_repos)
+
   cfg <- list(
-    app_name =  app_name,        # Defaults to "$USER/$PROJECT_DIR"
-    r_version = lam_r_version(), # Current session's R version, e.g. "4.0.1"
-    include_files = NULL,        # Files to be included in the container image
-    lambda_handlers = NULL,      # In the format "file.function_name"
-    r_packages = NULL,           # R packages to be installed in the image
-    r_package_repos = as.character(getOption("repos")),
-    linux_packages = NULL,       # Linux packages to be installed in the image
-    env = NULL                   # Environment variables to be set in the container
+    app_name =  app_name,              # Defaults to "$USER/$PROJECT_DIR"
+    r_version = lam_r_version(),       # Current session's R version, e.g. "4.0.1"
+    include_files = NULL,              # Files to be included in the container image
+    lambda_handlers = NULL,            # In the format "file.function_name"
+    r_packages = NULL,                 # R packages to be installed in the image
+    r_package_repos = r_package_repos, # See above
+    linux_packages = NULL,             # Linux packages to be installed in the image
+    env = NULL                         # Environment variables to be set in the container
   )
 
   # Overwrite `cfg` with any values supplied in `config`

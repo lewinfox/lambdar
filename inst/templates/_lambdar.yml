@@ -10,8 +10,10 @@ include_files: [ {{{ include_files }}} ]
 # Specify the handler/s as `file.function_name`. Omit `.R` from the file name.
 lambda_handlers: [ {{{ lambda_handlers }}} ]
 
-# List any extra R packages you need to have installed in the container
+# List any extra R packages you need to have installed in the container, along with the repositories
+# to be used to install them.
 r_packages: [ {{ r_packages }} ]
+r_package_repos: [ {{{ r_package_repos }}} ]
 
 # List any extra Linux packages you need to have installed in the container
 linux_packages: [  ]
