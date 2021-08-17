@@ -30,7 +30,10 @@ You will need:
 * Docker
 * R
 
-I also assume you're using RStudio, although it's not strictly necessary.
+These are not strictly necessary but will make your life easier:
+
+* RStudio
+* The AWS cli
 
 
 ## Create your function
@@ -153,4 +156,79 @@ env:
 * `env`: A list of environment variables to be set in the container. `_lambdar.yml` contains two,
   `LAMBDAR_APP_NAME` and `LAMBDAR_VERSION` - these are not used by anything at the moment and are
   just there to demonstrate the syntax.
+
+
+At this point you can manually edit `_lamndar.yml` if you need to, but for our example we will move
+on to creating the Dockerfile.
+
+## Create the `Dockerfile`
+
+Run `lambdar::build_dockerfile()`. This starts from a basic `Dockerfile` and adds in any additional
+customisations set out in `_lambdar.yml`. The resulting `Dockerfile` will be written to your
+project's root directory, so you should have something that looks like this:
+
+
+```
+.
+├── .lambdar
+│   └── lambdar_runtime.R
+├── Dockerfile
+├── lambdar-test.Rproj
+├── _lambdar.yml
+└── main.R
+```
+
+At this point you can edit the Dockerfile yourself if you want to make any further changes, but for
+this example we will keep things simple and move on to building the container.
+
+
+## Build the container
+
+Call `lambdar::build_container()`. 
+
+
+## Upload to AWS
+
+You need to upload your freshly-built container to the AWS Elastic Container Registry so that we can
+use it as a base for our lambda function.
+
+### Create a container repository
+
+You need to create a container repository for each container image. Here I'm calling it 
+`lambdar-test`, but you can give it whatever name you like.
+
+``` bash
+$ aws ecr create-repository --repository-name lambdar-test
+```
+
+### Tag the container
+
+The container needs to be tagged with a specific format:
+
+```
+<aws-account-id>.dkr.ecr.<region>.amazonaws.com/<repository-name>:<optional-tag>
+```
+
+The `<repository-name>` must match the name of the repository created earlier. If you omit the
+`<optional-tag>`, AWS will tag it with `:latest`.
+
+Using a fake AWS account ID and the `ap-southeast-2` region (I'm in New Zealand), the whole tag 
+becomes `123456789012.dkr.ecr.ap-southeast-2.amazonaws.com/lambdar-test:latest`.
+
+Then, use this awful command to upload the image
+
+```
+$ aws ecr get-login-password | docker login --username AWS --password-stdin 123456789012.dkr.ecr.ap-southeast-2.amazonaws.com
+```
+
+This authenticates Docker with AWS ECR. Now we can finally push the image:
+
+```
+$ docker push 123456789012.dkr.ecr.ap-southeast-2.amazonaws.com/lambdar-test:latest
+```
+
+Now that the image is safely within AWS's loving embrace we can (finally) use it to create a lambda.
+
+
+## Create the lambda
 
