@@ -4,14 +4,24 @@
 \alias{build_dockerfile}
 \title{Create a Dockerfile}
 \usage{
-build_dockerfile(cfg = NULL, quiet = FALSE)
+build_dockerfile(from_scratch = TRUE, quiet = FALSE, lambda_handler = NULL)
 }
 \arguments{
-\item{cfg}{A \code{\link[=lambdar_config]{lambdar_config()}} object (optional).}
+\item{from_scratch}{Boolean. If \code{TRUE}, lambdar will re-scan your project and rebuild your config
+file before building the Dockerfile. If \code{FALSE}, lambdar will use whatever state your config
+file is in and build a Dockerfile from that.}
 
 \item{quiet}{If \code{FALSE}, will tell you the command to build your container.}
+
+\item{lambda_handler}{Either \code{NULL} or a string specifying a handler function in
+\code{"file.function_name"} format. Only necessary if your project contains multiple handlers. In
+this case if no handler is specified the first one in the list will be used, with a warning.}
+}
+\value{
+A \link{lambdar_config} object, invisibly. This is for internal use only and may be removed in
+future.
 }
 \description{
-Writes a Dockerfile to your project root directory based on a configuration object. If no
-config object is provided it will try and read \verb{_lambdar.yml} from your project's root directory.
+Writes a Dockerfile to your project root directory based on a configuration file If no config
+file path is provided it will try and read \verb{_lambdar.yml} from your project's root directory.
 }

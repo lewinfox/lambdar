@@ -233,13 +233,3 @@ dockerfile_exists <- function() {
 in_project <- function() {
   !inherits(try(usethis::proj_path(), silent = TRUE), "try-error")
 }
-
-#' Remove all the lambdar-related files and directories from a project
-#'
-#' @export
-clean <- function() {
-  unlink(lam_dir_path(), recursive = TRUE, force = TRUE)
-  unlink(lam_dockerfile_path(), force = TRUE)
-  unlink(lam_config_path(), force = TRUE)
-  cli::cli_alert_success("Cleaned")
-}
