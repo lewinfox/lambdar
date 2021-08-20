@@ -1,3 +1,9 @@
+# Your 12-digit AWS ID
+aws_account_id: "{{ aws_account_id }}"
+
+# Your preferred AWS regionm e.g. "ap-southeast-2"
+aws_region: "{{ aws_region }}"
+
 # This will be used as the container tag
 app_name: "{{ app_name }}"
 

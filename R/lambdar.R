@@ -73,6 +73,37 @@ build_config <- function() {
     r_packages = r_packages
   )
 
+  # If a file already exists we want to keep some fields that we can't calculate automatically.
+  # Specifically:
+  #
+  # * aws_account_id
+  # * aws_region
+  # * linux_packages
+  #
+  # The rest we are happy to overwrite
+  if (file.exists(lam_config_path())) {
+    current_config <- lambdar_config_from_file(lam_config_path())
+
+    not_missing <- function(field) {
+      !is.null(field) && length(field) > 0 && nchar(field) > 0
+    }
+
+    # aws_account_id
+    if (not_missing(current_config$aws_account_id)) {
+      extra_params$aws_account_id <- current_config$aws_account_id
+    }
+
+    # aws_region
+    if (not_missing(current_config$aws_region)) {
+      extra_params$aws_region <- current_config$aws_region
+    }
+
+    # linux_packages
+    if (not_missing(current_config$linux_packages)) {
+      extra_params$linux_packages <- current_config$linux_packages
+    }
+  }
+
   cfg <- new_lambdar_config(extra_params)
 
   usethis::use_template(
@@ -239,4 +270,24 @@ clean <- function() {
   unlink(lam_dockerfile_path(), force = TRUE)
   unlink(lam_config_path(), force = TRUE)
   cli::cli_alert_success("Cleaned")
+}
+
+#' Upload your container image to the Elastic Container Repository
+#'
+#' @export
+upload_to_ecr <- function() {
+  # TODO: Check container exists with the tag we expect
+  cfg <- lambdar_config_from_file()
+  # tag
+  lam_ecr_tag_image_for_upload()
+  lam_ecr_upload_image(cfg$aws_account_id, cfg$aws_region, cfg$app_name)
+}
+
+#' Attempt to retrieve your AWS account id
+#'
+#' @return String
+#'
+#' @export
+get_aws_account_id <- function() {
+  lam_aws_get_account_id()
 }

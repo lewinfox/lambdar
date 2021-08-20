@@ -22,6 +22,25 @@ lambdar_config_from_file <- function(config_file = NULL) {
 
   # Read the YAML
   cfg <- yaml::read_yaml(config_file)
+
+  # AWS account ID and region are needed to construct the ARI for tagging the image and uploading to
+  # Elastic Container Repository
+  if (is.null(cfg$aws_account_id) || nchar(cfg$aws_account_id) == 0) {
+    msg <- paste(
+      "`aws_account_id` is missing from the config file.",
+      "Without it lambdar cannot tag your completed image or upload it to AWS ECR."
+    )
+    rlang::warn(msg, "lambdar_bad_config")
+  }
+
+  if (is.null(cfg$aws_region) || nchar(cfg$aws_region) == 0) {
+    msg <- paste(
+      "`aws_region` is missing from the config file.",
+      "Without it lambdar cannot tag your completed image or upload it to AWS ECR."
+    )
+    rlang::warn(msg, "lambdar_bad_config")
+  }
+
   new_lambdar_config(cfg)
 }
 
@@ -41,19 +60,23 @@ new_lambdar_config <- function(config = NULL) {
     }
   }
 
-  user <- Sys.getenv("USER")
-  proj_root_name <- basename(usethis::proj_path())
-  app_name <- glue::glue("{user}/{proj_root_name}")
+  # Build the default app name by using the project folder name. Clean up the path to replace any
+  # non-word characters, lowercase etc. Generally try and make it presentable.
+  app_name <- tolower(stringr::str_replace_all(basename(usethis::proj_path()), "\\W+$?", "-"))
+  app_name <- stringr::str_remove(app_name, "\\W+$") # No trailing non-word chars
+  app_name <- stringr::str_remove(app_name, "^\\W+") # No leading non-word chars
 
   # This is the default config object. We have the option of overwriting additional parameters by
   # passing a list into the `config` argument
 
-  # The default value of `getOption("repos")` is `@CRAN@`, so we need to replace that
+  # If not configured, the default value of `getOption("repos")` is `@CRAN@`, so we need to replace
+  # that
   r_package_repos <- unname(getOption("repos"))
-  if (identical(r_package_repos, "@CRAN@")) {
-    r_package_repos <- "https://cran.r-project.org"
-  }
-
+  r_package_repos <- stringr::str_replace_all(
+    r_package_repos,
+    "^@CRAN@$",
+    "https://cran.r-project.org"
+  )
   r_package_repos <- lam_build_quoted_list(r_package_repos)
 
   cfg <- list(
