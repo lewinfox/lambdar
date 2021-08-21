@@ -158,8 +158,9 @@ handle_event <- function(event) {
     }
   }
 
-  response_object <- list(result = try(do.call(function_name, event_content), silent = TRUE)) # TODO: Error handling
+  response_object <- list(result = try(do.call(function_name, event_content), silent = TRUE))
   if (inherits(response_object$result, "try-error")) {
+    response_object$result <- NULL # TODO: We would like to return some more info about the error here
     response_object$status <- "failure"
   } else {
     response_object$status <- "success"

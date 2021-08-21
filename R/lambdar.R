@@ -32,6 +32,7 @@ use_lambdar <- function() {
       usethis::ui_todo("Edit {conf_str}")
     },
     error = function(e) {
+      cli::cli_alert_warning("Restoring directory state")
       if (dir.exists(LAMBDAR_DIR)) {
         unlink(LAMBDAR_DIR, recursive = TRUE, force = TRUE)
         cli::cli_alert_warning("Removing {.path {LAMBDAR_DIR}} directory")
@@ -53,6 +54,7 @@ use_lambdar <- function() {
 #'
 #' @export
 build_config <- function() {
+
   if (!using_lambdar()) {
     cli::cli_alert_info("Lambdar has not been initialiased yet, doing it now")
     use_lambdar()
@@ -71,6 +73,37 @@ build_config <- function() {
     r_packages = r_packages
   )
 
+  # If a file already exists we want to keep some fields that we can't calculate automatically.
+  # Specifically:
+  #
+  # * aws_account_id
+  # * aws_region
+  # * linux_packages
+  #
+  # The rest we are happy to overwrite
+  if (file.exists(lam_config_path())) {
+    current_config <- lambdar_config_from_file(lam_config_path())
+
+    not_missing <- function(field) {
+      !is.null(field) && length(field) > 0 && nchar(field) > 0
+    }
+
+    # aws_account_id
+    if (not_missing(current_config$aws_account_id)) {
+      extra_params$aws_account_id <- current_config$aws_account_id
+    }
+
+    # aws_region
+    if (not_missing(current_config$aws_region)) {
+      extra_params$aws_region <- current_config$aws_region
+    }
+
+    # linux_packages
+    if (not_missing(current_config$linux_packages)) {
+      extra_params$linux_packages <- current_config$linux_packages
+    }
+  }
+
   cfg <- new_lambdar_config(extra_params)
 
   usethis::use_template(
@@ -83,23 +116,34 @@ build_config <- function() {
 
 #' Create a Dockerfile
 #'
-#' Writes a Dockerfile to your project root directory based on a configuration object. If no
-#' config object is provided it will try and read `_lambdar.yml` from your project's root directory.
+#' Writes a Dockerfile to your project root directory based on a configuration file If no config
+#' file path is provided it will try and read `_lambdar.yml` from your project's root directory.
 #'
-#' @param cfg A [lambdar_config()] object (optional).
+#' @param from_scratch Boolean. If `TRUE`, lambdar will re-scan your project and rebuild your config
+#'   file before building the Dockerfile. If `FALSE`, lambdar will use whatever state your config
+#'   file is in and build a Dockerfile from that.
 #' @param quiet If `FALSE`, will tell you the command to build your container.
+#' @param lambda_handler Either `NULL` or a string specifying a handler function in
+#'   `"file.function_name"` format. Only necessary if your project contains multiple handlers. In
+#'   this case if no handler is specified the first one in the list will be used, with a warning.
 #'
 #' @export
-build_dockerfile <- function(cfg = NULL, quiet = FALSE) {
+#'
+#' @return A [lambdar_config] object, invisibly. This is for internal use only and may be removed in
+#'   future.
+build_dockerfile <- function(from_scratch = TRUE, quiet = FALSE, lambda_handler = NULL) {
   tryCatch(
     {
-      build_config()
-
-      # If this is called in standalone mode, read the config file. Otherwise we expect to have a
-      # `cfg` object passed in
-      if (is.null(cfg)) {
-        cfg <- lambdar_config_from_file(lam_config_path())
+      if (from_scratch) {
+        build_config()
       }
+
+      if (!config_exists()) {
+        msg <- glue::glue("{lam_config_path()} not found")
+        rlang::abort(msg)
+      }
+
+      cfg <- lambdar_config_from_file(lam_config_path())
 
       # Validate the config object
       if (!is_lambdar_config(cfg)) {
@@ -108,25 +152,46 @@ build_dockerfile <- function(cfg = NULL, quiet = FALSE) {
         rlang::abort("Invalid configuration object")
       }
 
+      # TODO: Better way of determining this
+      if (length(cfg$lambda_handlers) > 1 && is.null(lambda_handler)) {
+        if (!quiet) {
+          msg <- paste(
+            "Multiple lambdar handlers found in config file and no handler given in the",
+            "{.var lambda_handler} argument.\nThis is fine for testing, but when you come to build",
+            "the final container you will need to specify your chosen handler when calling",
+            "{.fn lambdar::build_container}.\nIn the meantime the Dockerfile has been written with",
+            "{.code {cfg$lambda_handlers[[1L]]}} as the handler."
+          )
+          cli::cli_alert_warning(msg)
+        }
+        rlang::warn("Multiple handlers present, only the first will be used.")
+      }
+
+      lambda_entrypoint <- cfg$lambda_handlers[[1L]]
+
       # Some elements of the config file need formatting before they're inserted into the Dockerfile
       # template
-      cfg$r_packages      <- lam_build_quoted_list(cfg$r_packages)
-      cfg$r_package_repos <- lam_build_quoted_list(cfg$r_package_repos)
-      cfg$linux_packages  <- lam_build_space_separated_list(cfg$linux_packages)
-      cfg$include_files   <- lam_build_quoted_list(cfg$include_files)
-      cfg$env             <- lam_build_env_list(cfg$env)
-      cfg$r_runtime_file  <- lam_runtime_path()
+      cfg$r_packages        <- lam_build_quoted_list(cfg$r_packages)
+      cfg$r_package_repos   <- lam_build_quoted_list(cfg$r_package_repos)
+      cfg$linux_packages    <- lam_build_space_separated_list(cfg$linux_packages)
+      cfg$include_files     <- lam_build_quoted_list(cfg$include_files)
+      cfg$env               <- lam_build_env_list(cfg$env)
+      cfg$r_runtime_file    <- lam_runtime_path()
+      cfg$lambda_entrypoint <- lam_build_quoted_list(lambda_entrypoint)
 
-      # Replace any zero-length elements with NULL to prevent the populating the Dockerfile
+      # Replace any zero-length elements with NULL to prevent them populating the Dockerfile - if
+      # this happens then `whisker` treats them as if they're present and may include bits of the
+      # template that we don't want.
       cfg <- lapply(cfg, function(item) if (length(item) > 0) item else NULL)
 
       # Build and write the Dockerfile
       usethis::use_template("Dockerfile", save_as = "Dockerfile", data = cfg, package = "lambdar")
       if (!quiet) {
         msg <- paste("To build your container, run {.code docker build -t {cfg$app_name} .}",
-                     "or {.code lambdar::build_container()}")
+                     "or {.fn lambdar::build_container}")
         cli::cli_alert_info(msg)
       }
+      return(invisible(cfg))
     },
     lambdar_no_config = function(e) {
       return(invisible())
@@ -138,11 +203,16 @@ build_dockerfile <- function(cfg = NULL, quiet = FALSE) {
 #' Build a container image from a config file
 #'
 #' Reads your `_lambdar.yml` config file, creates a Dockerfile from it, and then attempts to create
-#' a container from the Dockerfile using `docker build`. You must have Docker installed for this
-#' to work, otherwise it will throw an error.
+#' a container from the Dockerfile using `docker build`. You must have Docker installed for this to
+#' work, otherwise it will throw an error.
 #'
+#' @param from_scratch Boolean. If `TRUE`, lambdar will re-scan your project and rebuild your config
+#'   file before building the container. If FALSE it will build from whatever the current state of
+#'   your Dockerfile is.
+#' @param lambda_handler Either `NULL` or a string specifying a handler function in
+#'   `"file.function_name"` format.
 #' @export
-build_container <- function() {
+build_container <- function(from_scratch = TRUE, lambda_handler = NULL) {
 
   # Check we have Docker installed
   if (!lam_has_docker()) {
@@ -151,12 +221,21 @@ build_container <- function() {
       "You can still create a Dockerfile using {.fn lambdar::build_dockerfile}."
     )
     cli::cli_alert_danger(msg)
-    return(invisible())
+    rlang::abort("Docker is not installed")
   }
 
-  # Read config and create the Dockerfile
-  cfg <- lambdar_config_from_file(lam_config_path())
-  build_dockerfile(cfg, quiet = TRUE)
+  if (from_scratch) {
+    # Read config and create the Dockerfile
+    cfg <- build_dockerfile(from_scratch = from_scratch, quiet = TRUE, lambda_handler = lambda_handler)
+  } else {
+    cfg <- lambdar_config_from_file(lam_config_path())
+  }
+
+  # No Dockerfile, no joy
+  if (!dockerfile_exists()) {
+    msg <- glue::glue("{lam_dockerfile_path()} does not exist")
+    rlang::abort(msg)
+  }
 
   # Build the container
   docker_build_cmd <- glue::glue("docker build -t {cfg$app_name} .")
@@ -181,4 +260,34 @@ build_container <- function() {
   msg <- paste("Once running you can send test queries to",
                "{.code http://localhost:9000/2015-03-31/functions/function/invocations}")
   cli::cli_alert_info(msg)
+}
+
+#' Remove all the lambdar-related files and directories from a project
+#'
+#' @export
+clean <- function() {
+  unlink(lam_dir_path(), recursive = TRUE, force = TRUE)
+  unlink(lam_dockerfile_path(), force = TRUE)
+  unlink(lam_config_path(), force = TRUE)
+  cli::cli_alert_success("Cleaned")
+}
+
+#' Upload your container image to the Elastic Container Repository
+#'
+#' @export
+upload_to_ecr <- function() {
+  # TODO: Check container exists with the tag we expect
+  cfg <- lambdar_config_from_file()
+  # tag
+  lam_ecr_tag_image_for_upload()
+  lam_ecr_upload_image(cfg$aws_account_id, cfg$aws_region, cfg$app_name)
+}
+
+#' Attempt to retrieve your AWS account id
+#'
+#' @return String
+#'
+#' @export
+get_aws_account_id <- function() {
+  lam_aws_get_account_id()
 }

@@ -1,7 +1,7 @@
 Type: Package
 Package: lambdar
 Title: Tools for building AWS Lambda functions in R
-Version: 0.1.0.9004
+Version: 0.1.0.9005
 Authors@R: 
     person(given = "Lewin",
            family = "Appleton-Fox",
@@ -24,9 +24,13 @@ Imports:
     yaml
 Suggests: 
     withr,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    fs
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+VignetteBuilder: knitr

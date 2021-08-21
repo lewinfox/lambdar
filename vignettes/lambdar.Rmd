@@ -1,0 +1,234 @@
+---
+title: "Create an AWS Lambda function with lambdar"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{lambdar}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+In this article we will walk through the process of creating and deploying an R function in AWS
+Lambda using the `lambdar` package.
+
+AWS Lambda does not currently provide a pre-packaged runtime for R. However, it does allow you to
+create lambda functions that use a custom Docker image. The goal of `lambdar` is to make creating
+these Docker images as easy as possible so you can focus on the code rather than the infrastructure.
+
+
+## Setup
+
+You will need:
+
+* An AWS account
+* Docker
+* R
+
+These are not strictly necessary but will make your life easier:
+
+* RStudio
+* The AWS cli
+
+
+## Create your function
+
+In RStudio, create a new project. I'm calling mine `lambdar-test`.
+
+Once you have the project open, create a file `main.R` and add a function called `hello_world()`.
+Using roxygen-style comments, tag the function with `@lambda`. This tells lambdar's build system
+that you want to deploy this function.
+
+``` r
+# main.R
+
+#' @lambda
+hello_world <- function(name = NULL) {
+  if (is.null(name)) {
+    name <- "World"
+  }
+  paste0("Hello, ", name, "!")
+}
+```
+
+At the moment your project will look pretty boring.
+
+```
+.
+├── lambdar-test.Rproj
+└── main.R
+```
+
+## Initialise lambdar
+
+Call `lambdar::use_lambdar()`. This does a number of things:
+
+First, it creates a `.lambdar/` directory in your project. Next, it writes a file in that directory
+called `lambdar_runtime.R`. The runtime is a script that passes incoming requests from AWS to your 
+code, and returns the results of your code to AWS so they can be passed on to your users. Changing
+this file could cause things to break, so leave it alone unless you know what you're doing.
+
+Next, `lambdar` scans all the `.R` files in your project looking for functions with the `@lambda`
+tag. This is so it knows which files need to be included in your container. It will also try and 
+detect any R packages your function needs by looking for `library()` and `package::function()` calls
+in your code.
+
+Once this is done, `lambdar` writes a `_lambdar.yml` configuration file to your project directory,
+This is the template that will be used to create a Dockerfile, which in turn will be used to create
+a container image. If this doesn't make sense to you I suggest Googling "intro to Docker".
+
+Your project now looks something like this:
+
+```
+.
+├── .lambdar
+│   └── lambdar_runtime.R
+├── lambdar-test.Rproj
+├── _lambdar.yml
+└── main.R
+```
+
+
+## `_lambdar.yml`
+
+`_lambdar.yml` contains all the information needed to create your container images. If you open it,
+you'll see that some information has been pre-filled for you:
+
+``` yaml
+# This will be used as the container tag
+app_name: "lewin/lambdar-test"
+
+# What version of R should be installed in the container?
+r_version: "4.1.0"
+
+# List of files or directories that need to be added to the container image
+include_files: [ "main.R" ]
+
+# Specify the handler/s as `file.function_name`. Omit `.R` from the file name.
+lambda_handlers: [ "main.hello_world" ]
+
+# List any extra R packages you need to have installed in the container
+r_packages: [  ]
+
+# List any extra Linux packages you need to have installed in the container
+linux_packages: [  ]
+
+# Specify any environment variables your function needs.
+#
+# NOTE: Do not use YAML lists here. Copy the syntax in the example variables below.
+# TODO: Support `env` being a list as well as this syntax
+env:
+  LAMBDAR_APP_NAME: "lewin/lambdar-test"
+  LAMBDAR_VERSION: "0.1.0"
+
+```
+
+### Parameters
+
+* `app_name`: What do you want your container to be called? This is arbitrary - the default name is
+  `<your_username>/<name_of_project_folder>`. This parameter doesn't affect the contents of the 
+  container at all, but it will be used as the Docker tag (see docker build -t).
+* `r_version`: What version of R do you want installed in the container? The default is whatever
+  version of R you're currently running. If you want to specify a different version, enter it as
+  `"major.minor.patch"`, e.g. `"3.6.3"`.
+* `include_files`: This is a list of files that need to be copied into the container. `lambdar` has
+  populated this as best it can by looking for files that contain functions tagged with `@lambdar`,
+  but if your code needs any other files (for example, if you're `source()`-ing any other files or
+  if you need to include data files), list them here. At the moment `lambdar` does not support 
+  files nested within folders - although the files will be copied over, the directory structure will
+  be lost and everything will end up in the same directory in the container. Although it's messy,
+  keep all your code and data files in your project's root directory.
+* `lambda_handlers`: Each lambda instance calls a single function. We need to tell AWS where to find
+  that function, which we do by feeding it a handler string in the format `"file.function_name"`.
+  Note that there is no `.R` in the filename and no `()` at the end of the function name. Make sure
+  that your handler functions don't contain any characters other than letters, numbers and
+  underscores.
+* `r_packages`: A list of any additional R packages that your function requires. `lambdar` will have
+  filled this in as best it can, but if you need anything else, enter the names here.
+* `linux_packages`: If your function needs any additional Linux libraries, mention them here.
+  `lambdar` does not give you any help here! If you omit a required package here you will encounter
+  errors when building the Dockerfile in the next step.
+* `env`: A list of environment variables to be set in the container. `_lambdar.yml` contains two,
+  `LAMBDAR_APP_NAME` and `LAMBDAR_VERSION` - these are not used by anything at the moment and are
+  just there to demonstrate the syntax.
+
+
+At this point you can manually edit `_lamndar.yml` if you need to, but for our example we will move
+on to creating the Dockerfile.
+
+## Create the `Dockerfile`
+
+Run `lambdar::build_dockerfile()`. This starts from a basic `Dockerfile` and adds in any additional
+customisations set out in `_lambdar.yml`. The resulting `Dockerfile` will be written to your
+project's root directory, so you should have something that looks like this:
+
+
+```
+.
+├── .lambdar
+│   └── lambdar_runtime.R
+├── Dockerfile
+├── lambdar-test.Rproj
+├── _lambdar.yml
+└── main.R
+```
+
+At this point you can edit the Dockerfile yourself if you want to make any further changes, but for
+this example we will keep things simple and move on to building the container.
+
+
+## Build the container
+
+Call `lambdar::build_container()`. 
+
+
+## Upload to AWS
+
+You need to upload your freshly-built container to the AWS Elastic Container Registry so that we can
+use it as a base for our lambda function.
+
+### Create a container repository
+
+You need to create a container repository for each container image. Here I'm calling it 
+`lambdar-test`, but you can give it whatever name you like.
+
+``` bash
+$ aws ecr create-repository --repository-name lambdar-test
+```
+
+### Tag the container
+
+The container needs to be tagged with a specific format:
+
+```
+<aws-account-id>.dkr.ecr.<region>.amazonaws.com/<repository-name>:<optional-tag>
+```
+
+The `<repository-name>` must match the name of the repository created earlier. If you omit the
+`<optional-tag>`, AWS will tag it with `:latest`.
+
+Using a fake AWS account ID and the `ap-southeast-2` region (I'm in New Zealand), the whole tag 
+becomes `123456789012.dkr.ecr.ap-southeast-2.amazonaws.com/lambdar-test:latest`.
+
+Then, use this awful command to upload the image
+
+```
+$ aws ecr get-login-password | docker login --username AWS --password-stdin 123456789012.dkr.ecr.ap-southeast-2.amazonaws.com
+```
+
+This authenticates Docker with AWS ECR. Now we can finally push the image:
+
+```
+$ docker push 123456789012.dkr.ecr.ap-southeast-2.amazonaws.com/lambdar-test:latest
+```
+
+Now that the image is safely within AWS's loving embrace we can (finally) use it to create a lambda.
+
+
+## Create the lambda
+

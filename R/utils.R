@@ -71,14 +71,17 @@ lam_build_env_list <- function(env = list()) {
 }
 
 
-# ---- Check Docker ----
+# ---- Docker ----
 
 #' Do we have docker installed?
 #'
+#' Examines the output of [Sys.which()] to see if we can locate an installation.
+#'
+#' @return Boolean
+#'
 #' @keywords internal
 lam_has_docker <- function() {
-  x <- Sys.which("docker")
-  if (x == "") {
+  if (Sys.which("docker") == "") {
     msg <- paste(
       "No docker installation found.",
       "Refer to {.url https://docs.docker.com/get-docker/} for installation instructions"
@@ -87,6 +90,134 @@ lam_has_docker <- function() {
     return(FALSE)
   }
   TRUE
+}
+
+
+# ---- AWS ----
+
+#' Shared params for AWS cli functions
+#'
+#' @param aws_account_id Your 12-digit AWS account id
+#' @param aws_region Your AWS region, e.g. `"ap-southeast-2"`
+#' @param aws_ecr_repository_name Chosen name for your AWS ECR repository. It is recommended that
+#'   this be the same as your app name.
+#' @param tag Optional image tag. If omited, "latest" will be used.
+#'
+#' @name aws-generic-params
+NULL
+
+
+#' Do we have the AWS cli installed?
+#'
+#' Examines the output of [Sys.which()] to see if we can locate an installation.
+#'
+#' @return Boolean
+#'
+#' @keywords internal
+lam_has_aws_cli <- function() {
+  if (Sys.which("aws") == "") {
+    msg <- paste(
+      "No AWS cli installation found.",
+      "Refer to {.url https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html}",
+      "for installation instructions"
+    )
+    cli::cli_alert_warning(msg)
+    return(FALSE)
+  }
+  TRUE
+}
+
+#' Attempt to get our AWS account ID
+#'
+#' @return A character string
+#'
+#' @keywords internal
+lam_aws_get_account_id <- function() {
+  if (lam_has_aws_cli()) {
+    cli::cli_alert_info("Attempting to get AWS account ID")
+    if (.Platform$OS.type == "unix") {
+      aws_account_id <- lam_run_system_command("aws sts get-caller-identity --output text | cut -f 1", capture_output = TRUE)
+      return(aws_account_id)
+    } else {
+      rlang::warn("AWS account ID collection is not implemented for Widows yet.")
+    }
+  }
+  return("")
+}
+
+#' Create the AWS ECR tag for your image
+#'
+#' @inheritParams aws-generic-params
+#' @return A character vector
+#'
+#' @keywords internal
+lam_ecr_image_tag_name <- function(aws_account_id, aws_region, aws_ecr_repository_name, tag = "latest") {
+  as.character(glue::glue("{aws_account_id}.dkr.ecr.{aws_region}.amazonaws.com/{aws_ecr_repository_name}:{tag}"))
+}
+
+#' Tag an image in preparation for upload to AWS Lambda
+#'
+#' See [this blog post](https://aws.amazon.com/blogs/aws/new-for-aws-lambda-container-image-support/)
+#' for details.
+#'
+#' @inheritParams aws-generic-params
+#'
+#' @keywords internal
+lam_ecr_tag_image_for_upload <- function(tag = "latest") {
+  if (!lam_has_docker()) {
+    rlang::abort("No Docker installation detected")
+  }
+  cfg <- lambdar_config_from_file()
+  tag <- lam_ecr_image_tag_name(
+    aws_account_id = cfg$aws_account_id,
+    aws_region = cfg$aws_region,
+    aws_ecr_repository_name = cfg$app_name,
+    tag = tag
+  )
+  docker_tag_cmd <- glue::glue("docker tag {cfg$app_name} {tag}")
+  lam_run_system_command(docker_tag_cmd)
+  cli::cli_alert_success("Suggessfully tagged {.code {cfg$app_name}} as {.code {tag}}")
+}
+
+#' Generate an ECR repo URL
+#'
+#' @inheritParams aws-generic-params
+#'
+#' @keywords internal
+lam_ecr_repo_url <- function(aws_account_id, aws_region, aws_ecr_repository_name) {
+  as.character(glue::glue("{aws_account_id}.dkr.ecr.{aws_region}.amazonaws.com"))
+}
+
+#' Create an ECR repository if it doesn't already exist
+#'
+#' @inheritParams aws-generic-params
+#'
+#' @keywords internal
+lam_ecr_create_repo_if_not_exists <- function(aws_ecr_repository_name) {
+  cli::cli_alert_info("Creating the repository if it doesn't already exist")
+  cmd <- glue::glue("aws ecr create-repository --repository-name {aws_ecr_repository_name}")
+  lam_run_system_command(cmd)
+}
+
+#' Upload an image to ECR
+#'
+#' @inheritParams aws-generic-params
+#'
+#' @keywords internal
+lam_ecr_upload_image <- function(aws_account_id, aws_region, aws_ecr_repository_name) {
+  if (!lam_has_docker() || !lam_has_aws_cli()) {
+    rlang::abort("Both Docker and the AWS cli are required to upload a container image")
+  }
+  ecr_repo_url <- lam_ecr_repo_url(aws_account_id, aws_region, aws_ecr_repository_name)
+  lam_ecr_create_repo_if_not_exists(aws_ecr_repository_name)
+  authentication_cmd <- glue::glue("aws ecr get-login-password | docker login --username AWS --password-stdin {ecr_repo_url}")
+  cli::cli_alert_info("Authenticating Docker with AWS ECR")
+  lam_run_system_command(authentication_cmd)
+  image_tag <- lam_ecr_image_tag_name(aws_account_id, aws_region, aws_ecr_repository_name)
+  upload_cmd <- glue::glue("docker push {image_tag}")
+  cli::cli_alert_info("Uploading container image")
+  lam_run_system_command(upload_cmd)
+  cli::cli_alert_success("Successfully uploaded {image_tag}")
 }
 
 # ---- Path utilities ----
@@ -227,12 +358,32 @@ in_project <- function() {
   !inherits(try(usethis::proj_path(), silent = TRUE), "try-error")
 }
 
-#' Remove all the lambdar-related files and directories from a project
+#' Invoke a system command and check to see if it was successful
 #'
-#' @export
-clean <- function() {
-  unlink(lam_dir_path(), recursive = TRUE, force = TRUE)
-  unlink(lam_dockerfile_path(), force = TRUE)
-  unlink(lam_config_path(), force = TRUE)
-  cli::cli_alert_success("Cleaned")
+#' This is a wrapper around [system()] with some extra bells and whistles.
+#'
+#' @param cmd String, a system command
+#' @param capture_output Do we want the actual output of the command returned? Useful when trying to
+#'   generate text. This is passed directly to tne `intern` parameter of [system()].
+#'
+#' @return If `capture_output` is `FALSE`, invisibly returns the exit code of the command, as long
+#'   as that is zero. Any other exit code throws an error. If `capture_output` is `TRUE`, returns
+#'   whatever the text output of the command is.
+lam_run_system_command <- function(cmd, capture_output = FALSE) {
+  cli::cli_alert("{.code {cmd}}")
+  res <- system(cmd, intern = capture_output)
+  if (!capture_output) {
+    if (res != 0) {
+      rlang::abort(
+        "Execution of system command failed",
+        class = "lambdar_system_cmd_failed",
+        exit_code = res,
+        cmd = cmd
+      )
+    }
+  }
+  if (capture_output) {
+    return(res)
+  }
+  invisible(res)
 }

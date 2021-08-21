@@ -1,4 +1,4 @@
-# lambdar
+# lambdar <a href='https://lewinfox.github.io/lambdar'><img src='man/figures/logo.png' align="right" height="138" /></a>
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -28,7 +28,7 @@ project folder and use it to give a default name to your app.
 In the root directory of your project, create a file called `main.R` containing the function you
 want to access as a lambda. Use a roxygen-style `#' @lambda` tag to tell lambdar that this function should be lambda-fied. 
 
-``` r
+lam_``` r
 # main.R
 
 #' @lambda
