@@ -229,8 +229,8 @@ lam_ecr_upload_image <- function(aws_account_id, aws_region, aws_ecr_repository_
 #' @param ... Path elements
 #'
 #' @keywords internal
-lam_proj_path <- function(...) {
-    relish(file.path(usethis::proj_path(), ...))
+lam_proj_path <- function(dir = ".", ...) {
+    relish(file.path(dir, ...))
 }
 
 #' @describeIn lam_proj_path Path to the `.lambdar/` directory
