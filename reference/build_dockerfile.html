@@ -8,6 +8,13 @@
 
 <title>Create a Dockerfile — build_dockerfile • lambdar</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -40,8 +47,9 @@
 
 
 <meta property="og:title" content="Create a Dockerfile — build_dockerfile" />
-<meta property="og:description" content="Writes a Dockerfile to your project root directory based on a configuration object. If no
-config object is provided it will try and read _lambdar.yml from your project's root directory." />
+<meta property="og:description" content="Writes a Dockerfile to your project root directory based on a configuration file If no config
+file path is provided it will try and read _lambdar.yml from your project's root directory." />
+<meta property="og:image" content="https://lewinfox.github.io/lambdar/logo.png" />
 
 
 
@@ -73,7 +81,7 @@ config object is provided it will try and read _lambdar.yml from your project's 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">lambdar</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9004</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9005</span>
       </span>
     </div>
 
@@ -84,6 +92,9 @@ config object is provided it will try and read _lambdar.yml from your project's 
     <span class="fas fa-home fa-lg"></span>
      
   </a>
+</li>
+<li>
+  <a href="../articles/lambdar.html">Get started</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
@@ -115,25 +126,37 @@ config object is provided it will try and read _lambdar.yml from your project's 
     </div>
 
     <div class="ref-description">
-    <p>Writes a Dockerfile to your project root directory based on a configuration object. If no
-config object is provided it will try and read <code>_lambdar.yml</code> from your project's root directory.</p>
+    <p>Writes a Dockerfile to your project root directory based on a configuration file If no config
+file path is provided it will try and read <code>_lambdar.yml</code> from your project's root directory.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>build_dockerfile</span><span class='op'>(</span>cfg <span class='op'>=</span> <span class='cn'>NULL</span>, quiet <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>build_dockerfile</span><span class='op'>(</span>from_scratch <span class='op'>=</span> <span class='cn'>TRUE</span>, quiet <span class='op'>=</span> <span class='cn'>FALSE</span>, lambda_handler <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>cfg</th>
-      <td><p>A <code><a href='lambdar_config_from_file.html'>lambdar_config()</a></code> object (optional).</p></td>
+      <th>from_scratch</th>
+      <td><p>Boolean. If <code>TRUE</code>, lambdar will re-scan your project and rebuild your config
+file before building the Dockerfile. If <code>FALSE</code>, lambdar will use whatever state your config
+file is in and build a Dockerfile from that.</p></td>
     </tr>
     <tr>
       <th>quiet</th>
       <td><p>If <code>FALSE</code>, will tell you the command to build your container.</p></td>
     </tr>
+    <tr>
+      <th>lambda_handler</th>
+      <td><p>Either <code>NULL</code> or a string specifying a handler function in
+<code>"file.function_name"</code> format. Only necessary if your project contains multiple handlers. In
+this case if no handler is specified the first one in the list will be used, with a warning.</p></td>
+    </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A <a href='lambdar_config_from_file.html'>lambdar_config</a> object, invisibly. This is for internal use only and may be removed in
+future.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

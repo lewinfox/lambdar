@@ -4,6 +4,9 @@
     <loc>https://lewinfox.github.io/lambdar/index.html</loc>
   </url>
   <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/aws-generic-params.html</loc>
+  </url>
+  <url>
     <loc>https://lewinfox.github.io/lambdar/reference/build-lists.html</loc>
   </url>
   <url>
@@ -19,13 +22,34 @@
     <loc>https://lewinfox.github.io/lambdar/reference/clean.html</loc>
   </url>
   <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/get_aws_account_id.html</loc>
+  </url>
+  <url>
     <loc>https://lewinfox.github.io/lambdar/reference/get_handler_from_block.html</loc>
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/in_project.html</loc>
   </url>
   <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/lam_aws_get_account_id.html</loc>
+  </url>
+  <url>
     <loc>https://lewinfox.github.io/lambdar/reference/lam_build_env_list.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/lam_ecr_create_repo_if_not_exists.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/lam_ecr_image_tag_name.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/lam_ecr_repo_url.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/lam_ecr_tag_image_for_upload.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/lam_ecr_upload_image.html</loc>
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/lam_function_exists_in_file.html</loc>
@@ -35,6 +59,9 @@
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/lam_handler_filenames.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/lam_has_aws_cli.html</loc>
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/lam_has_docker.html</loc>
@@ -55,15 +82,24 @@
     <loc>https://lewinfox.github.io/lambdar/reference/lam_roxy_block_has_lambda_tag.html</loc>
   </url>
   <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/lam_run_system_command.html</loc>
+  </url>
+  <url>
     <loc>https://lewinfox.github.io/lambdar/reference/lambdar_config_from_file.html</loc>
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/relish.html</loc>
   </url>
   <url>
+    <loc>https://lewinfox.github.io/lambdar/reference/upload_to_ecr.html</loc>
+  </url>
+  <url>
     <loc>https://lewinfox.github.io/lambdar/reference/use_lambdar.html</loc>
   </url>
   <url>
     <loc>https://lewinfox.github.io/lambdar/reference/using_lambdar.html</loc>
+  </url>
+  <url>
+    <loc>https://lewinfox.github.io/lambdar/articles/lambdar.html</loc>
   </url>
 </urlset>
