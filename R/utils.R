@@ -324,6 +324,8 @@ lam_function_exists_in_file <- function(file, fun) {
     return(FALSE)
   }
   is_fun <- is.function(eval(parse(text = fun), envir = e))
+  msg <- glue::glue("Symbol `{fun}` exists in `{file}` but is not a function")
+  rlang::warn(msg)
   if (!is_fun) {
     return(FALSE)
   }
