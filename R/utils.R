@@ -229,28 +229,28 @@ lam_ecr_upload_image <- function(aws_account_id, aws_region, aws_ecr_repository_
 #' @param ... Path elements
 #'
 #' @keywords internal
-lam_proj_path <- function(dir = ".", ...) {
-    relish(file.path(dir, ...))
+lam_proj_path <- function(..., dir = ".") {
+    relish(file.path(normalizePath(dir), ...))
 }
 
 #' @describeIn lam_proj_path Path to the `.lambdar/` directory
-lam_dir_path <- function() {
-  lam_proj_path(".lambdar")
+lam_dir_path <- function(dir = ".") {
+  lam_proj_path(".lambdar", dir = dir)
 }
 
 #' @describeIn lam_proj_path Path to `_lambdar.yml` config file
-lam_config_path <- function() {
-  lam_proj_path("_lambdar.yml")
+lam_config_path <- function(dir = ".") {
+  lam_proj_path("_lambdar.yml", dir = dir)
 }
 
 #' @describeIn lam_proj_path Path to Dockerfile
-lam_dockerfile_path <- function() {
-  lam_proj_path("Dockerfile")
+lam_dockerfile_path <- function(dir = ".") {
+  lam_proj_path("Dockerfile", dir = ".")
 }
 
 #' @describeIn lam_proj_path Path to runtime function
-lam_runtime_path <- function() {
-  lam_proj_path(lam_dir_path(), "lambdar_runtime.R")
+lam_runtime_path <- function(dir = ".") {
+  lam_proj_path(lam_dir_path(dir = dir), "lambdar_runtime.R", dir = ".")
 }
 
 #' Tidy file paths by removing instances of `dir` from `x`.
@@ -337,18 +337,23 @@ lam_function_exists_in_file <- function(file, fun) {
 #' @return Boolean
 #'
 #' @keywords internal
-using_lambdar <- function() {
-  dir.exists(lam_dir_path())
+using_lambdar <- function(dir = ".") {
+  dir.exists(lam_dir_path()) && runtime_exists(dir)
+}
+
+#' @describeIn using_lambdar Does the runtime file exist?
+runtime_exists <- function(dir = ".") {
+  file.exists(lam_runtime_path(dir))
 }
 
 #' @describeIn using_lambdar Does the config file exist?
-config_exists <- function() {
-  file.exists(lam_config_path())
+config_exists <- function(dir = ".") {
+  file.exists(lam_config_path(dir))
 }
 
 #' @describeIn using_lambdar Does the Dockerfile exist?
-dockerfile_exists <- function() {
-  file.exists(lam_dockerfile_path())
+dockerfile_exists <- function(dir = ".") {
+  file.exists(lam_dockerfile_path(dir))
 }
 
 #' Are we in a project-y environment?

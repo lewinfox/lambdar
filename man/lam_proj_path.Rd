@@ -8,15 +8,15 @@
 \alias{lam_runtime_path}
 \title{Path utilities}
 \usage{
-lam_proj_path(...)
+lam_proj_path(..., dir = ".")
 
-lam_dir_path()
+lam_dir_path(dir = ".")
 
-lam_config_path()
+lam_config_path(dir = ".")
 
-lam_dockerfile_path()
+lam_dockerfile_path(dir = ".")
 
-lam_runtime_path()
+lam_runtime_path(dir = ".")
 }
 \arguments{
 \item{...}{Path elements}
