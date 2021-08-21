@@ -1,4 +1,4 @@
-# lambdar
+# lambdar <a href='https://lewinfox.github.io/lambdar'><img src='man/figures/logo.png' align="right" height="138" /></a>
 
 <!-- badges: start -->
 <!-- badges: end -->
