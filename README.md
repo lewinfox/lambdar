@@ -42,7 +42,7 @@ hello_world <- function(name = NULL) {
 
 ## Generate config file
 
-Call `lambdar::use_lambdar()`. This will create two items in your project's root directory:
+Call `lambdar::init()`. This will create two items in your project's root directory:
 
 1. A `_lambdar.yml` file. This will be pre-populated with some metadata about your app. For this
    example you can leave it as-is.
@@ -50,7 +50,7 @@ Call `lambdar::use_lambdar()`. This will create two items in your project's root
    that will be installed into the container to make everything work. Don't touch it!
    
 ``` r
-lambdar::use_lambdar()
+lambdar::init()
 #> ✓ Setting active project to '/home/lewin/lambdar-test'
 #> ✓ Creating .lambdar directory
 #> ✓ Writing .lambdar/lambdar_runtime.R

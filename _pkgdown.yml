@@ -12,7 +12,7 @@ reference:
     desc: >
       Getting started with lambdar is easy!
   - contents:
-    - use_lambdar
+    - init
     - build_config
     - clean
 

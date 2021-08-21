@@ -10,7 +10,7 @@
 #' you are free to amend as much or as little as you like.
 #'
 #' @export
-use_lambdar <- function() {
+init <- function() {
   # If this fails we want to restore the dir to its previous state
   LAMBDAR_DIR <- lam_dir_path()
   LAMBDAR_RUNTIME_PATH <- lam_runtime_path()
@@ -57,7 +57,7 @@ build_config <- function() {
 
   if (!using_lambdar()) {
     cli::cli_alert_info("Lambdar has not been initialiased yet, doing it now")
-    use_lambdar()
+    init()
   }
 
   # TODO: Look for source() calls and follow that graph.
