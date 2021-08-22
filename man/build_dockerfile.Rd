@@ -14,8 +14,6 @@ file is in and build a Dockerfile from that.}
 \item{lambda_handler}{Either \code{NULL} or a string specifying a handler function in
 \code{"file.function_name"} format. Only necessary if your project contains multiple handlers. In
 this case if no handler is specified the first one in the list will be used, with a warning.}
-
-\item{quiet}{If \code{FALSE}, will tell you the command to build your container.}
 }
 \value{
 A \link{lambdar_config} object, invisibly. This is for internal use only and may be removed in

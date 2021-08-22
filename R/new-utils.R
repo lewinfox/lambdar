@@ -1,10 +1,10 @@
 # ---- Read and write files ----
-read_config <- function(dir = ".") {
-  config_file <- lam_config_path(dir)
+read_config <- function() {
+  config_file <- lam_config_path()
   if (!file.exists(config_file)) {
     rlang::abort("No config file found in project", "lambdar_no_config_file")
   }
-  cfg <- yaml::read_yaml(lam_config_path(dir))
+  cfg <- yaml::read_yaml(lam_config_path())
   new_lambdar_config(cfg)
 }
 
@@ -33,6 +33,8 @@ write_dockerfile <- function(cfg) {
 #' @param cmd String, a system command
 #' @param capture_output Do we want the actual output of the command returned? Useful when trying to
 #'   generate text. This is passed directly to tne `intern` parameter of [system()].
+#' @param quiet Set to `FALSE` to reduce verbosity of lambdar messages. Note that system commands
+#'   may still write to the terminal.
 #'
 #' @return If `capture_output` is `FALSE`, invisibly returns the exit code of the command, as long
 #'   as that is zero. Any other exit code throws an error. If `capture_output` is `TRUE`, returns

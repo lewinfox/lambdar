@@ -44,7 +44,7 @@ init <- function() {
     },
     error = function(e) {
       warning(e)
-      clean(dir)
+      clean()
     }
   )
 }
@@ -71,11 +71,11 @@ build_config <- function() {
 
   # These are parameters that are not set in the default config. They also need to be formatted
   # before we pass them to `usethis::use_template()`
-  include_files <- lam_handler_filenames(dir)
+  include_files <- lam_handler_filenames()
   r_packages <- lam_get_file_dependencies(include_files)
 
   extra_params <- list(
-    lambda_handlers = lam_build_quoted_list(lam_parse_project_handlers(dir)),
+    lambda_handlers = lam_build_quoted_list(lam_parse_project_handlers()),
     include_files = lam_build_quoted_list(include_files),
     r_packages = r_packages
   )
@@ -88,8 +88,8 @@ build_config <- function() {
   # * linux_packages
   #
   # The rest we are happy to overwrite
-  if (file.exists(lam_config_path(dir))) {
-    current_config <- lambdar_config_from_file(lam_config_path(dir))
+  if (file.exists(lam_config_path())) {
+    current_config <- lambdar_config_from_file()
 
     not_missing <- function(field) {
       !is.null(field) && length(field) > 0 && nchar(field) > 0
@@ -129,7 +129,6 @@ build_config <- function() {
 #' @param from_scratch Boolean. If `TRUE`, lambdar will re-scan your project and rebuild your config
 #'   file before building the Dockerfile. If `FALSE`, lambdar will use whatever state your config
 #'   file is in and build a Dockerfile from that.
-#' @param quiet If `FALSE`, will tell you the command to build your container.
 #' @param lambda_handler Either `NULL` or a string specifying a handler function in
 #'   `"file.function_name"` format. Only necessary if your project contains multiple handlers. In
 #'   this case if no handler is specified the first one in the list will be used, with a warning.
@@ -146,7 +145,7 @@ build_dockerfile <- function(from_scratch = TRUE, lambda_handler = NULL) {
         build_config()
       }
 
-      cfg <- lambdar_config_from_file(lam_config_path())
+      cfg <- lambdar_config_from_file()
 
       # Validate the config object
       if (!is_lambdar_config(cfg)) {
@@ -239,9 +238,9 @@ build_image <- function(from_scratch = TRUE, lambda_handler = NULL) {
 
   if (from_scratch) {
     # Read config and create the Dockerfile
-    cfg <- build_dockerfile(from_scratch = from_scratch, quiet = TRUE, lambda_handler = lambda_handler)
+    cfg <- build_dockerfile(from_scratch = from_scratch, lambda_handler = lambda_handler)
   } else {
-    cfg <- lambdar_config_from_file(lam_config_path())
+    cfg <- lambdar_config_from_file()
   }
 
   # No Dockerfile, no joy

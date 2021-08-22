@@ -2,6 +2,7 @@
 % Please edit documentation in R/lambdar-config.R
 \name{lambdar_config_from_file}
 \alias{lambdar_config_from_file}
+\alias{lambdar_config}
 \alias{new_lambdar_config}
 \alias{is_lambdar_config}
 \title{Create a new lambdar config object by reading the config file}

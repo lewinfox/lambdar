@@ -11,6 +11,9 @@ lam_run_system_command(cmd, capture_output = FALSE, quiet = lam_is_quiet())
 
 \item{capture_output}{Do we want the actual output of the command returned? Useful when trying to
 generate text. This is passed directly to tne \code{intern} parameter of \code{\link[=system]{system()}}.}
+
+\item{quiet}{Set to \code{FALSE} to reduce verbosity of lambdar messages. Note that system commands
+may still write to the terminal.}
 }
 \value{
 If \code{capture_output} is \code{FALSE}, invisibly returns the exit code of the command, as long

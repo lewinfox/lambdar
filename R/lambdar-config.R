@@ -3,6 +3,8 @@
 #' @return A [lambdar_config] object.
 #'
 #' @keywords internal
+#'
+#' @aliases lambdar_config
 lambdar_config_from_file <- function() {
   cfg <- read_config()
   new_lambdar_config(cfg)
