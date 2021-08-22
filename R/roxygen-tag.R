@@ -18,8 +18,8 @@ roxy_tag_parse.roxy_tag_lambda <- function(x) {
 #' @return Returns a character vector of `"file.function"` handler specifications.
 #'
 #' @keywords internal
-lam_parse_project_handlers <- function() {
-  files <- list.files(path = lam_proj_path(), pattern = "\\.R$", all.files = FALSE)
+lam_parse_project_handlers <- function(dir = ".") {
+  files <- list.files(path = lam_proj_path(dir), pattern = "\\.R$", all.files = FALSE)
   res <- character()
   for (file in files) {
     # TODO: Do this without using c() all the time. Not the end of the world as we don't expect

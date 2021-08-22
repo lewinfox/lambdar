@@ -1,46 +1,10 @@
-#' Lambdar configuration object
+#' Create a new lambdar config object by reading the config file
 #'
-#' Lambdar stores information about your app in a configuration object of class `lambdar_config`.
-#' This is just a named list.
-#'
-#' @param config_file Path to config file. If not provided, looks for `_lambdar.yml` in the project
-#'   root durectory.
-#'
-#' @return A list.
+#' @return A [lambdar_config] object.
 #'
 #' @keywords internal
-#' @aliases lambdar_config
-lambdar_config_from_file <- function(config_file = NULL) {
-  # If no file path is supplied, use the default ($PROJECT_ROOT/_lambdar.yml)
-  if (is.null(config_file)) {
-    config_file <- lam_config_path()
-  }
-
-  if (!config_exists()) {
-    build_config()
-  }
-
-  # Read the YAML
-  cfg <- yaml::read_yaml(config_file)
-
-  # AWS account ID and region are needed to construct the ARI for tagging the image and uploading to
-  # Elastic Container Repository
-  if (is.null(cfg$aws_account_id) || nchar(cfg$aws_account_id) == 0) {
-    msg <- paste(
-      "`aws_account_id` is missing from the config file.",
-      "Without it lambdar cannot tag your completed image or upload it to AWS ECR."
-    )
-    rlang::warn(msg, "lambdar_bad_config")
-  }
-
-  if (is.null(cfg$aws_region) || nchar(cfg$aws_region) == 0) {
-    msg <- paste(
-      "`aws_region` is missing from the config file.",
-      "Without it lambdar cannot tag your completed image or upload it to AWS ECR."
-    )
-    rlang::warn(msg, "lambdar_bad_config")
-  }
-
+lambdar_config_from_file <- function() {
+  cfg <- read_config()
   new_lambdar_config(cfg)
 }
 

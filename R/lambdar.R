@@ -6,42 +6,45 @@
 #' * A `_lambdar.yml` config file
 #' * A `lambdar/` directory to house a copy of the R runtime we will load into your container
 #'
-#' The function will try and pre-populate your config file with as much information as possible, but
-#' you are free to amend as much or as little as you like.
-#'
 #' @export
 init <- function() {
+
   # If this fails we want to restore the dir to its previous state
   LAMBDAR_DIR <- lam_dir_path()
   LAMBDAR_RUNTIME_PATH <- lam_runtime_path()
   LAMBDAR_CONFIG_PATH <- lam_config_path()
 
+  quiet <- lam_is_quiet()
+
   tryCatch(
     {
       if (!dir.exists(LAMBDAR_DIR)) {
         dir.create(LAMBDAR_DIR)
-        cli::cli_alert_success("Creating {.path {LAMBDAR_DIR}} directory")
+        if (!quiet) {
+          cli::cli_alert_success("Creating {.path {LAMBDAR_DIR}} directory")
+        }
       }
-      file.copy(
-        system.file("runtime", "lambdar_runtime.R", package = "lambdar", mustWork = TRUE),
-        LAMBDAR_RUNTIME_PATH
+
+      if (!file.exists(lam_runtime_path())) {
+        file.copy(
+          system.file("runtime", "lambdar_runtime.R", package = "lambdar", mustWork = TRUE),
+          LAMBDAR_RUNTIME_PATH
+        )
+        if (!quiet) {
+          cli::cli_alert_success("Writing {.path {LAMBDAR_RUNTIME_PATH}}")
+        }
+      }
+
+      usethis::use_template(
+        "_lambdar.yml",
+        save_as = "_lambdar.yml",
+        package = "lambdar"
       )
-      cli::cli_alert_success("Writing {.path {LAMBDAR_RUNTIME_PATH}}")
-      build_config()
-      conf_str <- usethis::ui_path(LAMBDAR_CONFIG_PATH)
-      usethis::ui_todo("Edit {conf_str}")
+
     },
     error = function(e) {
-      cli::cli_alert_warning("Restoring directory state")
-      if (dir.exists(LAMBDAR_DIR)) {
-        unlink(LAMBDAR_DIR, recursive = TRUE, force = TRUE)
-        cli::cli_alert_warning("Removing {.path {LAMBDAR_DIR}} directory")
-      }
-      if (file.exists(LAMBDAR_CONFIG_PATH)) {
-        unlink(LAMBDAR_CONFIG_PATH, "_lambdar.yml", force = TRUE)
-        cli::cli_alert_warning("Removing {.path {LAMBDAR_CONFIG_PATH}}")
-      }
-      stop(e)
+      warning(e)
+      clean(dir)
     }
   )
 }
@@ -55,8 +58,12 @@ init <- function() {
 #' @export
 build_config <- function() {
 
+  quiet <- lam_is_quiet()
+
   if (!using_lambdar()) {
-    cli::cli_alert_info("Lambdar has not been initialiased yet, doing it now")
+    if (!quiet) {
+      cli::cli_alert_info("Lambdar has not been initialiased yet, doing it now")
+    }
     init()
   }
 
@@ -64,11 +71,11 @@ build_config <- function() {
 
   # These are parameters that are not set in the default config. They also need to be formatted
   # before we pass them to `usethis::use_template()`
-  include_files <- lam_handler_filenames()
+  include_files <- lam_handler_filenames(dir)
   r_packages <- lam_get_file_dependencies(include_files)
 
   extra_params <- list(
-    lambda_handlers = lam_build_quoted_list(lam_parse_project_handlers()),
+    lambda_handlers = lam_build_quoted_list(lam_parse_project_handlers(dir)),
     include_files = lam_build_quoted_list(include_files),
     r_packages = r_packages
   )
@@ -81,8 +88,8 @@ build_config <- function() {
   # * linux_packages
   #
   # The rest we are happy to overwrite
-  if (file.exists(lam_config_path())) {
-    current_config <- lambdar_config_from_file(lam_config_path())
+  if (file.exists(lam_config_path(dir))) {
+    current_config <- lambdar_config_from_file(lam_config_path(dir))
 
     not_missing <- function(field) {
       !is.null(field) && length(field) > 0 && nchar(field) > 0
@@ -131,24 +138,24 @@ build_config <- function() {
 #'
 #' @return A [lambdar_config] object, invisibly. This is for internal use only and may be removed in
 #'   future.
-build_dockerfile <- function(from_scratch = TRUE, quiet = FALSE, lambda_handler = NULL) {
+build_dockerfile <- function(from_scratch = TRUE, lambda_handler = NULL) {
+  quiet <- lam_is_quiet()
   tryCatch(
     {
-      if (from_scratch) {
+      if (from_scratch || !config_exists()) {
         build_config()
-      }
-
-      if (!config_exists()) {
-        msg <- glue::glue("{lam_config_path()} not found")
-        rlang::abort(msg)
       }
 
       cfg <- lambdar_config_from_file(lam_config_path())
 
       # Validate the config object
       if (!is_lambdar_config(cfg)) {
-        msg <- "{.var cfg} must be a {.code lambdar_config} object. See {.code ?lambdar_config}."
-        cli::cli_alert_danger(msg)
+
+        if (!quiet) {
+          msg <- "{.var cfg} must be a {.code lambdar_config} object. See {.code ?lambdar_config}."
+          cli::cli_alert_danger(msg)
+        }
+
         rlang::abort("Invalid configuration object")
       }
 
@@ -159,7 +166,7 @@ build_dockerfile <- function(from_scratch = TRUE, quiet = FALSE, lambda_handler 
             "Multiple lambdar handlers found in config file and no handler given in the",
             "{.var lambda_handler} argument.\nThis is fine for testing, but when you come to build",
             "the final container you will need to specify your chosen handler when calling",
-            "{.fn lambdar::build_container}.\nIn the meantime the Dockerfile has been written with",
+            "{.fn lambdar::build_image}.\nIn the meantime the Dockerfile has been written with",
             "{.code {cfg$lambda_handlers[[1L]]}} as the handler."
           )
           cli::cli_alert_warning(msg)
@@ -185,10 +192,11 @@ build_dockerfile <- function(from_scratch = TRUE, quiet = FALSE, lambda_handler 
       cfg <- lapply(cfg, function(item) if (length(item) > 0) item else NULL)
 
       # Build and write the Dockerfile
-      usethis::use_template("Dockerfile", save_as = "Dockerfile", data = cfg, package = "lambdar")
+      write_dockerfile(cfg)
+
       if (!quiet) {
         msg <- paste("To build your container, run {.code docker build -t {cfg$app_name} .}",
-                     "or {.fn lambdar::build_container}")
+                     "or {.fn lambdar::build_image}")
         cli::cli_alert_info(msg)
       }
       return(invisible(cfg))
@@ -212,15 +220,20 @@ build_dockerfile <- function(from_scratch = TRUE, quiet = FALSE, lambda_handler 
 #' @param lambda_handler Either `NULL` or a string specifying a handler function in
 #'   `"file.function_name"` format.
 #' @export
-build_container <- function(from_scratch = TRUE, lambda_handler = NULL) {
+build_image <- function(from_scratch = TRUE, lambda_handler = NULL) {
+
+  quiet <- lam_is_quiet()
 
   # Check we have Docker installed
   if (!lam_has_docker()) {
-    msg <- paste(
-      "Can't build a container without Docker installed.",
-      "You can still create a Dockerfile using {.fn lambdar::build_dockerfile}."
-    )
-    cli::cli_alert_danger(msg)
+    if (!quiet) {
+      msg <- paste(
+        "Can't build a container without Docker installed.",
+        "You can still create a Dockerfile using {.fn lambdar::build_dockerfile}."
+      )
+      cli::cli_alert_danger(msg)
+    }
+
     rlang::abort("Docker is not installed")
   }
 
@@ -247,29 +260,38 @@ build_container <- function(from_scratch = TRUE, lambda_handler = NULL) {
   }
 
   # Let the user know we are OK and provide useful URLs for testing
-  cli::cli_alert_success("Docker build successful")
-  if (length(cfg$lambda_handlers) > 1) {
+  if (!quiet) {
+    cli::cli_alert_success("Docker build successful")
+  }
+
+  if (length(cfg$lambda_handlers) > 1 && !quiet) {
     msg <- "To start your container run {.code docker run -p 9000:8080 {cfg$app_name} <handler>}"
     cli::cli_alert_info(msg)
     cli::cli_alert_info("Possible values of {.code <handler>} are {.code {cfg$lambda_handlers}}")
-  } else {
+  } else if (!quiet) {
     msg <- paste("To start your container run" ,
                  "{.code docker run -p 9000:8080 {cfg$app_name} {cfg$lambda_handlers}}")
     cli::cli_alert_info(msg)
   }
-  msg <- paste("Once running you can send test queries to",
-               "{.code http://localhost:9000/2015-03-31/functions/function/invocations}")
-  cli::cli_alert_info(msg)
+  if (!quiet) {
+    msg <- paste("Once running you can send test queries to",
+                 "{.code http://localhost:9000/2015-03-31/functions/function/invocations}")
+    cli::cli_alert_info(msg)
+  }
+
 }
 
 #' Remove all the lambdar-related files and directories from a project
 #'
 #' @export
 clean <- function() {
+  quiet <- lam_is_quiet()
   unlink(lam_dir_path(), recursive = TRUE, force = TRUE)
   unlink(lam_dockerfile_path(), force = TRUE)
   unlink(lam_config_path(), force = TRUE)
-  cli::cli_alert_success("Cleaned")
+  if (!quiet) {
+    cli::cli_alert_success("Cleaned")
+  }
 }
 
 #' Upload your container image to the Elastic Container Repository

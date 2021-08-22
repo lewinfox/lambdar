@@ -2,11 +2,14 @@
 % Please edit documentation in R/utils.R
 \name{using_lambdar}
 \alias{using_lambdar}
+\alias{runtime_exists}
 \alias{config_exists}
 \alias{dockerfile_exists}
 \title{Have we got everything we need?}
 \usage{
 using_lambdar()
+
+runtime_exists()
 
 config_exists()
 
@@ -20,6 +23,8 @@ Have we got everything we need?
 }
 \section{Functions}{
 \itemize{
+\item \code{runtime_exists}: Does the runtime file exist?
+
 \item \code{config_exists}: Does the config file exist?
 
 \item \code{dockerfile_exists}: Does the Dockerfile exist?

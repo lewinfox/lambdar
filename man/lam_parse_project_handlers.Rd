@@ -4,7 +4,7 @@
 \alias{lam_parse_project_handlers}
 \title{Search project files for \verb{@lambda} tags}
 \usage{
-lam_parse_project_handlers()
+lam_parse_project_handlers(dir = ".")
 }
 \value{
 Returns a character vector of \code{"file.function"} handler specifications.

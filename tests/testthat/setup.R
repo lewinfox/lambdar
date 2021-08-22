@@ -74,3 +74,15 @@ with_local_project <- function(code) {
     force(code)
   })
 }
+
+skip_if_not_in_project <- function() {
+  if (!in_project()) {
+    skip("Skipping tests that must be run in a project")
+  }
+}
+
+skip_in_rcmd_check <- function() {
+  if (any(grepl("^_R_CHECK", Sys.getenv()))) {
+    skip("This test does not work correctly under R CMD check")
+  }
+}

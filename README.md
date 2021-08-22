@@ -63,21 +63,21 @@ for `@lambda` tags. You can always edit `_lambdar.yml` by hand as well - see (**
 
 ## Build container
 
-From here you can call `lambdar::build_dockerfile()` or `lambdar::build_container()`.
-`build_container()` builds the Dockerfile as part of the process anyway, but if you want to review
+From here you can call `lambdar::build_dockerfile()` or `lambdar::build_image()`.
+`build_image()` builds the Dockerfile as part of the process anyway, but if you want to review
 the Dockerfile before building it, use `build_dockerfile()`. The Dockerfile will be created in your
 project's root directory.
 
 ``` r
 lambdar::build_dockerfile()
 #> ✓ Writing 'Dockerfile'
-#> ℹ To build your container, run `docker build -t lewin/lambdar-test .` or `lambdar::build_container()`
+#> ℹ To build your container, run `docker build -t lewin/lambdar-test .` or `lambdar::build_image()`
 ```
 
 Or
 
 ``` r
-lambdar::build_container()
+lambdar::build_image()
 #> ...
 #> ... [lots of Docker output]
 #> ...
@@ -168,7 +168,7 @@ lambda_handlers: [ "main.hello_world", "main.add_one" ]
 Either of these can now be specified as a handler for a given container.
 
 ``` r
-lambdar::build_container()
+lambdar::build_image()
 #> ... [ Docker output ] ...
 #> ✓ Docker build successful
 #> ℹ To start your container run `docker run -p 9000:8080 lewin/lambdar-test <handler>`

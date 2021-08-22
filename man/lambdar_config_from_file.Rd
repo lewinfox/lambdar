@@ -2,30 +2,25 @@
 % Please edit documentation in R/lambdar-config.R
 \name{lambdar_config_from_file}
 \alias{lambdar_config_from_file}
-\alias{lambdar_config}
 \alias{new_lambdar_config}
 \alias{is_lambdar_config}
-\title{Lambdar configuration object}
+\title{Create a new lambdar config object by reading the config file}
 \usage{
-lambdar_config_from_file(config_file = NULL)
+lambdar_config_from_file()
 
 new_lambdar_config(config = NULL)
 
 is_lambdar_config(x)
 }
 \arguments{
-\item{config_file}{Path to config file. If not provided, looks for \verb{_lambdar.yml} in the project
-root durectory.}
-
 \item{config}{A named list containing params. If \code{config} or any elements are missing, defaults
 will be used.}
 }
 \value{
-A list.
+A \link{lambdar_config} object.
 }
 \description{
-Lambdar stores information about your app in a configuration object of class \code{lambdar_config}.
-This is just a named list.
+Create a new lambdar config object by reading the config file
 }
 \section{Functions}{
 \itemize{

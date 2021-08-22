@@ -22,7 +22,7 @@ reference:
       help you build and test container images from a lambdar config file.
   - contents:
     - build_dockerfile
-    - build_container
+    - build_image
 
   - title: Layers
     desc: >
