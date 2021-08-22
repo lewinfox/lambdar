@@ -16,3 +16,4 @@ this be the same as your app name.}
 \description{
 Shared params for AWS cli functions
 }
+\keyword{internal}

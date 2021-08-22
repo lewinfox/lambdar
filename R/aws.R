@@ -9,6 +9,8 @@
 #' @param tag Optional image tag. If omited, "latest" will be used.
 #'
 #' @name aws-generic-params
+#'
+#' @keywords internal
 NULL
 
 

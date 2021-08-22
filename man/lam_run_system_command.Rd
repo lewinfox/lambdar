@@ -23,3 +23,4 @@ whatever the text output of the command is.
 \description{
 This is a wrapper around \code{\link[=system]{system()}} with some extra bells and whistles.
 }
+\keyword{internal}

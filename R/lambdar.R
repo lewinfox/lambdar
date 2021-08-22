@@ -303,12 +303,3 @@ upload_to_ecr <- function() {
   lam_ecr_tag_image_for_upload()
   lam_ecr_upload_image(cfg$aws_account_id, cfg$aws_region, cfg$app_name)
 }
-
-#' Attempt to retrieve your AWS account id
-#'
-#' @return String
-#'
-#' @export
-get_aws_account_id <- function() {
-  lam_aws_get_account_id()
-}

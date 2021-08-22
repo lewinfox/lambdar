@@ -24,6 +24,11 @@ reference:
     - build_dockerfile
     - build_image
 
+  - title: Upload your code to AWS
+    desc: >
+      Once you've built and tested your function locally you're ready to deploy it.
+  - contents:
+    - upload_to_ecr
   - title: Layers
     desc: >
       Tooling to help you build Lambda layers is on the roadmap but not implemented yet.

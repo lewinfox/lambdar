@@ -39,6 +39,8 @@ write_dockerfile <- function(cfg) {
 #' @return If `capture_output` is `FALSE`, invisibly returns the exit code of the command, as long
 #'   as that is zero. Any other exit code throws an error. If `capture_output` is `TRUE`, returns
 #'   whatever the text output of the command is.
+#'
+#' @keywords internal
 lam_run_system_command <- function(cmd, capture_output = FALSE, quiet = lam_is_quiet()) {
   if (!quiet) {
     cli::cli_alert("{.code {cmd}}")

@@ -1,5 +1,5 @@
 ---
-title: "Create an AWS Lambda function with lambdar"
+title: "lambdar"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{lambdar}
