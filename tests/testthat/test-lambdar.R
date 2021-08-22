@@ -1,18 +1,35 @@
-test_that("`init()` creates the correct directory structure", {
-  skip_on_cran()
-  skip("Not ready yet")
+test_that("`init()` creates the right project structure", {
+  with_local_project({
+    expect_true(file.exists(lam_runtime_path()))
+    expect_true(file.exists(lam_config_path()))
+  })
+})
 
-  project_path <- suppressMessages(create_local_thing(thing = "project"))
+test_that("`clean()` removes everything", {
+  with_local_project({
+    expect_true(file.exists(lam_runtime_path()))
+    expect_true(file.exists(lam_config_path()))
+    clean()
+    expect_false(file.exists(lam_runtime_path()))
+    expect_false(file.exists(lam_config_path()))
+  })
+})
 
+test_that("`write_config()` does the right thing", {
+  with_local_project({
+    unlink(lam_config_path()) # Otherwise `usethis::use_template()` doesn't write the new one
+    cfg <- new_lambdar_config(list(app_name = "foo"))
+    write_config(cfg)
+    new_cfg <- yaml::read_yaml(lam_config_path())
+    expect_equal(new_cfg$app_name, "foo")
+  })
+})
 
-  withr::with_dir(project_path, {
-    suppressMessages({
-      expect_false(file.exists(lam_config_path()))
-      expect_false(dir.exists(lam_dir_path()))
-      init()
-      expect_true(file.exists(lam_config_path()))
-      expect_true(dir.exists(lam_dir_path()))
-      expect_true(file.exists(lam_runtime_path()))
-    })
+test_that("`write_dockerfile()` does the right thing", {
+  with_local_project({
+    cfg <- new_lambdar_config(list(lambda_entrypoint = "foo.bar"))
+    write_dockerfile(cfg)
+    df_lines <- readLines(lam_dockerfile_path())
+    expect_true(any(grepl("foo.bar", df_lines, fixed = TRUE)))
   })
 })
