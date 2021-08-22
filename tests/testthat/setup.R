@@ -17,7 +17,13 @@ create_local_thing <- function(dir = fs::file_temp(),
   }
 
   withr::with_options(list(usethis.quiet = TRUE), {
-    old_project <- usethis::proj_get() # this could be `NULL`, i.e. no active project
+
+    # I ran into an issue where R CMD check where the old_project (tests/testthat in the temporary
+    # folder) was not a project so this `proj_get()` call failed with an error. Wrapping this in a
+    # `try()` allows us to A: stop those tests failing and B: check for the existence of an old
+    # project before trying to switch back to one below.
+    old_project <- try(usethis::proj_get(), silent = TRUE)
+    has_old_project <- !inherits(old_project, "try-error")
     old_wd <- getwd()          # not necessarily same as `old_project`
 
 
@@ -35,7 +41,9 @@ create_local_thing <- function(dir = fs::file_temp(),
       )
     )
 
-    withr::defer(usethis::ui_silence(usethis::proj_set(old_project, force = TRUE)), envir = env)
+    if (has_old_project) {
+      withr::defer(usethis::ui_silence(usethis::proj_set(old_project, force = TRUE)), envir = env)
+    }
     usethis::proj_set(dir)
 
     withr::defer(
@@ -73,16 +81,4 @@ with_local_project <- function(code) {
     cat(main_text, file = "main.R")
     force(code)
   })
-}
-
-skip_if_not_in_project <- function() {
-  if (!in_project()) {
-    skip("Skipping tests that must be run in a project")
-  }
-}
-
-skip_in_rcmd_check <- function() {
-  if (any(grepl("^_R_CHECK", Sys.getenv()))) {
-    skip("This test does not work correctly under R CMD check")
-  }
 }
