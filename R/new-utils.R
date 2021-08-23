@@ -8,19 +8,55 @@ read_config <- function() {
   new_lambdar_config(cfg)
 }
 
+#' Take a config object, format its contents and write the configfile
+#'
+#' Formatting involves correctly quoting R vectors for inclusion in the config file.
+#'
+#' @param cfg A [lambdar_config] object.
+#'
+#' @keywords internal
 write_config <- function(cfg) {
   if (!is_lambdar_config(cfg)) {
     msg <- glue::glue("`cfg` must be a lambdar_config object, not {class(cfg)}")
     rlang::abort(msg)
   }
+
+  # Formatting
+  cfg$include_files   <- lam_build_quoted_list(cfg$include_files)
+  cfg$lambda_handlers <- lam_build_quoted_list(cfg$lambda_handlers)
+  cfg$r_packages      <- lam_build_separated_list(cfg$r_packages, sep = ", ")
+  cfg$r_package_repos <- lam_build_quoted_list(cfg$r_package_repos)
+  cfg$linux_packages  <- lam_build_separated_list(cfg$linux_packages, sep = ", ")
+
   usethis::use_template("_lambdar.yml", data = cfg, package = "lambdar")
 }
 
+#' Take a config object, format its contents and write the Dockerfile
+#'
+#' Formatting involves correctly quoting R vectors for inclusion in the config file.
+#'
+#' @param cfg A [lambdar_config] object.
+#'
+#' @keywords internal
 write_dockerfile <- function(cfg) {
   if (!is_lambdar_config(cfg)) {
     msg <- glue::glue("`cfg` must be a lambdar_config object, not {class(cfg)}")
     rlang::abort(msg)
   }
+
+  lambda_entrypoint <- cfg$lambda_handlers[[1L]]
+
+  # Formatting
+  cfg$r_packages        <- lam_build_quoted_list(cfg$r_packages)
+  cfg$r_package_repos   <- lam_build_quoted_list(cfg$r_package_repos)
+  cfg$linux_packages    <- lam_build_separated_list(cfg$linux_packages)
+  cfg$include_files     <- lam_build_quoted_list(cfg$include_files)
+  cfg$env               <- lam_build_env_list(cfg$env)
+  cfg$r_runtime_file    <- lam_runtime_path()
+  cfg$lambda_entrypoint <- lam_build_quoted_list(lambda_entrypoint)
+
+  cfg <- lapply(cfg, function(item) if (length(item) > 0) item else NULL)
+
   usethis::use_template("Dockerfile", data = cfg, package = "lambdar")
 }
 

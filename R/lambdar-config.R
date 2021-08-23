@@ -43,7 +43,6 @@ new_lambdar_config <- function(config = NULL) {
     "^@CRAN@$",
     "https://cran.r-project.org"
   )
-  r_package_repos <- lam_build_quoted_list(r_package_repos)
 
   cfg <- list(
     app_name =  app_name,              # Defaults to "$USER/$PROJECT_DIR"
@@ -53,7 +52,8 @@ new_lambdar_config <- function(config = NULL) {
     r_packages = NULL,                 # R packages to be installed in the image
     r_package_repos = r_package_repos, # See above
     linux_packages = NULL,             # Linux packages to be installed in the image
-    env = NULL                         # Environment variables to be set in the container
+    env = NULL,                        # Environment variables to be set in the container
+    lambdar_version = as.character(utils::packageVersion("lambdar"))
   )
 
   # Overwrite `cfg` with any values supplied in `config`

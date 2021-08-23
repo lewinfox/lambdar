@@ -67,13 +67,55 @@ lam_get_file_dependencies <- function(file) {
   unique(deps$Package)
 }
 
+#' Scan the project folder for handlers and package dependencies
+#'
+#' @return A list containing three named items, `lambda_handlers`, `include_files` and `r_packages`,
+#'   each of which is a character vector, possible of length zero.
+#'
+#' @keywords internal
+lam_scan_project <- function() {
+  quiet <- lam_is_quiet()
+
+  if (!quiet) {
+    cli::cli_alert_info("Scanning project...")
+  }
+
+  # TODO: Look for source() calls and follow that graph.
+  include_files <- lam_handler_filenames()
+  handlers <- lam_parse_project_handlers()
+
+  if (!quiet) {
+    if (length(include_files) > 0 && length(handlers) > 0) {
+      msg <- "Found {length(handlers)} handler function{?s} in {length(include_files)} file{?s}"
+      cli::cli_alert_success(msg)
+    } else {
+      msg <- paste("No handler functions found.",
+                   "Tag functions with {.code #' @lambda} so lambdar can find them.")
+      cli::cli_alert_info(msg)
+    }
+
+  }
+
+  r_packages <- lam_get_file_dependencies(include_files)
+
+  if (!quiet && length(r_packages) > 0) {
+    cli::cli_alert_success("Detected {length(r_packages)} R package dependenc{?y/ies}.")
+  }
+
+  list(
+    lambda_handlers = handlers,
+    include_files = include_files,
+    r_packages = r_packages
+  )
+}
+
 #' Get a list of all `.R` files containing `@lambda` handlers
 #'
 #' @return Character vector of file paths
 #'
 #' @keywords internal
-lam_handler_filenames <- function(dir = ".") {
-  handlers <- lam_parse_project_handlers(dir = ".")
+lam_handler_filenames <- function() {
+  handlers <- lam_parse_project_handlers()
   unique(
     sapply(
       strsplit(handlers, ".", fixed = T),

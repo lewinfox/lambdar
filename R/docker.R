@@ -51,14 +51,14 @@ lam_build_quoted_list <- function(items = NULL, quote = c("double", "single")) {
 }
 
 #' @describeIn build-lists Build an unquoted space-separated list
-lam_build_space_separated_list <- function(items = NULL) {
+lam_build_separated_list <- function(items = NULL, sep = " ") {
   # The templating function needs to receive NULLs if the item is not present otherwise sections
   # that are not supposed to render will render.
   if (is.null(items)) {
     return(NULL)
   }
   items <- stringr::str_remove_all(items, "[\"\']")
-  as.character(glue::glue_collapse(items, sep = " "))
+  as.character(glue::glue_collapse(items, sep = sep))
 }
 
 #' Get the current R version
@@ -74,7 +74,10 @@ lam_r_version <- function() {
 #' @param env A named list
 #'
 #' @keywords internal
-lam_build_env_list <- function(env = list()) {
+lam_build_env_list <- function(env = NULL) {
+  if (is.null(env)) {
+    env <- list()
+  }
   if (!is.list(env)) {
     msg <- glue::glue("`env` must be a list, not {typeof(env)})")
     rlang::abort(msg)
