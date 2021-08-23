@@ -4,15 +4,7 @@
 \alias{build_image}
 \title{Build a container image from a config file}
 \usage{
-build_image(from_scratch = TRUE, lambda_handler = NULL)
-}
-\arguments{
-\item{from_scratch}{Boolean. If \code{TRUE}, lambdar will re-scan your project and rebuild your config
-file before building the container. If FALSE it will build from whatever the current state of
-your Dockerfile is.}
-
-\item{lambda_handler}{Either \code{NULL} or a string specifying a handler function in
-\code{"file.function_name"} format.}
+build_image()
 }
 \description{
 Reads your \verb{_lambdar.yml} config file, creates a Dockerfile from it, and then attempts to create

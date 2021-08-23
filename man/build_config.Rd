@@ -6,6 +6,9 @@
 \usage{
 build_config()
 }
+\value{
+A \link{lambdar_config} object, invisibly.
+}
 \description{
 Scans your project folder for \code{.R} files, identified those containing \verb{@lambda} tags, and writes
 a \verb{_lambdar.yml} config file containing relevant information.

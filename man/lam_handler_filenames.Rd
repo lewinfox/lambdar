@@ -4,7 +4,7 @@
 \alias{lam_handler_filenames}
 \title{Get a list of all \code{.R} files containing \verb{@lambda} handlers}
 \usage{
-lam_handler_filenames(dir = ".")
+lam_handler_filenames()
 }
 \value{
 Character vector of file paths

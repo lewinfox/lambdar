@@ -4,7 +4,7 @@
 \alias{lam_build_env_list}
 \title{Create a space-separated list of environment variables}
 \usage{
-lam_build_env_list(env = list())
+lam_build_env_list(env = NULL)
 }
 \arguments{
 \item{env}{A named list}

@@ -3,12 +3,12 @@
 \name{build-lists}
 \alias{build-lists}
 \alias{lam_build_quoted_list}
-\alias{lam_build_space_separated_list}
+\alias{lam_build_separated_list}
 \title{Convert a vector into text}
 \usage{
 lam_build_quoted_list(items = NULL, quote = c("double", "single"))
 
-lam_build_space_separated_list(items = NULL)
+lam_build_separated_list(items = NULL, sep = " ")
 }
 \arguments{
 \item{items}{Vector or items to write.}
@@ -27,7 +27,7 @@ need to be space-separated (e.g. Linux \verb{yum install a b c}).
 \itemize{
 \item \code{lam_build_quoted_list}: Build a double-quoted comma-separated list
 
-\item \code{lam_build_space_separated_list}: Build an unquoted space-separated list
+\item \code{lam_build_separated_list}: Build an unquoted space-separated list
 }}
 
 \keyword{internal}
