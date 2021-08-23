@@ -22,7 +22,7 @@ r_packages: [ {{ r_packages }} ]
 r_package_repos: [ {{{ r_package_repos }}} ]
 
 # List any extra Linux packages you need to have installed in the container
-linux_packages: [  ]
+linux_packages: [ {{{ linux_packages }}} ]
 
 # Specify any environment variables your function needs.
 #
@@ -30,4 +30,4 @@ linux_packages: [  ]
 # TODO: Support `env` being a list as well as this syntax
 env:
   LAMBDAR_APP_NAME: "{{ app_name }}"
-  LAMBDAR_VERSION: "0.1.0"
+  LAMBDAR_VERSION: "{{ lambdar_version }}"
