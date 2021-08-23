@@ -8,7 +8,7 @@ home:
       href: https://github.com/lewinfox
 
 reference:
-  - title: Setup
+  - title: Get started
     desc: >
       Getting started with lambdar is easy!
   - contents:
@@ -16,7 +16,7 @@ reference:
     - build_config
     - clean
 
-  - title: Containers
+  - title: Build containers
     desc: >
       AWS Lambda allows you to use custom container images to run your code. These functions
       help you build and test container images from a lambdar config file.
@@ -24,11 +24,16 @@ reference:
     - build_dockerfile
     - build_image
 
-  - title: Upload your code to AWS
+  - title: Upload your image to the Elastic Container Registry
     desc: >
       Once you've built and tested your function locally you're ready to deploy it.
   - contents:
     - upload_to_ecr
+
+  - title: Create a lambda function
+    desc: >
+      Tooling to automatically create a Lambda function is on the roadmap but not implemented yet.
+
   - title: Layers
     desc: >
       Tooling to help you build Lambda layers is on the roadmap but not implemented yet.
