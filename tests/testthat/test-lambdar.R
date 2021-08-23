@@ -27,7 +27,7 @@ test_that("`write_config()` does the right thing", {
 
 test_that("`write_dockerfile()` does the right thing", {
   with_local_project({
-    cfg <- new_lambdar_config(list(lambda_entrypoint = "foo.bar"))
+    cfg <- new_lambdar_config(list(lambda_handlers = "foo.bar"))
     write_dockerfile(cfg)
     df_lines <- readLines(lam_dockerfile_path())
     expect_true(any(grepl("foo.bar", df_lines, fixed = TRUE)))
