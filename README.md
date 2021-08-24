@@ -3,11 +3,17 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of `lambdar` is to provide a plug-and-play solution to running R on AWS lambda. The runtime
-code (see `inst/runtime/lambdar_runtime.R`) is a straight copy of 
-[mdneuzerling/r-on-lambda](https://github.com/mdneuzerling/r-on-lambda). The 
-[acompanying blog post](https://mdneuzerling.com/post/r-on-aws-lambda-with-containers/) was helpful
-when I was learning about Lambda runtimes.
+The goal of lambdar is to make it easy to run R on AWS lambda. AWS doesn't provide support for R
+out of the box, but _does_ allow you to provide a custom runtime in the form of a container image or
+lambda layers. Lambdar provides:
+
+* An R runtime (thanks to [mdneuzerling/r-on-lambda](https://github.com/mdneuzerling/r-on-lambda))
+* Tools to build, test and deploy Docker containers containing your code
+
+The process is simple. You write your code as normal, decorate your lambda function with a
+roxygen-style `@lambda` tag, and lambdar does the rest. It's designed to drop on top of your
+existing work with almost no changes to your code.
+
 
 ## Installation
 
@@ -17,16 +23,18 @@ You can install the development version from GitHub with
 devtools::install_github("lewinfox/lambdar")
 ```
 
+[Docker](https://docs.docker.com/get-docker/) and the [AWS cli](https://aws.amazon.com/cli/) are 
+recommended - without these lambdar can build Dockerfiles but can't create or deploy the actual 
+image.
+
 
 ## Setup
 
-First, make sure you have [Docker installed](https://docs.docker.com/get-docker/).
+Lambdar is designed to work in [R projects](https://r4ds.had.co.nz/workflow-projects.html). For this
+example I've create a project in a directory called `lambdar-test`. The project contains one file,
+`main.R`, which contains one function, `hello_world()`.
 
-Create a new RStudio project. Mine is called `lambdar-test` - lambdar will detect the name of your
-project folder and use it to give a default name to your app.
 
-In the root directory of your project, create a file called `main.R` containing the function you
-want to access as a lambda. Use a roxygen-style `#' @lambda` tag to tell lambdar that this function should be lambda-fied. 
 
 ``` r
 # main.R
@@ -191,42 +199,6 @@ the `hello_world()` function) and `http://localhost:9001/2015-03-31/functions/fu
 (for the `add_one()` function).
 
 
-## Including extra stuff in the container
-
-You can tell lambdar to include extra files or packages in your container by editing `_lambdar.yml`.
-
-### `include_files`
-
-If your lambda depends on additional data or code files you need to add them to the`include_files`
-array. By default only files containing `@lambdar`-tagged functions will be included.
-
-``` yaml
-# _lambdar.yml
-
-include_files: [ "main.R", "data.csv", "utilities.R" ]
-```
-
-### `r_packages`
-
-Any packages listed here will be installed when the container is built. Lambdar will try and
-determine which packages you need using `renv::dependencies()` and will auto-fill this list.
-
-``` yaml
-# _lambdar.yml
-
-r_packages: [ tidyverse, units ]
-```
-
-### `linux_packages`
-
-If you need any extra system libraries installing, mention them here. The base AWS image is based on
-CentOS, so packages will be installed by `yum`.
-
-``` yaml
-# _lambdar.yml
-
-linux_packages: [ udunits2-devel ]
-```
 
 ## TODO - future work
 

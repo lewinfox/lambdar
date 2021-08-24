@@ -106,9 +106,6 @@ app_name: "lewin/lambdar-test"
 # What version of R should be installed in the container?
 r_version: "4.1.0"
 
-# List of files or directories that need to be added to the container image
-include_files: [ "main.R" ]
-
 # Specify the handler/s as `file.function_name`. Omit `.R` from the file name.
 lambda_handlers: [ "main.hello_world" ]
 
@@ -136,13 +133,6 @@ env:
 * `r_version`: What version of R do you want installed in the container? The default is whatever
   version of R you're currently running. If you want to specify a different version, enter it as
   `"major.minor.patch"`, e.g. `"3.6.3"`.
-* `include_files`: This is a list of files that need to be copied into the container. `lambdar` has
-  populated this as best it can by looking for files that contain functions tagged with `@lambdar`,
-  but if your code needs any other files (for example, if you're `source()`-ing any other files or
-  if you need to include data files), list them here. At the moment `lambdar` does not support 
-  files nested within folders - although the files will be copied over, the directory structure will
-  be lost and everything will end up in the same directory in the container. Although it's messy,
-  keep all your code and data files in your project's root directory.
 * `lambda_handlers`: Each lambda instance calls a single function. We need to tell AWS where to find
   that function, which we do by feeding it a handler string in the format `"file.function_name"`.
   Note that there is no `.R` in the filename and no `()` at the end of the function name. Make sure
@@ -184,7 +174,7 @@ this example we will keep things simple and move on to building the container.
 
 ## Build the container
 
-Call `lambdar::build_container()`. 
+Call `lambdar::build_image()`. 
 
 
 ## Upload to AWS

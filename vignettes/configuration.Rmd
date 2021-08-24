@@ -1,0 +1,107 @@
+---
+title: "Configuring lambdar"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Configuring lambdar}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(lambdar)
+```
+
+The `_lambdar.yml` file can be used to customise your container image. Lambdar tries to populate as
+much information as it can, but if you need to override any options you're welcome to do so. You
+can also write your own Dockerfile and use lambdar to build it, if you prefer.
+
+
+## Config options
+
+
+### `aws_account_id` and `aws_region`
+
+Lambdar uses these when it talks to AWS. This information is needed to:
+
+* Authenticate with AWS so lambdar can run `docker push` and upload your container.
+* Construct the URL of your ECR (Elastic Container Registry) repository, which is where your
+  container will be stored.
+* Create the lambda function from your container (this isn't implemented yet).
+
+If you don't supply this information you can still build a container if you have Docker installed,
+or build a Dockerfile if you don't.
+
+``` yaml
+# _lambdar.yml
+
+aws_account_id: "123456789012"
+
+aws_region: "ap-southeast-2"
+```
+
+
+### `app_name`
+
+This is used to name (via `docker tag`) your container when it's built. It also forms part of the
+ECR repository URL.
+
+``` yaml
+# _lambdar.yml
+
+app_name: "my-first-lambdar-app"
+```
+
+
+### `r_version`
+
+This tells lambdar what version of R to install in your container. Lambdar pre-fills this with your
+current R version, but you can change it if you need to. Make sure you specify all three digits of
+the version number, e.g. `"3.6.3"`.
+
+``` yaml
+# _lambdar.yml
+
+r_version: "4.1.1"
+```
+
+
+### `include_files`
+
+If your lambda depends on additional data or code files you need to add them to the`include_files`
+array. By default only files containing `@lambdar`-tagged functions will be included.
+
+``` yaml
+# _lambdar.yml
+
+include_files: [ "main.R", "data.csv", "utils/helpers.R" ]
+```
+
+
+### `r_packages`
+
+Any packages listed here will be installed when the container is built. Lambdar will try and
+determine which packages you need using `renv::dependencies()` and will auto-fill this list.
+
+``` yaml
+# _lambdar.yml
+
+r_packages: [ tidyverse, units ]
+```
+
+### `linux_packages`
+
+If you need any extra system libraries installing, mention them here. The base AWS image is based on
+CentOS, so packages will be installed by `yum`.
+
+``` yaml
+# _lambdar.yml
+
+linux_packages: [ udunits2-devel ]
+```
