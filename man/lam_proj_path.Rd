@@ -5,6 +5,7 @@
 \alias{lam_dir_path}
 \alias{lam_config_path}
 \alias{lam_dockerfile_path}
+\alias{lam_dockerignore_path}
 \alias{lam_runtime_path}
 \title{Path utilities}
 \usage{
@@ -15,6 +16,8 @@ lam_dir_path()
 lam_config_path()
 
 lam_dockerfile_path()
+
+lam_dockerignore_path()
 
 lam_runtime_path()
 }
@@ -31,6 +34,8 @@ Pinched from \code{usethis}.
 \item \code{lam_config_path}: Path to \verb{_lambdar.yml} config file
 
 \item \code{lam_dockerfile_path}: Path to Dockerfile
+
+\item \code{lam_dockerignore_path}: Path to \code{.dockerignore}
 
 \item \code{lam_runtime_path}: Path to runtime function
 }}

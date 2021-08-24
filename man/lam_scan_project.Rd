@@ -7,7 +7,7 @@
 lam_scan_project()
 }
 \value{
-A list containing three named items, \code{lambda_handlers}, \code{include_files} and \code{r_packages},
+A list containing two named items, \code{lambda_handlers} and \code{r_packages},
 each of which is a character vector, possible of length zero.
 }
 \description{

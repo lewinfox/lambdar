@@ -2,10 +2,10 @@
 % Please edit documentation in R/lambdar.R
 \name{upload_to_ecr}
 \alias{upload_to_ecr}
-\title{Upload your container image to the Elastic Container Repository}
+\title{Upload your container image to the Elastic Container Registry}
 \usage{
 upload_to_ecr()
 }
 \description{
-Upload your container image to the Elastic Container Repository
+Upload your container image to the Elastic Container Registry
 }
