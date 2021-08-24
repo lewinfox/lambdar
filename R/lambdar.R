@@ -38,6 +38,7 @@ init <- function() {
       cfg <- new_lambdar_config()
 
       write_config(cfg)
+      write_dockerignore()
     },
     error = function(e) {
       warning(e)
@@ -104,11 +105,6 @@ build_config <- function() {
       extra_params$r_packages <- union(extra_params$r_packages, current_config$r_packages)
     }
 
-    # include_files
-    if (not_missing(current_config$include_files)) {
-      extra_params$include_files <- union(extra_params$include_files, current_config$include_files)
-    }
-
     # lambda_handlers
     if (not_missing(current_config$lambda_handlers)) {
       extra_params$lambda_handlers <- union(extra_params$lambda_handlers, current_config$lambda_handlers)
@@ -118,6 +114,9 @@ build_config <- function() {
     if (not_missing(current_config$env)) {
       extra_params$env <- current_config$env
     }
+
+    # Remove the old config file to prevent us being asked to confirm overwriting it.
+    unlink(lam_config_path(), force = TRUE)
   }
 
   cfg <- new_lambdar_config(extra_params)
@@ -256,6 +255,7 @@ clean <- function() {
   quiet <- lam_is_quiet()
   unlink(lam_dir_path(), recursive = TRUE, force = TRUE)
   unlink(lam_dockerfile_path(), force = TRUE)
+  unlink(lam_dockerignore_path(), force = TRUE)
   unlink(lam_config_path(), force = TRUE)
   if (!quiet) {
     cli::cli_alert_success("Cleaned")

@@ -1,0 +1,8 @@
+*.Rproj
+.Rproj.user
+.github
+*.[Rr]?md
+_lambdar.yml
+.lambdar
+!.lambdar/lambdar_runtime.R
+Dockerfile
