@@ -19,6 +19,36 @@ lam_has_docker <- function() {
   TRUE
 }
 
+# ---- Dockerfile ----
+
+#' Take a config object, format its contents and write the Dockerfile
+#'
+#' Formatting involves correctly quoting R vectors for inclusion in the config file.
+#'
+#' @param cfg A [lambdar_config] object.
+#'
+#' @keywords internal
+write_dockerfile <- function(cfg) {
+  if (!is_lambdar_config(cfg)) {
+    msg <- glue::glue("`cfg` must be a lambdar_config object, not {class(cfg)}")
+    rlang::abort(msg)
+  }
+
+  lambda_entrypoint <- cfg$lambda_handlers[[1L]]
+
+  # Formatting
+  cfg$r_packages        <- lam_build_quoted_list(cfg$r_packages)
+  cfg$r_package_repos   <- lam_build_quoted_list(cfg$r_package_repos)
+  cfg$linux_packages    <- lam_build_separated_list(cfg$linux_packages)
+  cfg$env               <- lam_build_env_list(cfg$env)
+  cfg$r_runtime_file    <- lam_runtime_path()
+  cfg$lambda_entrypoint <- lam_build_quoted_list(lambda_entrypoint)
+
+  cfg <- lapply(cfg, function(item) if (length(item) > 0) item else NULL)
+
+  usethis::use_template("Dockerfile", data = cfg, package = "lambdar")
+}
+
 # ---- Dockerfile formatting helpers ----
 
 #' Convert a vector into text
@@ -117,4 +147,17 @@ lam_docker_image_exists <- function(image_name, tag = NULL) {
   }
   exit_code <- try(lam_run_system_command(cmd, capture_output = FALSE, quiet = TRUE), silent = TRUE)
   exit_code == 0
+}
+
+# ---- .dockerignore ----
+
+#' Write a `.dockerignore` file
+#'
+#' @keywords internal
+write_dockerignore <- function() {
+  file.copy(
+    system.file("templates", "dockerignore", package = "lambdar", mustWork = TRUE),
+    lam_dockerignore_path()
+  )
+  usethis::ui_done("Writing {usethis::ui_path(\".dockerignore\")}")
 }
