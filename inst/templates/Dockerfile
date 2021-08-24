@@ -38,14 +38,11 @@ RUN Rscript -e 'install.packages(c({{{ r_packages }}}), repos = c({{{ r_package_
 ENV {{{ env }}}
 {{/env}}
 
-# Copy over any user-generated files needed for the function to run. This could be R scripts, data
-# files or any other resources.
-{{#include_files}}
-COPY {{{ include_files }}} ${LAMBDA_TASK_ROOT}/
-{{/include_files}}
+# Copy over the contents of the project directory to the container, minus anything specified in
+# .dockerignore
+COPY . ${LAMBDA_TASK_ROOT}/
 
 # Make everything in the task root executable.
-# TODO: is this a good idea?
 RUN chmod 755 -R ${LAMBDA_TASK_ROOT}/
 
 # The entrypoint to be used for the function
