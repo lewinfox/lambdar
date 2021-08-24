@@ -1,8 +1,6 @@
 url: "https://lewinfox.github.io/lambdar"
 
 home:
-  strip_header: true
-
   authors:
     Lewin Appleton-Fox:
       href: https://github.com/lewinfox
