@@ -19,7 +19,7 @@ roxy_tag_parse.roxy_tag_lambda <- function(x) {
 #'
 #' @keywords internal
 lam_parse_project_handlers <- function() {
-  files <- list.files(path = lam_proj_path(), pattern = "\\.R$", all.files = FALSE)
+  files <- get_project_r_files()
   res <- character()
   for (file in files) {
     # TODO: Do this without using c() all the time. Not the end of the world as we don't expect
@@ -128,4 +128,8 @@ get_handler_from_block <- function(block) {
     }
   }
   NULL
+}
+
+get_project_r_files <- function() {
+  files <- list.files(path = lam_proj_path(), pattern = "\\.R$", all.files = FALSE)
 }
