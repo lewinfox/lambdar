@@ -2,6 +2,7 @@ test_that("`init()` creates the right project structure", {
   with_local_project({
     expect_true(file.exists(lam_runtime_path()))
     expect_true(file.exists(lam_config_path()))
+    expect_true(file.exists(lam_dockerignore_path()))
   })
 })
 
@@ -9,9 +10,11 @@ test_that("`clean()` removes everything", {
   with_local_project({
     expect_true(file.exists(lam_runtime_path()))
     expect_true(file.exists(lam_config_path()))
+    expect_true(file.exists(lam_dockerignore_path()))
     clean()
     expect_false(file.exists(lam_runtime_path()))
     expect_false(file.exists(lam_config_path()))
+    expect_false(file.exists(lam_dockerignore_path()))
   })
 })
 
