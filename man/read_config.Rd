@@ -12,3 +12,4 @@ A \link{lambdar_config} object.
 \description{
 Read a YAML file and return a config object
 }
+\keyword{internal}

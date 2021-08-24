@@ -6,13 +6,12 @@
 \usage{
 lam_get_project_dependencies()
 }
-\arguments{
-\item{file}{Path to a file or files to analyse}
-}
 \value{
 A character vector of R package dependencies needed by \code{file}
 }
 \description{
-Detect R package dependencies in code
+Uses \code{\link[renv:dependencies]{renv::dependencies()}} to work out what packages we depend on. Ignores \code{rmarkdown} where
+that is triggered by the presence of markdown files, and also excludes packages that are already
+in the container because the runtime needs them (\code{httr}, \code{jsonlite} and \code{logger}).
 }
 \keyword{internal}

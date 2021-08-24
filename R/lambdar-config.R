@@ -71,6 +71,8 @@ print.lambdar_config <- function(x, ...) {
 #' Read a YAML file and return a config object
 #'
 #' @return A [lambdar_config] object.
+#'
+#' @keywords internal
 read_config <- function() {
   config_file <- lam_config_path()
   if (!file.exists(config_file)) {
