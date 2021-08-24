@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">lambdar</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9005</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9007</span>
       </span>
     </div>
 
@@ -97,6 +97,18 @@
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/configuration.html">Configuring lambdar</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -128,13 +140,15 @@
     <p>Pinched from <code>usethis</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>lam_proj_path</span><span class='op'>(</span><span class='va'>...</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>lam_proj_path</span><span class='op'>(</span><span class='va'>...</span>, ext <span class='op'>=</span> <span class='st'>""</span><span class='op'>)</span>
 
 <span class='fu'>lam_dir_path</span><span class='op'>(</span><span class='op'>)</span>
 
 <span class='fu'>lam_config_path</span><span class='op'>(</span><span class='op'>)</span>
 
 <span class='fu'>lam_dockerfile_path</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>lam_dockerignore_path</span><span class='op'>(</span><span class='op'>)</span>
 
 <span class='fu'>lam_runtime_path</span><span class='op'>(</span><span class='op'>)</span></pre>
 
@@ -154,6 +168,7 @@
 <li><p><code>lam_dir_path</code>: Path to the <code>.lambdar/</code> directory</p></li>
 <li><p><code>lam_config_path</code>: Path to <code>_lambdar.yml</code> config file</p></li>
 <li><p><code>lam_dockerfile_path</code>: Path to Dockerfile</p></li>
+<li><p><code>lam_dockerignore_path</code>: Path to <code>.dockerignore</code></p></li>
 <li><p><code>lam_runtime_path</code>: Path to runtime function</p></li>
 </ul>
 

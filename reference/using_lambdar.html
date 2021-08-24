@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">lambdar</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9005</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9007</span>
       </span>
     </div>
 
@@ -97,6 +97,18 @@
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/configuration.html">Configuring lambdar</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -130,6 +142,8 @@
 
     <pre class="usage"><span class='fu'>using_lambdar</span><span class='op'>(</span><span class='op'>)</span>
 
+<span class='fu'>runtime_exists</span><span class='op'>(</span><span class='op'>)</span>
+
 <span class='fu'>config_exists</span><span class='op'>(</span><span class='op'>)</span>
 
 <span class='fu'>dockerfile_exists</span><span class='op'>(</span><span class='op'>)</span></pre>
@@ -142,6 +156,7 @@
 
     
 <ul>
+<li><p><code>runtime_exists</code>: Does the runtime file exist?</p></li>
 <li><p><code>config_exists</code>: Does the config file exist?</p></li>
 <li><p><code>dockerfile_exists</code>: Does the Dockerfile exist?</p></li>
 </ul>

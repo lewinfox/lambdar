@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">lambdar</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9005</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9007</span>
       </span>
     </div>
 
@@ -96,6 +96,18 @@
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/configuration.html">Configuring lambdar</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -132,7 +144,7 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-setup" class="hasAnchor"><a href="#section-setup" class="anchor"></a>Setup</h2>
+          <h2 id="section-get-started" class="hasAnchor"><a href="#section-get-started" class="anchor"></a>Get started</h2>
           <p class="section-desc"><p>Getting started with lambdar is easy!</p></p>
         </th>
       </tr>
@@ -144,7 +156,7 @@
       <tr>
         
         <td>
-          <p><code><a href="use_lambdar.html">use_lambdar()</a></code> </p>
+          <p><code><a href="init.html">init()</a></code> </p>
         </td>
         <td><p>Use lambdar with your project</p></td>
       </tr><tr>
@@ -163,7 +175,7 @@
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-containers" class="hasAnchor"><a href="#section-containers" class="anchor"></a>Containers</h2>
+          <h2 id="section-build-containers" class="hasAnchor"><a href="#section-build-containers" class="anchor"></a>Build containers</h2>
           <p class="section-desc"><p>AWS Lambda allows you to use custom container images to run your code. These functions help you build and test container images from a lambdar config file.</p></p>
         </th>
       </tr>
@@ -181,10 +193,38 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="build_container.html">build_container()</a></code> </p>
+          <p><code><a href="build_image.html">build_image()</a></code> </p>
         </td>
         <td><p>Build a container image from a config file</p></td>
       </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-upload-your-image-to-the-elastic-container-registry" class="hasAnchor"><a href="#section-upload-your-image-to-the-elastic-container-registry" class="anchor"></a>Upload your image to the Elastic Container Registry</h2>
+          <p class="section-desc"><p>Once you’ve built and tested your function locally you’re ready to deploy it.</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="upload_to_ecr.html">upload_to_ecr()</a></code> </p>
+        </td>
+        <td><p>Upload your container image to the Elastic Container Registry</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-create-a-lambda-function" class="hasAnchor"><a href="#section-create-a-lambda-function" class="anchor"></a>Create a lambda function</h2>
+          <p class="section-desc"><p>Tooling to automatically create a Lambda function is on the roadmap but not implemented yet.</p></p>
+        </th>
+      </tr>
+      
+      
     </tbody><tbody>
       <tr>
         <th colspan="2">

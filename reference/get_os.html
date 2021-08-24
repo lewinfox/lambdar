@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Invoke a system command and check to see if it was successful — lam_run_system_command • lambdar</title>
+<title>What operating system are we on? — get_os • lambdar</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Invoke a system command and check to see if it was successful — lam_run_system_command" />
-<meta property="og:description" content="This is a wrapper around system() with some extra bells and whistles." />
+<meta property="og:title" content="What operating system are we on? — get_os" />
+<meta property="og:description" content="Needed to warn Windows users" />
 <meta property="og:image" content="https://lewinfox.github.io/lambdar/logo.png" />
 
 
@@ -131,41 +131,21 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Invoke a system command and check to see if it was successful</h1>
+    <h1>What operating system are we on?</h1>
     <small class="dont-index">Source: <a href='https://github.com/lewinfox/lambdar/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
-    <div class="hidden name"><code>lam_run_system_command.Rd</code></div>
+    <div class="hidden name"><code>get_os.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This is a wrapper around <code><a href='https://rdrr.io/r/base/system.html'>system()</a></code> with some extra bells and whistles.</p>
+    <p>Needed to warn Windows users</p>
     </div>
 
-    <pre class="usage"><span class='fu'>lam_run_system_command</span><span class='op'>(</span><span class='va'>cmd</span>, capture_output <span class='op'>=</span> <span class='cn'>FALSE</span>, quiet <span class='op'>=</span> <span class='fu'>lam_is_quiet</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_os</span><span class='op'>(</span><span class='op'>)</span></pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>cmd</th>
-      <td><p>String, a system command</p></td>
-    </tr>
-    <tr>
-      <th>capture_output</th>
-      <td><p>Do we want the actual output of the command returned? Useful when trying to
-generate text. This is passed directly to tne <code>intern</code> parameter of <code><a href='https://rdrr.io/r/base/system.html'>system()</a></code>.</p></td>
-    </tr>
-    <tr>
-      <th>quiet</th>
-      <td><p>Set to <code>FALSE</code> to reduce verbosity of lambdar messages. Note that system commands
-may still write to the terminal.</p></td>
-    </tr>
-    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>If <code>capture_output</code> is <code>FALSE</code>, invisibly returns the exit code of the command, as long
-as that is zero. Any other exit code throws an error. If <code>capture_output</code> is <code>TRUE</code>, returns
-whatever the text output of the command is.</p>
+    <p>One of <code>"osx"</code>, <code>"linux"</code> or <code>"windows"</code>.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -81,7 +81,7 @@ file path is provided it will try and read _lambdar.yml from your project's root
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">lambdar</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9005</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9007</span>
       </span>
     </div>
 
@@ -98,6 +98,18 @@ file path is provided it will try and read _lambdar.yml from your project's root
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/configuration.html">Configuring lambdar</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -130,32 +142,12 @@ file path is provided it will try and read _lambdar.yml from your project's root
 file path is provided it will try and read <code>_lambdar.yml</code> from your project's root directory.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>build_dockerfile</span><span class='op'>(</span>from_scratch <span class='op'>=</span> <span class='cn'>TRUE</span>, quiet <span class='op'>=</span> <span class='cn'>FALSE</span>, lambda_handler <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>build_dockerfile</span><span class='op'>(</span><span class='op'>)</span></pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>from_scratch</th>
-      <td><p>Boolean. If <code>TRUE</code>, lambdar will re-scan your project and rebuild your config
-file before building the Dockerfile. If <code>FALSE</code>, lambdar will use whatever state your config
-file is in and build a Dockerfile from that.</p></td>
-    </tr>
-    <tr>
-      <th>quiet</th>
-      <td><p>If <code>FALSE</code>, will tell you the command to build your container.</p></td>
-    </tr>
-    <tr>
-      <th>lambda_handler</th>
-      <td><p>Either <code>NULL</code> or a string specifying a handler function in
-<code>"file.function_name"</code> format. Only necessary if your project contains multiple handlers. In
-this case if no handler is specified the first one in the list will be used, with a warning.</p></td>
-    </tr>
-    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A <a href='lambdar_config_from_file.html'>lambdar_config</a> object, invisibly. This is for internal use only and may be removed in
+    <p>A <a href='new_lambdar_config.html'>lambdar_config</a> object, invisibly. This is for internal use only and may be removed in
 future.</p>
 
   </div>
