@@ -7,7 +7,8 @@ Authors@R:
            family = "Appleton-Fox",
            role = c("aut", "cre"),
            email = "lewin.a.f@gmail.com")
-Description: Tools to develop and test AWS Lambda functions in R.
+Description: Provides an R runtime for AWS lambda and tooling to build,
+    test and deploy container-based lambda functions.
 License: MIT + file LICENSE
 URL: https://github.com/lewinfox/lambdar,
     https://lewinfox.github.io/lambdar
