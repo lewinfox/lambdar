@@ -20,7 +20,7 @@ library(lambdar)
 
 The `_lambdar.yml` file can be used to customise your container image. Lambdar tries to populate as
 much information as it can, but if you need to override any options you're welcome to do so. You
-can also write your own Dockerfile and use lambdar to build it, if you prefer.
+can also write your own Dockerfile and use lambdar to build it if you prefer.
 
 
 ## Config options
@@ -72,18 +72,6 @@ r_version: "4.1.1"
 ```
 
 
-### `include_files`
-
-If your lambda depends on additional data or code files you need to add them to the`include_files`
-array. By default only files containing `@lambdar`-tagged functions will be included.
-
-``` yaml
-# _lambdar.yml
-
-include_files: [ "main.R", "data.csv", "utils/helpers.R" ]
-```
-
-
 ### `r_packages`
 
 Any packages listed here will be installed when the container is built. Lambdar will try and
@@ -104,4 +92,21 @@ CentOS, so packages will be installed by `yum`.
 # _lambdar.yml
 
 linux_packages: [ udunits2-devel ]
+```
+
+Lambdar can't work out which Linux package you need so this section is up to you.
+
+
+### `env`
+
+If your code needs any specific environment variables, enter them here. At the moment `yaml` lists
+are not supported because they don't translate to the correct data structure in R, so copy the
+examples in the template.
+
+``` yaml
+# _lambdar.yml
+
+env:
+  FOO: "bar"
+  BAZ: "qux"
 ```
