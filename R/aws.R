@@ -113,7 +113,13 @@ lam_ecr_create_repo_if_not_exists <- function(aws_ecr_repository_name) {
   if (!lam_is_quiet()) {
     cli::cli_alert_info("Creating the repository if it doesn't already exist")
   }
-  cmd <- glue::glue("aws ecr create-repository --repository-name {aws_ecr_repository_name}")
+  cmd <- glue::glue(
+    # If the describe command fails, the repo doesn't exist (or something else has gone wrong)
+    paste(
+      "aws ecr describe-repositories --repository-names {aws_ecr_repository_name} ||" ,
+      "aws ecr create-repository --repository-name {aws_ecr_repository_name}"
+    )
+  )
   lam_run_system_command(cmd)
 }
 
