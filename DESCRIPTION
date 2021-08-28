@@ -1,7 +1,7 @@
 Type: Package
 Package: lambdar
 Title: Tools for building AWS Lambda functions in R
-Version: 0.1.0.9007
+Version: 0.1.0.9008
 Authors@R: 
     person(given = "Lewin",
            family = "Appleton-Fox",
