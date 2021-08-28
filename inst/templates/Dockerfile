@@ -16,12 +16,12 @@ ENV PATH="${PATH}:/opt/R/${R_VERSION}/bin/"
 # The R runtime requires these packages
 RUN Rscript -e 'install.packages(c("httr", "jsonlite", "logger"), repos = c({{{ r_package_repos }}}))'
 
-# Move the runtime into the container
-COPY {{ r_runtime_file }} ${LAMBDA_TASK_ROOT}/
-
 # Write the bootstrap file
 RUN printf '#!/bin/sh\ncd $LAMBDA_TASK_ROOT\nRscript lambdar_runtime.R' > /var/runtime/bootstrap \
   && chmod +x /var/runtime/bootstrap
+
+# Move the runtime into the container
+COPY {{ r_runtime_file }} ${LAMBDA_TASK_ROOT}/
 
 # If necessary, install extra R and Linux packages here. As the base Lambda image is based on CentOS
 # the `yum` package manager is used. Make sure you have the correct package name/s.
