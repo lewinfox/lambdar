@@ -35,10 +35,9 @@ init <- function() {
         }
       }
 
-      cfg <- new_lambdar_config()
-
-      write_config(cfg)
       write_dockerignore()
+
+      build_config()
     },
     error = function(e) {
       warning(e)
