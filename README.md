@@ -211,5 +211,4 @@ Create your lambda function from your newly-uploaded container image following t
 * Add a function to create the lambda for you.
 * Provide a GitHub Actions template so we can update on every push etc.
 * Duplicate the same functionality but using lambda layers (the other custom runtime option). See
-  [medium.com/bakdata/running-r-on-aws-lambda](https://medium.com/bakdata/running-r-on-aws-lambda-9d40643551a6)
-a
+  [medium.com/bakdata/running-r-on-aws-lambda](https://medium.com/bakdata/running-r-on-aws-lambda-9d40643551a6).
