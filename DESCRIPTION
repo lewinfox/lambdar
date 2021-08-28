@@ -15,7 +15,6 @@ BugReports: https://github.com/lewinfox/lambdar/issues
 Imports: 
     cli,
     glue,
-    httr,
     renv,
     rlang,
     roxygen2,
