@@ -35,3 +35,4 @@ linux_packages: [ {{{ linux_packages }}} ]
 env:
   LAMBDAR_APP_NAME: "{{ app_name }}"
   LAMBDAR_VERSION: "{{ lambdar_version }}"
+  LAMBDAR_LOG_LEVEL: "INFO"
