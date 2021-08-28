@@ -98,7 +98,7 @@ handle_event <- function(event) {
 
   status_code <- httr::status_code(event)
 
-  logger::log_debug("New event received, status code:", status_code)
+  logger::log_trace("Event status code:", status_code)
 
   if (status_code != 200) {
     msg <- paste(
@@ -142,7 +142,14 @@ handle_event <- function(event) {
     logger::log_info("Event type is 'scheduled'")
   }
 
-  logger::log_debug("Unparsed content:", unparsed_content)
+  # Record the event payload in the log
+  if (!is.null(event_headers[["content-length"]])) {
+    if (as.integer(event_headers[["content-length"]]) > 0) {
+      logger::log_debug("Event payload:", unparsed_content)
+    } else {
+      logger::log_debug("Event payload: <none>")
+    }
+  }
 
   if (identical(unparsed_content, "") || is_scheduled_event) {
     # (1a) direct invocation with no args (or scheduled request)
@@ -198,8 +205,9 @@ handle_event <- function(event) {
     response_object
   }
 
+  # Send the response
   httr::POST(
-    url = response_endpoint,
+    url = aws_response_endpoint(aws_request_id),
     body = body,
     encode = "json"
   )
@@ -255,15 +263,13 @@ tryCatch(
       stop_api("_HANDLER environment variable undefined")
     }
 
-    logger::log_info("Handler found:", handler)
+    logger::log_info(paste0("Handler found: '", handler, "'"))
 
-    handler_split <- strsplit(handler, ".", fixed = TRUE)[[1]]
-    file_name <- paste0(handler_split[1], ".R")
-    function_name <- handler_split[2]
+    handler_split <- strsplit(handler, ".", fixed = TRUE)[[1L]]
+    file_name <- paste0(handler_split[1L], ".R")
+    function_name <- handler_split[2L]
 
-    logger::log_info(paste0("Using function '", function_name, "()' from ", file_name))
-
-    logger::log_debug("Checking if", file_name, "exists")
+    logger::log_debug(paste0("Checking if '", file_name, "' exists"))
 
     if (!file.exists(file_name)) {
       stop_api(paste(file_name, "not found in container dir", getwd()))
@@ -284,8 +290,12 @@ tryCatch(
       msg <- paste0("'", function_name, "()' is not a function")
       stop_api(msg, code = 400)
     }
+
+    # Everything checks out, we can use this function
+    logger::log_info(paste0("Using function '", function_name, "()' from '", file_name, "'"))
   },
   lambdar_api_error = function(e) {
+    logger::log_trace("Handling a `lambdar_api_error` during runtime setup")
     # Something broke when we were trying to set up the API, so report this to the AWS
     # "initialisation error endpoint".
     logger::log_error(as.character(e))
@@ -302,7 +312,6 @@ tryCatch(
 )
 
 logger::log_info("Runtime setup successful")
-logger::log_info("Polling for events")
 
 
 # ---- Main runtime loop ----
@@ -316,7 +325,7 @@ repeat {
     },
     lambdar_api_error = function(e) {
       # If this handler is triggered it means our runtime code has failed.
-      logger::log_error(paste("API error:", as.character(e)))
+      logger::log_error(paste("API error while handling event:", as.character(e)))
 
       # Extract headers
       headers <- httr::headers(event)
@@ -343,7 +352,7 @@ repeat {
     },
     error = function(e) {
 
-      logger::log_error(as.character(e))
+      logger::log_error("Unhandled error occurred while handling event:", as.character(e))
 
       # Extract headers
       headers <- httr::headers(event)
