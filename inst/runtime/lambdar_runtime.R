@@ -1,4 +1,4 @@
-# ---- Function definitions ----
+# ---- Functions: AWS endpoints ----
 
 #' Response endpoints
 #'
@@ -15,9 +15,21 @@
 #' * `invocation_error_endpoint`: If something goes wrong with a particular lambda invocation, we
 #'   should report it to this endpoint.
 #'
-#' @param aws_request_id Lambda-Runtime-Aws-Request-Id header of the event
+#' These endpoints follow a set template and are defined by two variables, the environment variable
+#' `AWS_LAMBDA_RUNTIME_API` (set at the session level) and the header
+#' `Lambda-Runtime-Aws-Request-Id` which is different for every invocation of the lambda function.
+#'
+#' The generic constructor `aws_endpoint()` obtains the `LAMBDA_RUNTIME_API` variable for us (and
+#' will throw an error if it is not present). The event handler code needs to obtain the
+#' `Lambda-Runtime-Aws-Request-Id` header each time it's invoked.
+#'
+#' @param aws_request_id `Lambda-Runtime-Aws-Request-Id` header of the event
 #' @param ... Path elements to be concatenated with `"/"`
 #'
+#' @name endpoints
+NULL
+
+#' @describeIn endpoints Generic endpoint constructor
 aws_endpoint <- function(...) {
   # Check for the presence of the relevant env var so we can construct the endpoints
   lambda_runtime_api <- Sys.getenv("AWS_LAMBDA_RUNTIME_API")
@@ -25,32 +37,35 @@ aws_endpoint <- function(...) {
   if (lambda_runtime_api == "") {
     error_message <- "'AWS_LAMBDA_RUNTIME_API' environment variable undefined"
     logger::log_error(error_message)
-    stop(error_message) # TODO: Should this be `stop_api()`?
+    stop_api(error_message)
   }
 
   base_url <- paste0("http://", lambda_runtime_api, "/2018-06-01/runtime")
   paste(base_url, ..., sep = "/")
 }
 
-#' @describein aws_endpoint URL to query for the next event to process
+#' @describein endpoints URL to query for the next event to process
 aws_next_invocation_endpoint <- function() {
   aws_endpoint("invocation", "next")
 }
 
-#' @describeIn aws_endpoint URL to return the result of the lambda function to
+#' @describeIn endpoints URL to return the result of the lambda function to
 aws_response_endpoint <- function(aws_request_id) {
   aws_endpoint("invocation", aws_request_id, "response")
 }
 
-#' @describeIn aws_endpoint URL to report to if we fail to intialise the runtime
+#' @describeIn endpoints URL to report to if we fail to intialise the runtime
 aws_initialisation_error_endpoint <- function() {
   aws_endpoint("init", "error")
 }
 
-#' @describeIn aws_endpoint URL to report invocation errors (i.e. lambda function errors) to
+#' @describeIn endpoints URL to report invocation errors (i.e. lambda function errors) to
 aws_invocation_error_endpoint <- function(aws_request_id) {
   aws_endpoint("invocation", aws_request_id, "error")
 }
+
+
+# ---- Functions: utils ----
 
 #' Convert a list to a single character, preserving names
 #' prettify_list(list("a" = 1, "b" = 2, "c" = 3))
@@ -62,10 +77,12 @@ prettify_list <- function(x) {
   )
 }
 
+# ---- Functions: error handling ----
+
 #' Signal an API error
 #'
 #' This raises a custom error class `"lambdar_api_error"` to indicate that something has gone wrong
-#' in our runtime.
+#' in our runtime. This is distinct from an error that occurs in the lambda function itself.
 #'
 #' @param message The error message to return
 #' @param code The response code to return. Defaults to 500 for "Internal Server Error". See
@@ -86,6 +103,9 @@ stop_api <- function(message, code = 500, call = sys.call(-1), ...) {
   logger::log_error(paste0("Lambdar API error (code ", code, "): ", message))
   stop(err)
 }
+
+
+# ---- Functions: event handling ----
 
 #' Handle an API event
 #'
@@ -214,7 +234,7 @@ handle_event <- function(event) {
 }
 
 
-# ---- Set up logging----
+# ---- Runtime: Set up logging ----
 
 logger::log_formatter(logger::formatter_paste)
 
@@ -241,12 +261,13 @@ if (identical(log_level_env_var, "")) {
   logger::log_threshold(log_level)
 }
 
-# ---- Set up endpoints ----
+# ---- Runtime: Set up endpoints ----
+
 next_invocation_endpoint <- aws_next_invocation_endpoint()
 initialisation_error_endpoint <- aws_initialisation_error_endpoint()
 
 
-# ---- Set up runtime ----
+# ---- Runtime: Set up runtime ----
 
 # Run through the runtime setup process. If anything goes wrong, use `stop_api()` to signal to
 # AWS that we weren't able to initialise the runtime correctly.
@@ -314,7 +335,7 @@ tryCatch(
 logger::log_info("Runtime setup successful")
 
 
-# ---- Main runtime loop ----
+# ---- Runtime: Main loop ----
 
 repeat {
   tryCatch(
