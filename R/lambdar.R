@@ -211,7 +211,10 @@ build_image <- function() {
       msg <- glue::glue("{lam_dockerfile_path()} does not exist - building")
       cli::cli_alert_info(msg)
     }
-    build_dockerfile()
+    # Suppress Dockerfile build messages.
+    withr::with_options(list(lambdar.quiet = TRUE), {
+      build_dockerfile()
+    })
   }
 
   cfg <- lambdar_config_from_file()

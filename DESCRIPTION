@@ -21,13 +21,13 @@ Imports:
     roxygen2,
     stringr,
     usethis,
+    withr,
     yaml
 Suggests: 
     fs,
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0),
-    withr
+    testthat (>= 3.0.0)
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3
