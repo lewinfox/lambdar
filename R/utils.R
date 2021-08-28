@@ -154,7 +154,7 @@ lam_function_exists_in_file <- function(file, fun) {
 #'
 #' @keywords internal
 using_lambdar <- function() {
-  dir.exists(lam_dir_path()) && runtime_exists() && config_exists()
+  dir.exists(lam_dir_path()) && runtime_exists()
 }
 
 #' @describeIn using_lambdar Does the runtime file exist?
