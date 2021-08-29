@@ -231,7 +231,12 @@ handle_event <- function(event) {
         result = NULL,
         status = "ok"
       )
-      res$result <- do.call(function_name, event_content)
+
+      # We are using `callr::r()` to run the function in an isolated subprocess. This is safer but
+      # slower - instead we could use `do.call(function_name, event_content)` but this leaves us
+      # open to the possibility of functions buggering up the global state in some way.
+      lambda_function <- match.fun(function_name)
+      res$result <- callr::r(lambda_function, args = event_content)
       res
     },
     warning = function(w) {

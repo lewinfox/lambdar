@@ -14,7 +14,7 @@ RUN  yum makecache \
 ENV PATH="${PATH}:/opt/R/${R_VERSION}/bin/"
 
 # The R runtime requires these packages
-RUN Rscript -e 'install.packages(c("httr", "jsonlite", "logger"), repos = c({{{ r_package_repos }}}))'
+RUN Rscript -e 'install.packages(c("httr", "jsonlite", "logger", "callr"), repos = c({{{ r_package_repos }}}))'
 
 # Write the bootstrap file
 RUN printf '#!/bin/sh\ncd $LAMBDA_TASK_ROOT\nRscript lambdar_runtime.R' > /var/runtime/bootstrap \

@@ -77,7 +77,7 @@ lam_get_project_dependencies <- function() {
   deps <- deps[!(grepl("\\.[Rr]md$", deps$Source) & deps$Package == "rmarkdown"), "Package"]
 
   # TODO: Is there a neater way of excluding runtime dependencies?
-  setdiff(unique(deps), c("httr","jsonlite", "logger"))
+  setdiff(unique(deps), c("httr","jsonlite", "logger", "callr"))
 }
 
 #' Scan the project folder for handlers and package dependencies
