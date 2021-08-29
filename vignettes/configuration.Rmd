@@ -107,6 +107,13 @@ examples in the template.
 # _lambdar.yml
 
 env:
-  FOO: "bar"
-  BAZ: "qux"
+  LAMBDAR_APP_NAME: "my-lambdar-app"
+  LAMBDAR_VERSION: "0.1.0"
+  LAMBDAR_LOG_LEVEL: "INFO"
 ```
+
+#### Lambdar environment variables
+
+The three default environment variables are shown above. At the moment only `LAMBDAR_LOG_LEVEL`
+has any effect - it sets the log level for the `logger` package, which the runtime uses to, well, 
+log stuff. The default if this variable is not defined is `logger::INFO`.
