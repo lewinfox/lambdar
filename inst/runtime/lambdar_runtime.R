@@ -117,7 +117,7 @@ signal_runtime_error <- function(message, code = 500, call = sys.call(-1), ...) 
 #'   options.
 #' @param call The function call in which the error occurred.
 #' @param ... Other data to be included in the error.
-signal_lambda_error <- function(message, code = 500, call = sys.call(-1), ...) {
+signal_lambda_error <- function(message, code = 400, call = sys.call(-1), ...) {
   err <- structure(
     list(
       message = message,
