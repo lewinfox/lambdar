@@ -217,15 +217,6 @@ handle_event <- function(event, lambda_function) {
     }
   }
 
-  # TODO: The error handling needs more work.
-  #
-  #       * How do we treat warnings?
-  #       * What do we do with error codes / error statuses?
-  #       * Really we should call the lambda in a new environment in case anyone starts messing
-  #         about with the global env or other nonsense.
-  #       * Are HTTP response codes the correct thing to be sending here? Seems like we risk
-  #         confusing people because we're mixing custom "status" values with standard "status_code"
-  #         values.
   response_object <- withCallingHandlers(
     {
       # Create a dummy result variable. This is so - in the event of a warning - we have an object
