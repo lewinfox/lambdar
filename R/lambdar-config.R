@@ -113,7 +113,5 @@ write_config <- function(cfg) {
   cfg$r_package_repos <- lam_build_quoted_list(cfg$r_package_repos)
   cfg$linux_packages  <- lam_build_separated_list(cfg$linux_packages, sep = ", ")
 
-  # TODO: This won't work in non-interactive sessions where the file exists already because
-  #       `use_template()` avoids clobbering the file if it can't check with the user.
   usethis::use_template("_lambdar.yml", data = cfg, package = "lambdar")
 }
