@@ -227,11 +227,20 @@ handle_event <- function(event) {
   #         values.
   response_object <- withCallingHandlers(
     {
+      # Create a dummy result variable. This is so - in the event of a warning - we have an object
+      # available to update.
       res <- list(
         result = NULL,
         status = "ok"
       )
-      res$result <- do.call(function_name, event_content)
+
+      # To minimise the risk of lambda code modifying important bits of the runtime's environment
+      # and potentially breaking stuff (what happens if it modifies environment variables like
+      # AWS_LAMBDA_RUNTIME_API?) we will execute it in a fresh empty environment. This means that we
+      # need to resolve the name to a function object before we use `do.call()`.
+      lambda_function <- match.fun(function_name)
+      lambda_execution_env <- new.env(parent = emptyenv())
+      res$result <- do.call(lambda_function, event_content, envir = lambda_execution_env)
       res
     },
     warning = function(w) {
