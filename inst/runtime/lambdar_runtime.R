@@ -105,6 +105,32 @@ signal_runtime_error <- function(message, code = 500, call = sys.call(-1), ...) 
   stop(err)
 }
 
+#' Signal an error in the lambda function
+#'
+#' This raises a custom error class `"lambdar_lambda_error"` to indicate that something has gone
+#' wrong in our runtime. This is distinct from an error that occurs in the lambda function itself.
+#'
+#' @param message The error message to return
+#' @param code The response code to return. Defaults to 500 for "Internal Server Error". See [Server
+#'   Error Responses on
+#'   MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#server_error_responses) for other
+#'   options.
+#' @param call The function call in which the error occurred.
+#' @param ... Other data to be included in the error.
+signal_lambda_error <- function(message, code = 500, call = sys.call(-1), ...) {
+  err <- structure(
+    list(
+      message = message,
+      call = call,
+      code = code,
+      ...
+    ),
+    class = c("lambdar_lambda_error", "error", "condition")
+  )
+  logger::log_error(paste0("Lambdar function error (code ", code, "): ", message))
+  stop(err)
+}
+
 
 # ---- Functions: event handling ----
 
@@ -180,13 +206,12 @@ handle_event <- function(event) {
     event_content <- jsonlite::fromJSON(unparsed_content)
   }
 
-  # if you want to do any additional inspection of the event body (including
-  # other http request elements if it's an endpoint), you can do that here!
+  # If you want to do any additional inspection of the event body (including other http request
+  # elements if it's an endpoint), you can do that here!
 
-  # change `http_req_element` if you'd prefer to send the http request `body` to
-  # the lambda fn, rather than the query parameters
-  # (note that query string params are always strings! your lambda fn may need to
-  # convert them back to numeric/logical/Date/etc.)
+  # Change `http_req_element` if you'd prefer to send the http request `body` to the lambda fn,
+  # rather than the query parameters (note that query string params are always strings! your lambda
+  # fn may need to convert them back to numeric/logical/Date/etc.)
   is_http_req <- FALSE
   http_req_element <- "queryStringParameters"
 
@@ -201,41 +226,52 @@ handle_event <- function(event) {
     }
   }
 
-  # TODO: Proper error handling. Think about what it should return on failures.
-  response_object <- tryCatch(
+  # TODO: The error handling needs more work.
+  #
+  #       * How do we treat warnings?
+  #       * What do we do with error codes / error statuses?
+  #       * Really we should call the lambda in a new environment in case anyone starts messing
+  #         about with the global env or other nonsense.
+  #       * Are HTTP response codes the correct thing to be sending here? Seems like we risk
+  #         confusing people because we're mixing custom "status" values with standard "status_code"
+  #         values.
+  response_object <- withCallingHandlers(
     {
-      list(
-        result = do.call(function_name, event_content),
-        status = "ok"
+      res <- list(
+        result = NULL,
+        status = "ok",
+        status_code = 200L # "OK"
       )
+      res$result <- do.call(function_name, event_content)
+      res
     },
     warning = function(w) {
-      # Capture relevant info from the warning, log it and set the response object appropriately
+      # In case of warnings we want to still return the result of the function, but add details of
+      # the warning/s that arose.
+      #
+      # TODO: This seems like a good candidate for an env var to determine whether we treat warnings
+      #       as errors. It seems like we ought to by default. In this case maybe the appropriate
+      #       and consistent thing to do is signal "there was an error in the lambda function" and
+      #       let the main loop code handle it. However, we would need to work out if/how to pass
+      #       the result up the chain.
       cnd_msg <- conditionMessage(w)
-      msg <- paste0("Warning in lambda function: ", cnd_msg)
-      logger::log_warn(msg)
+      cnd_call <- conditionCall(w)
 
-      list(
-        result = NULL,
-        warning = cnd_msg,
-        status = "warning"
-      )
+      res$status <<- "warning"
+      res$status_code <<- 400L  # "Bad Request"
+      res$warning_messages <<- c(res$warning, cnd_msg) # If we hit multiple warnings, return all of them
+
+      msg <- paste0("In '", cnd_call, "()': ", cnd_msg)
+      logger::log_warn(msg)
     },
     error = function(e) {
-      # Capture relevant info from the warning, log it and set the response object appropriately
-      cnd_msg <- conditionMessage(e)
-      msg <- paste0("Error in lambda function: ", cnd_msg)
-      logger::log_error(msg)
-
-      list(
-        result = NULL,
-        error = cnd_msg,
-        status = "error"
-      )
+      # Signal "the lambda function broke". This will be handled by the main loop's error handler
+      # and the client will be notified.
+      signal_lambda_error(conditionMessage(e), call = conditionCall(e))
     }
   )
 
-  # aws api gateway is a bit particular about the response format
+  # AWS api gateway is a bit particular about the response format
   body <- if (is_http_req) {
     list(
       isBase64Encoded = FALSE,
@@ -262,7 +298,7 @@ handle_event <- function(event) {
 logger::log_formatter(logger::formatter_paste)
 
 # Has the user supplied a logging level as an env var? If so, honour it unless we don't recognise it
-# as a valid `logger` log level, in which case throw an API error.
+# as a valid `logger` log level, in which case throw a runtime error.
 log_level_env_var <- toupper(Sys.getenv("LAMBDAR_LOG_LEVEL"))
 
 if (identical(log_level_env_var, "")) {
@@ -279,7 +315,7 @@ if (identical(log_level_env_var, "")) {
     "INFO"  = logger::INFO,
     "DEBUG" = logger::DEBUG,
     "TRACE" = logger::TRACE,
-    signal_runtime_error(paste("Invalid log level ", log_level_env_var, "provided"), code = 400)
+    signal_runtime_error(paste0("Invalid log level '", log_level_env_var, "' provided"), code = 500)
   )
   logger::log_threshold(log_level)
 }
@@ -361,6 +397,7 @@ logger::log_info("Runtime setup successful")
 # ---- Runtime: Main loop ----
 
 repeat {
+
   tryCatch(
     {
       event <- httr::GET(url = next_invocation_endpoint)
@@ -369,7 +406,7 @@ repeat {
     },
     lambdar_runtime_error = function(e) {
       # If this handler is triggered it means our runtime code has failed.
-      logger::log_error(paste("API error while handling event:", as.character(e)))
+      logger::log_error(paste("Runtime error:", as.character(e)))
 
       # Extract headers
       headers <- httr::headers(event)
@@ -378,7 +415,7 @@ repeat {
 
       if (exists("aws_request_id")) {
         # We have the request ID so we can be good citizens and report failure to AWS
-        logger::log_info("POSTing invocation error for ID:", aws_request_id)
+        logger::log_trace("POSTing invocation error for ID:", aws_request_id)
 
         httr::POST(
           url = aws_invocation_error_endpoint(aws_request_id),
@@ -394,7 +431,35 @@ repeat {
         logger::log_warn("No invocation ID! Can't clear this request from the queue.")
       }
     },
+    lambdar_lambda_error = function(e) {
+      # If this handler is triggered it means our lambda function has failed.
+      logger::log_error("Lambda function error:", as.character(e))
+
+      # Extract headers
+      headers <- httr::headers(event)
+      names(headers) <- tolower(names(headers))
+      aws_request_id <- headers[["lambda-runtime-aws-request-id"]]
+
+      if (exists("aws_request_id")) {
+        # We have the request ID so we can be good citizens and report failure to AWS
+        logger::log_trace("POSTing invocation error for ID:", aws_request_id)
+
+        httr::POST(
+          url = aws_invocation_error_endpoint(aws_request_id),
+          body = list(
+            status = "error",
+            status_code = e$code,
+            error_message = as.character(e$message)
+          ),
+          encode = "json"
+        )
+      } else {
+        logger::log_warn("No invocation ID! Can't clear this request from the queue.")
+      }
+    },
     error = function(e) {
+      # This is to catch other errors that we haven't thought of - probably a failure in obtaining
+      # the next event
 
       logger::log_error("Unhandled error occurred while handling event:", as.character(e))
 
@@ -405,11 +470,15 @@ repeat {
 
       if (exists("aws_request_id")) {
 
-        logger::log_info("POSTing invocation error for ID:", aws_request_id)
+        logger::log_trace("POSTing invocation error for ID:", aws_request_id)
 
         httr::POST(
           url = aws_invocation_error_endpoint(aws_request_id),
-          body = list(error_message = as.character(e)),
+          body = list(
+            status = "error",
+            status_code = 500L,
+            error_message = as.character(e)
+          ),
           encode = "json"
         )
       } else {
