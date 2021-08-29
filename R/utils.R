@@ -93,7 +93,6 @@ lam_scan_project <- function() {
     cli::cli_alert_info("Scanning project...")
   }
 
-  # TODO: Look for source() calls and follow that graph.
   handlers <- lam_parse_project_handlers()
 
   if (!quiet) {
