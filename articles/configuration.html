@@ -164,8 +164,14 @@
 <div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># _lambdar.yml</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a></span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="fu">env</span><span class="kw">:</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="at">  </span><span class="fu">FOO</span><span class="kw">:</span><span class="at"> </span><span class="st">"bar"</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a><span class="at">  </span><span class="fu">BAZ</span><span class="kw">:</span><span class="at"> </span><span class="st">"qux"</span></span></code></pre></div>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="at">  </span><span class="fu">LAMBDAR_APP_NAME</span><span class="kw">:</span><span class="at"> </span><span class="st">"my-lambdar-app"</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="at">  </span><span class="fu">LAMBDAR_VERSION</span><span class="kw">:</span><span class="at"> </span><span class="st">"0.1.0"</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="at">  </span><span class="fu">LAMBDAR_LOG_LEVEL</span><span class="kw">:</span><span class="at"> </span><span class="st">"INFO"</span></span></code></pre></div>
+<div id="lambdar-environment-variables" class="section level4">
+<h4 class="hasAnchor">
+<a href="#lambdar-environment-variables" class="anchor"></a>Lambdar environment variables</h4>
+<p>The three default environment variables are shown above. At the moment only <code>LAMBDAR_LOG_LEVEL</code> has any effect - it sets the log level for the <code>logger</code> package, which the runtime uses to, well, log stuff. The default if this variable is not defined is <code>logger::INFO</code>.</p>
+</div>
 </div>
 </div>
   </div>
