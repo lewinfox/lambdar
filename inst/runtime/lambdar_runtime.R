@@ -37,7 +37,7 @@ aws_endpoint <- function(...) {
   if (lambda_runtime_api == "") {
     error_message <- "'AWS_LAMBDA_RUNTIME_API' environment variable undefined"
     logger::log_error(error_message)
-    stop_api(error_message)
+    signal_runtime_error(error_message)
   }
 
   base_url <- paste0("http://", lambda_runtime_api, "/2018-06-01/runtime")
@@ -81,16 +81,17 @@ prettify_list <- function(x) {
 
 #' Signal an API error
 #'
-#' This raises a custom error class `"lambdar_api_error"` to indicate that something has gone wrong
-#' in our runtime. This is distinct from an error that occurs in the lambda function itself.
+#' This raises a custom error class `"lambdar_runtime_error"` to indicate that something has gone
+#' wrong in our runtime. This is distinct from an error that occurs in the lambda function itself.
 #'
 #' @param message The error message to return
-#' @param code The response code to return. Defaults to 500 for "Internal Server Error". See
-#'   [Server Error Responses on MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#server_error_responses)
-#'   for other options.
+#' @param code The response code to return. Defaults to 500 for "Internal Server Error". See [Server
+#'   Error Responses on
+#'   MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#server_error_responses) for other
+#'   options.
 #' @param call
 #' @param ...
-stop_api <- function(message, code = 500, call = sys.call(-1), ...) {
+signal_runtime_error <- function(message, code = 500, call = sys.call(-1), ...) {
   err <- structure(
     list(
       message = message,
@@ -98,9 +99,9 @@ stop_api <- function(message, code = 500, call = sys.call(-1), ...) {
       code = code,
       ...
     ),
-    class = c("lambdar_api_error", "error", "condition")
+    class = c("lambdar_runtime_error", "error", "condition")
   )
-  logger::log_error(paste0("Lambdar API error (code ", code, "): ", message))
+  logger::log_error(paste0("Lambdar runtime error (code ", code, "): ", message))
   stop(err)
 }
 
@@ -125,7 +126,7 @@ handle_event <- function(event) {
       "Received a bad response from the 'next invocation' endpoint.",
       "Status code:", status_code
     )
-    stop_api(msg, code = 400)
+    signal_runtime_error(msg, code = 400)
   }
 
   event_headers <- httr::headers(event)
@@ -136,7 +137,7 @@ handle_event <- function(event) {
 
   aws_request_id <- event_headers[["lambda-runtime-aws-request-id"]]
   if (is.null(aws_request_id)) {
-    stop_api("Could not find 'lambda-runtime-aws-request-id' header in event", code = 400)
+    signal_runtime_error("Could not find 'lambda-runtime-aws-request-id' header in event", code = 400)
   }
 
   # According to the AWS guide, the below is used by "X-Ray SDK". All we need to do is set the env
@@ -256,7 +257,7 @@ if (identical(log_level_env_var, "")) {
     "INFO"  = logger::INFO,
     "DEBUG" = logger::DEBUG,
     "TRACE" = logger::TRACE,
-    stop_api(paste("Invalid log level ", log_level_env_var, "provided"), code = 400)
+    signal_runtime_error(paste("Invalid log level ", log_level_env_var, "provided"), code = 400)
   )
   logger::log_threshold(log_level)
 }
@@ -269,8 +270,8 @@ initialisation_error_endpoint <- aws_initialisation_error_endpoint()
 
 # ---- Runtime: Set up runtime ----
 
-# Run through the runtime setup process. If anything goes wrong, use `stop_api()` to signal to
-# AWS that we weren't able to initialise the runtime correctly.
+# Run through the runtime setup process. If anything goes wrong, use `signal_runtime_error()` to
+# signal to AWS that we weren't able to initialise the runtime correctly.
 #
 # The checks we perform are:
 #
@@ -281,7 +282,7 @@ tryCatch(
 
     handler <- Sys.getenv("_HANDLER")
     if (is.null(handler) || handler == "") {
-      stop_api("_HANDLER environment variable undefined")
+      signal_runtime_error("_HANDLER environment variable undefined")
     }
 
     logger::log_info(paste0("Handler found: '", handler, "'"))
@@ -293,7 +294,7 @@ tryCatch(
     logger::log_debug(paste0("Checking if '", file_name, "' exists"))
 
     if (!file.exists(file_name)) {
-      stop_api(paste(file_name, "not found in container dir", getwd()))
+      signal_runtime_error(paste(file_name, "not found in container dir", getwd()))
     }
 
     source(file_name)
@@ -302,21 +303,21 @@ tryCatch(
     logger::log_debug(paste0("Checking if '", function_name, "()' is defined"))
     if (!exists(function_name)) {
       msg <- paste0("Function name '", function_name, "()' isn't defined in ", file_name)
-      stop_api(msg, code = 400)
+      signal_runtime_error(msg, code = 400)
     }
 
     logger::log_debug(paste0("Checking if '", function_name, "()' is a function"))
 
     if (!is.function(eval(parse(text = function_name)))) {
       msg <- paste0("'", function_name, "()' is not a function")
-      stop_api(msg, code = 400)
+      signal_runtime_error(msg, code = 400)
     }
 
     # Everything checks out, we can use this function
     logger::log_info(paste0("Using function '", function_name, "()' from '", file_name, "'"))
   },
-  lambdar_api_error = function(e) {
-    logger::log_trace("Handling a `lambdar_api_error` during runtime setup")
+  lambdar_runtime_error = function(e) {
+    logger::log_trace("Handling a `lambdar_runtime_error` during runtime setup")
     # Something broke when we were trying to set up the API, so report this to the AWS
     # "initialisation error endpoint".
     logger::log_error(as.character(e))
@@ -344,7 +345,7 @@ repeat {
       logger::log_info("New event received")
       handle_event(event)
     },
-    lambdar_api_error = function(e) {
+    lambdar_runtime_error = function(e) {
       # If this handler is triggered it means our runtime code has failed.
       logger::log_error(paste("API error while handling event:", as.character(e)))
 
