@@ -420,7 +420,8 @@ repeat {
         httr::POST(
           url = aws_invocation_error_endpoint(aws_request_id),
           body = list(
-            statusCode = e$code,
+            status = "runtime_error",
+            status_code = e$code,
             error_message = as.character(e$message)
           ),
           encode = "json"
