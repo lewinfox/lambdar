@@ -85,23 +85,18 @@ prettify_list <- function(x) {
 #' wrong in our runtime. This is distinct from an error that occurs in the lambda function itself.
 #'
 #' @param message The error message to return
-#' @param code The response code to return. Defaults to 500 for "Internal Server Error". See [Server
-#'   Error Responses on
-#'   MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#server_error_responses) for other
-#'   options.
 #' @param call The function call in which the error occurred.
 #' @param ... Other data to be included in the error.
-signal_runtime_error <- function(message, code = 500, call = sys.call(-1), ...) {
+signal_runtime_error <- function(message, call = sys.call(-1), ...) {
   err <- structure(
     list(
       message = message,
       call = call,
-      code = code,
       ...
     ),
     class = c("lambdar_runtime_error", "error", "condition")
   )
-  logger::log_error(paste0("Lambdar runtime error (code ", code, "): ", message))
+  logger::log_error(paste0("Lambdar runtime error: ", message))
   stop(err)
 }
 
@@ -111,23 +106,18 @@ signal_runtime_error <- function(message, code = 500, call = sys.call(-1), ...) 
 #' wrong in our runtime. This is distinct from an error that occurs in the lambda function itself.
 #'
 #' @param message The error message to return
-#' @param code The response code to return. Defaults to 500 for "Internal Server Error". See [Server
-#'   Error Responses on
-#'   MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#server_error_responses) for other
-#'   options.
 #' @param call The function call in which the error occurred.
 #' @param ... Other data to be included in the error.
-signal_lambda_error <- function(message, code = 400, call = sys.call(-1), ...) {
+signal_lambda_error <- function(message, call = sys.call(-1), ...) {
   err <- structure(
     list(
       message = message,
       call = call,
-      code = code,
       ...
     ),
     class = c("lambdar_lambda_error", "error", "condition")
   )
-  logger::log_error(paste0("Lambdar function error (code ", code, "): ", message))
+  logger::log_error(paste0("Lambdar function error: ", message))
   stop(err)
 }
 
@@ -152,7 +142,7 @@ handle_event <- function(event) {
       "Received a bad response from the 'next invocation' endpoint.",
       "Status code:", status_code
     )
-    signal_runtime_error(msg, code = 400)
+    signal_runtime_error(msg)
   }
 
   event_headers <- httr::headers(event)
@@ -239,8 +229,7 @@ handle_event <- function(event) {
     {
       res <- list(
         result = NULL,
-        status = "ok",
-        status_code = 200L # "OK"
+        status = "ok"
       )
       res$result <- do.call(function_name, event_content)
       res
@@ -258,7 +247,6 @@ handle_event <- function(event) {
       cnd_call <- conditionCall(w)
 
       res$status <<- "warning"
-      res$status_code <<- 400L  # "Bad Request"
       res$warning_messages <<- c(res$warning, cnd_msg) # If we hit multiple warnings, return all of them
 
       msg <- paste0("In '", cnd_call, "()': ", cnd_msg)
@@ -315,7 +303,7 @@ if (identical(log_level_env_var, "")) {
     "INFO"  = logger::INFO,
     "DEBUG" = logger::DEBUG,
     "TRACE" = logger::TRACE,
-    signal_runtime_error(paste0("Invalid log level '", log_level_env_var, "' provided"), code = 500)
+    signal_runtime_error(paste0("Invalid log level '", log_level_env_var, "' provided"))
   )
   logger::log_threshold(log_level)
 }
@@ -361,14 +349,14 @@ tryCatch(
     logger::log_debug(paste0("Checking if '", function_name, "()' is defined"))
     if (!exists(function_name)) {
       msg <- paste0("Function name '", function_name, "()' isn't defined in ", file_name)
-      signal_runtime_error(msg, code = 400)
+      signal_runtime_error(msg)
     }
 
     logger::log_debug(paste0("Checking if '", function_name, "()' is a function"))
 
     if (!is.function(eval(parse(text = function_name)))) {
       msg <- paste0("'", function_name, "()' is not a function")
-      signal_runtime_error(msg, code = 400)
+      signal_runtime_error(msg)
     }
 
     # Everything checks out, we can use this function
@@ -383,7 +371,7 @@ tryCatch(
     httr::POST(
       url = initialisation_error_endpoint,
       body = list(
-        statusCode = e$code,
+        status = "runtime_error",
         error_message = as.character(e$message)),
       encode = "json"
     )
@@ -421,7 +409,6 @@ repeat {
           url = aws_invocation_error_endpoint(aws_request_id),
           body = list(
             status = "runtime_error",
-            status_code = e$code,
             error_message = as.character(e$message)
           ),
           encode = "json"
@@ -449,7 +436,6 @@ repeat {
           url = aws_invocation_error_endpoint(aws_request_id),
           body = list(
             status = "error",
-            status_code = e$code,
             error_message = as.character(e$message)
           ),
           encode = "json"
@@ -476,8 +462,7 @@ repeat {
         httr::POST(
           url = aws_invocation_error_endpoint(aws_request_id),
           body = list(
-            status = "error",
-            status_code = 500L,
+            status = "unknown_error",
             error_message = as.character(e)
           ),
           encode = "json"
