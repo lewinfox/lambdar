@@ -255,6 +255,8 @@ handle_event <- function(event) {
       cnd_msg <- conditionMessage(w)
       cnd_call <- conditionCall(w)
 
+      # The use of superassignment here is a bit gross but it's the only way I've found of getting
+      # the warning handler to modify the result that will get returned.
       res$status <<- "warning"
       res$warning_messages <<- c(res$warning, cnd_msg) # If we hit multiple warnings, return all of them
 
