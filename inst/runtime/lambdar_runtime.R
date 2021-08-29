@@ -89,8 +89,8 @@ prettify_list <- function(x) {
 #'   Error Responses on
 #'   MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#server_error_responses) for other
 #'   options.
-#' @param call
-#' @param ...
+#' @param call The function call in which the error occurred.
+#' @param ... Other data to be included in the error.
 signal_runtime_error <- function(message, code = 500, call = sys.call(-1), ...) {
   err <- structure(
     list(
@@ -202,18 +202,38 @@ handle_event <- function(event) {
   }
 
   # TODO: Proper error handling. Think about what it should return on failures.
-  response_object <- list(result = try(do.call(function_name, event_content), silent = TRUE))
+  response_object <- tryCatch(
+    {
+      list(
+        result = do.call(function_name, event_content),
+        status = "ok"
+      )
+    },
+    warning = function(w) {
+      # Capture relevant info from the warning, log it and set the response object appropriately
+      cnd_msg <- conditionMessage(w)
+      msg <- paste0("Warning in lambda function: ", cnd_msg)
+      logger::log_warn(msg)
 
-  if (inherits(response_object$result, "try-error")) {
-    response_object$result <- NULL # TODO: We would like to return some more info about the error here
-    response_object$status <- "failure"
-  } else {
-    response_object$status <- "success"
-  }
+      list(
+        result = NULL,
+        warning = cnd_msg,
+        status = "warning"
+      )
+    },
+    error = function(e) {
+      # Capture relevant info from the warning, log it and set the response object appropriately
+      cnd_msg <- conditionMessage(e)
+      msg <- paste0("Error in lambda function: ", cnd_msg)
+      logger::log_error(msg)
 
-  logger::log_debug("Result:", as.character(response_object$result))
-
-  response_endpoint <- aws_response_endpoint(aws_request_id)
+      list(
+        result = NULL,
+        error = cnd_msg,
+        status = "error"
+      )
+    }
+  )
 
   # aws api gateway is a bit particular about the response format
   body <- if (is_http_req) {
@@ -225,6 +245,8 @@ handle_event <- function(event) {
   } else {
     response_object
   }
+
+  logger::log_debug("Response:", jsonlite::toJSON(body, auto_unbox = TRUE))
 
   # Send the response
   httr::POST(
