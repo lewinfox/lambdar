@@ -340,7 +340,7 @@ tryCatch(
       signal_runtime_error("_HANDLER environment variable undefined")
     }
 
-    logger::log_info(paste0("Handler found: '", handler, "'"))
+    logger::log_info(paste0("Handler specified: '", handler, "'"))
 
     handler_split <- strsplit(handler, ".", fixed = TRUE)[[1L]]
     file_name <- paste0(handler_split[1L], ".R")
