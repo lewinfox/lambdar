@@ -35,3 +35,10 @@ reference:
   - title: Layers
     desc: >
       Tooling to help you build Lambda layers is on the roadmap but not implemented yet.
+
+  - title: Handling API responses
+    desc: >
+      Once your function is in production your client applictions need to know how to handle the
+      responses it sends back.
+  - contents:
+    - lambdar-api
