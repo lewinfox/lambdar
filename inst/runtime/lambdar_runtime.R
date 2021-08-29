@@ -309,8 +309,8 @@ handle_event <- function(event, lambda_function) {
 
 logger::log_formatter(logger::formatter_paste)
 
-# Has the user supplied a logging level as an env var? If so, honour it unless we don't recognise it
-# as a valid `logger` log level, in which case throw a runtime error.
+# Has the user supplied a logging level env var? If so, honour it unless we don't recognise it as a
+# valid `logger` log level, in which case throw a runtime error.
 log_level_env_var <- toupper(Sys.getenv("LAMBDAR_LOG_LEVEL"))
 
 if (identical(log_level_env_var, "")) {
@@ -334,6 +334,7 @@ if (identical(log_level_env_var, "")) {
 
 # ---- Runtime: Set up endpoints ----
 
+# These will fail with a `lambdar_runtime_error` if the necessary env var is missing.
 next_invocation_endpoint <- aws_next_invocation_endpoint()
 initialisation_error_endpoint <- aws_initialisation_error_endpoint()
 
@@ -357,6 +358,9 @@ tryCatch(
 
     logger::log_info(paste0("Handler specified: '", handler, "'"))
 
+    # TODO: Validate handler param (does it work if the file is in a subfolder? What if the function
+    #       name has a dot in it? E.g. `"utils/stuff.do.things"` for the function `do.things()` in
+    #       the file `utils/stuff.R`)
     handler_split <- strsplit(handler, ".", fixed = TRUE)[[1L]]
     file_name <- paste0(handler_split[1L], ".R")
     function_name <- handler_split[2L]
@@ -367,7 +371,7 @@ tryCatch(
       signal_runtime_error(paste(file_name, "not found in container dir", getwd()))
     }
 
-    source(file_name)
+    source(file_name) # TODO: What if this messes with the global env or env vars?
 
     # Make sure that the handler function is defined in the file
     logger::log_debug(paste0("Checking if '", function_name, "()' is defined"))
@@ -404,10 +408,15 @@ tryCatch(
       encode = "json"
     )
     stop(e)
+  },
+  error = function(e) {
+    # General catch-all for other errors that might come up - convert them to runtime errors and
+    # re-throw
+    signal_runtime_error(message = conditionMessage(e), call = sys.call(-2))
   }
 )
 
-logger::log_info("Runtime setup successful")
+logger::log_info("Runtime initialisation successful")
 
 
 # ---- Runtime: Main loop ----
@@ -418,7 +427,7 @@ repeat {
     {
       event <- httr::GET(url = next_invocation_endpoint)
       logger::log_info("New event received")
-      handle_event(event)
+      handle_event(event, lambda_function)
     },
     lambdar_runtime_error = function(e) {
       # If this handler is triggered it means our runtime code has failed.
